@@ -299,7 +299,6 @@ aside.side-bar {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 100%;
 	margin: 0x 100px;
 	padding: 30px;
 	background-color: rgb(243, 248, 242);
