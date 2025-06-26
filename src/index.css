@@ -1,0 +1,102 @@
+:root {
+	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	font-weight: 400;
+
+	color-scheme: light dark;
+	color: rgba(255, 255, 255, 0.87);
+	background-color: #242424;
+
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	--red: rgb(154, 61, 24);
+	--lightblue: rgb(191, 205, 209);
+	--darkerblue: rgb(163, 189, 195);
+	--darkblue: #3f7882;
+	--offblack: rgb(45, 46, 44);
+	--offwhite: rgb(249, 247, 246);
+	--bg: rgb(4, 49, 0);
+
+	--size-10: 0.625rem;
+	--size-14: 0.875rem;
+	--size-16: 1rem;
+	--size-18: 1.125rem;
+	--size-20: 1.25rem;
+	--size-30: 1.875rem;
+	--size-40: 2.5rem;
+	--size-50: 3.125rem;
+	--size-100: 6.25rem;
+	--size-150: 9.375rem;
+	--size-200: 12.5rem;
+	--size-300: 18.75rem;
+}
+
+a {
+	font-weight: 400;
+	color: #646cff;
+	text-decoration: inherit;
+}
+a:hover {
+	color: var(--darkblue);
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center; /* horizontally centers children */
+	align-items: center; /* vertically centers (if height is set) */
+	min-width: 100%;
+	color: var(--darkblue);
+}
+
+h1 {
+	font-size: 3.2em;
+	line-height: 1.1;
+}
+
+button {
+	border-radius: 8px;
+	border: 1px solid transparent;
+	box-shadow: inset 0px 0px 5px 1px rgba(78, 76, 76, 0.75);
+	height: fit-content;
+	padding: 0.6em 1.2em;
+	font-size: 1em;
+	font-weight: 500;
+	font-family: inherit;
+	color: white;
+	background-color: #1a1a1a;
+	cursor: pointer;
+	transition: border-color 0.25s;
+	margin: 10px auto;
+}
+button:hover {
+	border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+	outline: 4px auto -webkit-focus-ring-color;
+	background-color: var(--red);
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		color: #213547;
+		background-color: var(--bg);
+	}
+	a:hover {
+		color: #242ef0;
+	}
+	button {
+		background-color: rgb(227, 219, 219);
+	}
+}
+@font-face {
+	font-family: 'Barlow';
+	src: local('Barlow'), url('src/fonts/BarlowCondensed-SemiBold.ttf') format('truetype');
+
+	font-weight: bold;
+}
