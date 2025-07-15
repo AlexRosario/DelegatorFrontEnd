@@ -1,7 +1,6 @@
 import type { Representative5Calls, CongressMember } from './types';
 import DOMPurify from 'dompurify';
 import { parseSenateVoteXML } from './utils/parser-utils';
-
 export const googleCivicHeader = new Headers();
 googleCivicHeader.append('Content-Type', 'application/json');
 googleCivicHeader.append('key', import.meta.env.VITE_GOOGLE_API_KEY);
@@ -249,13 +248,11 @@ export const Requests = {
 		}
 	},
 	getBillText: async (url: string) => {
+		console.log('url:', url);
 		try {
-			const response = await fetch('/api/extract-bill-text', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					url: url,
-				}),
+			const params = new URLSearchParams({ url }).toString();
+			const response = await fetch(`http://localhost:8080/congressGovRoutes/extract-text?${params}`, {
+				method: 'GET',
 			});
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -267,6 +264,15 @@ export const Requests = {
 			console.error('Fetch error:', error);
 			throw error;
 		}
+	},
+	translateLegalBill: async (text: string) => {
+		const res = await fetch('http://localhost:8080/chatgptRoutes', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ text }),
+		});
+		const data = await res.json();
+		return data.translation;
 	},
 	checkExistingReps: async (userId: String) => {
 		const response = await fetch(`http://localhost:8080/users/${userId}/representatives`);

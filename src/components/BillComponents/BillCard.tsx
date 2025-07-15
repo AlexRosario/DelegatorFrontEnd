@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useDisplayBills } from '../../providers/BillProvider';
 import type { Bill } from '../../types';
-import VoteButton from './VoteButton';
+import { VoteButton } from './VoteButton';
+import { VoteButtons } from './VoteButtons';
 import { ComButton } from './ComButton';
 import { Requests } from '../../api';
 import { Link } from 'react-router-dom';
@@ -12,16 +13,19 @@ export const BillCard = ({
 	onClick,
 }: {
 	bill: Bill;
-	className: string;
+	className?: string;
 	onClick?: () => void | number;
 }) => {
-	const { congress, activeBillTab } = useDisplayBills();
+	const { congress, activeBillTab, voteLog } = useDisplayBills();
 	const [textLink, setTextLink] = useState<string>('');
 	const [searchedForLink, setSearchedForLink] = useState<boolean>(false);
 	const userString = localStorage.getItem('user');
 	const user = userString ? JSON.parse(userString) : null;
 	const [translatedText, setTranslatedText] = useState<string | null>(null);
 	const [text, setText] = useState<string>('');
+	const vote = voteLog.find((vote) => vote.billId == bill.originChamberCode + bill.number);
+	const voteCast = vote?.vote;
+
 	const getMoreInfo = async (congress: string, billType: string, billNumber: string) => {
 		try {
 			const data = await Requests.getBillDetail(congress, billType.toLowerCase(), billNumber, 'text');
@@ -38,27 +42,26 @@ export const BillCard = ({
 	};
 
 	const handleTranslate = async () => {
-		const billText = await Requests.getBillText(textLink);
-		setText(billText.text);
-		try {
-			const res = await fetch('/api/translate-bill', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ text: billText }),
-			});
-
-			const data = await res.json();
-		} catch (error) {
-			console.error('Error translating bill:', error);
+		if (bill?.textVersions && bill.textVersions.url) {
+			const billText = await Requests.getBillText(textLink);
+			const translation = await Requests.translateLegalBill(billText);
+			console.log('translation', translation);
 		}
 	};
 
 	return (
 		<div
-			className={className}
+			className={`bill-card${className == undefined ? '' : className}`}
 			onClick={onClick}>
 			<div className='bill-header'>
-				<b>{`${bill.originChamberCode}${bill.number}`}</b>
+				<b>{`${bill.type}${bill.number}`}</b>
+				{user && activeBillTab === 'discover-bills' ? (
+					<VoteButtons bill={bill} />
+				) : (
+					<div>
+						<VoteButton voteValue={voteCast ?? ''} />
+					</div>
+				)}
 			</div>
 
 			{bill.summary === 'No Summary Available' ? <b>{bill.title}</b> : ''}
@@ -86,26 +89,27 @@ export const BillCard = ({
 						className='bill-url'>
 						{textLink}
 					</a>
-					<button onClick={handleTranslate}>Translate This Bill</button>
+					<button
+						onClick={async () => {
+							const data = await handleTranslate();
+							console.log('dataText:', data);
+						}}>
+						Translate This Bill
+					</button>
 				</>
 			)}
 			<div className='bill-member-positions'>
 				<b>{bill.latestAction.actionDate}</b>
 				<div>{bill.latestAction.text}</div>
 			</div>
-			{user ? (
-				activeBillTab === 'discover-bills' ? (
-					<VoteButton bill={bill} />
-				) : (
-					<ComButton bill={bill} />
-				)
-			) : (
+			{!user && (
 				<Link
 					to='/Home'
 					className='sign-in-link'>
 					Sign in to Vote
 				</Link>
 			)}
+			{activeBillTab == 'voted-bills' && <ComButton bill={bill} />}
 		</div>
 	);
 };

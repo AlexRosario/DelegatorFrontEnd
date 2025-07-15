@@ -12,13 +12,16 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+
 	--red: rgb(154, 61, 24);
 	--lightblue: rgb(191, 205, 209);
 	--darkerblue: rgb(163, 189, 195);
 	--darkblue: #3f7882;
 	--offblack: rgb(45, 46, 44);
 	--offwhite: rgb(249, 247, 246);
-	--bg: rgb(4, 49, 0);
 
 	--size-10: 0.625rem;
 	--size-14: 0.875rem;
@@ -50,7 +53,7 @@ body {
 	justify-content: center; /* horizontally centers children */
 	align-items: center; /* vertically centers (if height is set) */
 	min-width: 100%;
-	color: var(--darkblue);
+	background-color: rgb(243, 248, 242);
 }
 
 h1 {
@@ -64,7 +67,7 @@ button {
 	box-shadow: inset 0px 0px 5px 1px rgba(78, 76, 76, 0.75);
 	height: fit-content;
 	padding: 0.6em 1.2em;
-	font-size: 1em;
+	font-size: 0.8em;
 	font-weight: 500;
 	font-family: inherit;
 	color: white;

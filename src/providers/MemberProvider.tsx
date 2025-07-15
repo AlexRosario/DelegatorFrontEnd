@@ -15,7 +15,7 @@ type MemberContextType = {
 
 export const MemberContext = createContext<MemberContextType>({} as MemberContextType);
 
-export const MemberProvider = ({ children }: { children: ReactNode; address: any }) => {
+export const MemberProvider = ({ children }: { children: ReactNode }) => {
 	const representatives = useRef<CongressMember[]>([] as CongressMember[]);
 	const [senators, setSenators] = useState<CongressMember[]>([]);
 	const [houseReps, setHouseReps] = useState<CongressMember[]>([]);
@@ -26,12 +26,10 @@ export const MemberProvider = ({ children }: { children: ReactNode; address: any
 	const getRepInfoFromMultipleAPIs = async () => {
 		try {
 			const reps = await Requests.getMembers(userId);
-			const fetchCongressMember = async (bioID: string) => {
-				return await Requests.getCongressMember(bioID);
-			};
+
 			const congressDataResults = await Promise.all(
 				reps.map(async (member: Representative5Calls) => {
-					return await fetchCongressMember(member.id);
+					return await Requests.getCongressMember(member.id);
 				})
 			);
 			return congressDataResults.map((obj) => {

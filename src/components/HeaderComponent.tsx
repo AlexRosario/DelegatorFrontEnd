@@ -7,11 +7,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { defaultUser } from '../providers/AuthProvider';
 import { useEffect } from 'react';
-import { useDisplayMember } from '../providers/MemberProvider';
 
 export const Header = () => {
 	const { screenSelect, setScreenSelect } = useScreenInfo();
-	const { houseReps, senators } = useDisplayMember();
 	const { user, setUser } = useAuthInfo();
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [scrolled, setScrolled] = useState(false);
@@ -92,7 +90,6 @@ export const Header = () => {
 					className={`screenSelect ${screenSelect === 'reps' ? 'active' : ''}`}
 					onClick={() => {
 						setScreenSelect('reps');
-						console.log('house and senate:', houseReps, senators);
 					}}
 				/>
 			</div>

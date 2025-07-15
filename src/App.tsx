@@ -6,25 +6,34 @@ import './fonts/BarlowCondensed-SemiBold.ttf';
 import { BillProvider } from './providers/BillProvider';
 import { MemberProvider } from './providers/MemberProvider';
 import { useScreenInfo } from './providers/ScreenProvider';
-import { useLocation } from 'react-router-dom';
-import { SideBar } from './components/SideBar';
+import { SideBar } from './components/SideBarComponents/SideBar';
+import { useEffect, useState } from 'react';
 function App() {
 	const { screenSelect } = useScreenInfo();
-	const location = useLocation();
-	const address = location.state;
+
+	const [scrolled, setScrolled] = useState(false);
+	useEffect(() => {
+		const handleScroll = () => {
+			setScrolled(window.scrollY > 50);
+		};
+
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, []);
 	return (
 		<div className='main'>
 			<Header />
 
 			<BillProvider>
-				<div className='main-body'>
-					<SideBar />
-					<div className='content'>
-						<MemberProvider address={address}>
-							{screenSelect === 'bills' ? <BillSection /> : <RepSection />}
-						</MemberProvider>
+				<MemberProvider>
+					<div className={`main-body ${scrolled ? 'scrolled' : ''}`}>
+						<SideBar scrolled={scrolled} />
+
+						<div className={`content ${scrolled ? 'scrolled' : ''}`}>
+							{screenSelect == 'bills' ? <BillSection /> : <RepSection />}
+						</div>
 					</div>
-				</div>
+				</MemberProvider>
 			</BillProvider>
 			<footer>'E Pluribus Unum'</footer>
 		</div>

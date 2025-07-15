@@ -11,7 +11,7 @@ import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 type BillFilter = 'All Bills' | 'Passed' | 'Bills with Votes';
 
 export const BillDiscover = () => {
-	const [searchType, setSearchType] = useState('hopper');
+	const [searchType, setSearchType] = useState<'hopper' | 'bill-number'>('hopper');
 	const [searchedBill, setSearchedBill] = useState<Bill | null>(null);
 	const [billNumber, setBillNumber] = useState('');
 	const [billType, setBillType] = useState('hr');
@@ -20,6 +20,7 @@ export const BillDiscover = () => {
 		return /^\d+$/.test(billNumber) && billNumber.length > 0;
 	};
 	const { billsToDisplay, setBillFilter, setCurrentIndex, passedBills, billsWithRollCalls } = useDisplayBills();
+
 	const renderDiscoverBills = () => {
 		const billNumberNotBlank = billNumber !== '';
 
@@ -72,23 +73,19 @@ export const BillDiscover = () => {
 		<div className='bill-discover'>
 			<div className='search-options'>
 				<div className='selectors'>
-					<div className='selector-container'>
-						<div
-							className={`selector ${searchType === 'hopper' ? 'active' : ''}`}
-							onClick={() => {
-								setSearchType('hopper');
-							}}>
-							Hopper
-						</div>
+					<div
+						className={`selector ${searchType === 'hopper' ? 'active' : ''}`}
+						onClick={() => {
+							setSearchType('hopper');
+						}}>
+						Hopper
 					</div>
-					<div className='selector-container'>
-						<div
-							className={`selector dark-high-contrast ${searchType === 'bill-number' ? 'active' : ''} t`}
-							onClick={() => {
-								setSearchType('bill-number');
-							}}>
-							By Bill Number
-						</div>
+					<div
+						className={`selector dark-high-contrast ${searchType === 'bill-number' ? 'active' : ''} t`}
+						onClick={() => {
+							setSearchType('bill-number');
+						}}>
+						Bill Number
 					</div>
 					{searchType === 'bill-number' && (
 						<div className='bill-number'>
@@ -121,34 +118,26 @@ export const BillDiscover = () => {
 						</div>
 					)}{' '}
 					{searchType == 'hopper' && (
-						<>
-							<div className='select-wrapper'>
-								<select
-									onChange={(e) => {
-										setCurrentIndex(0);
-										setBillFilter(e.target.value as BillFilter);
-									}}>
-									<option value='default'>Filter Bills</option>
-									{billsToDisplay.length > 0 && <option value='All Bills'>All Bills</option>}
-									{billsWithRollCalls.length > 0 && <option value='Bills with Votes'>Bills with RollCalls</option>}
-									{passedBills.length > 0 && <option value='Passed'>Passed Bills</option>}
-								</select>
-								<FontAwesomeIcon
-									icon={faCaretDown}
-									className='caret-select'
-								/>
-							</div>
-							{passedBills.length == 0 && (
-								<div style={window.innerWidth < 1000 ? { display: 'none' } : undefined}>
-									<b>Congressional Bills made into law in this collection</b>
-									<b>: {passedBills.length}</b>
-								</div>
-							)}
-						</>
+						<div className='select-wrapper'>
+							<select
+								onChange={(e) => {
+									setCurrentIndex(0);
+									setBillFilter(e.target.value as BillFilter);
+								}}>
+								<option value='default'>Filter Bills</option>
+								{billsToDisplay.length > 0 && <option value='All Bills'>All Bills</option>}
+								{billsWithRollCalls.length > 0 && <option value='Bills with Votes'>Bills with RollCalls</option>}
+								{passedBills.length > 0 && <option value='Passed'>Passed Bills</option>}
+							</select>
+							<FontAwesomeIcon
+								icon={faCaretDown}
+								className='caret-select'
+							/>
+						</div>
 					)}
 				</div>
 			</div>
-			<BillStatus />
+			<BillStatus searchType={searchType} />
 
 			{renderDiscoverBills()}
 		</div>

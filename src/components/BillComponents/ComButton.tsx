@@ -23,7 +23,7 @@ export const ComButton = ({ bill }: { bill: Bill }) => {
 			{!passedHouse && (
 				<Button
 					className=''
-					onClick={() => ('s', passedSenate, 'h', passedHouse, bill)}>
+					onClick={() => console.log('s', passedSenate, 'h', passedHouse, bill)}>
 					Send message to your house representative.
 				</Button>
 			)}

@@ -7,7 +7,13 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 	const bioguideId = member.bioguideId;
 	const [memberVotes, setMemberVotes] = useState<number>(0);
 	const { voteLog } = useDisplayBills();
+	const score = (memberVotes * 100).toFixed(2);
 
+	const getBarColor = (score: number) => {
+		if (score >= 75) return '#4caf50';
+		if (score >= 50) return '#ffeb3b';
+		return '#f44336';
+	};
 	useEffect(() => {
 		const getVotes = async () => {
 			try {
@@ -40,11 +46,20 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 					<h3 className='font-face-Barlow'>{member.name.toUpperCase()}</h3>
 					<h5>{`${title} from ${member.state}`}</h5>
 				</div>
-				{title == 'Senator' || title === 'Representative' ? (
+				{title == 'Senator' || title == 'Representative' ? (
 					<div className='rep-score'>
-						<div>
-							Score: {voteLog.length > 0 ? (memberVotes * 100).toFixed(2) + '%' : 'No votes from you to compare yet.'}
-						</div>
+						{voteLog.length < 0 ? (
+							<div>'No votes from you to compare yet.'</div>
+						) : (
+							<div className='alignment-container'>
+								<div className='alignment-bar'>
+									<div
+										className='fill'
+										style={{ width: `${score}%`, backgroundColor: getBarColor(Number(score)) }}></div>
+								</div>
+								<div>Alignment Score: {score}</div>
+							</div>
+						)}
 					</div>
 				) : null}
 			</div>
