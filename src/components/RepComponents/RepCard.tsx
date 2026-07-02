@@ -4,7 +4,7 @@ import { useDisplayBills } from '../../providers/BillProvider';
 import { Requests } from '../../api';
 export const RepCard = ({ member }: { member: CongressMember }) => {
 	const title = member.area == 'US House' ? 'Representative' : 'Senator';
-	const bioguideId = member.bioguideId;
+	const bioguideId = member.bioguideId ?? member.id;
 	const [memberVotes, setMemberVotes] = useState<number>(0);
 	const { voteLog } = useDisplayBills();
 	const score = (memberVotes * 100).toFixed(2);
@@ -66,13 +66,13 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 
 			<div className='rep-card-right'>
 				<img
-					src={`${member?.depiction.imageUrl}`}
+					src={member.photoURL ?? member.depiction?.imageUrl ?? ''}
 					alt=''
 					className='rep-photo'
 				/>
 				<div className='rep-info'>
 					{(member.bioguideId || member.id) && <div>Bioguide-ID: {member.bioguideId || member.id} </div>}
-					{member.district && member.bioguideId ? (
+					{member.district ? (
 						<span className='rep-district'>
 							{member.state} District {member.district}
 						</span>

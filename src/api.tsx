@@ -1,6 +1,7 @@
-import type { Representative5Calls, CongressMember } from './types';
+import type { Representative5Calls } from './types';
+import { API_BASE_URL } from './config';
 import DOMPurify from 'dompurify';
-import { parseSenateVoteXML } from './utils/parser-utils';
+import { parseSenateVoteXML, parseHouseVoteXML } from './utils/parser-utils';
 export const googleCivicHeader = new Headers();
 googleCivicHeader.append('Content-Type', 'application/json');
 googleCivicHeader.append('key', import.meta.env.VITE_GOOGLE_API_KEY);
@@ -26,7 +27,7 @@ export const Requests = {
 		},
 		memberIds: string
 	) => {
-		const url = 'http://localhost:8080/auth/register';
+		const url = `${API_BASE_URL}/auth/register`;
 
 		return fetch(url, {
 			method: 'POST',
@@ -58,7 +59,7 @@ export const Requests = {
 	},
 	async loginUser(credentials: { username: string; password: string }) {
 		try {
-			const response = await fetch('http://localhost:8080/auth/login', {
+			const response = await fetch(`${API_BASE_URL}/auth/login`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ export const Requests = {
 	},
 	addNewMember: async (member: Representative5Calls) => {
 		try {
-			const members = await fetch(`http://localhost:8080/members`, {
+			const members = await fetch(`${API_BASE_URL}/members`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -92,7 +93,7 @@ export const Requests = {
 	},
 	getMembers: async (userId: number) => {
 		try {
-			const res = await fetch(`http://localhost:8080/members/by-user/${userId}`);
+			const res = await fetch(`${API_BASE_URL}/members/by-user/${userId}`);
 			if (!res.ok) throw new Error('Failed to fetch members');
 			const data = await res.json();
 			return data;
@@ -103,7 +104,7 @@ export const Requests = {
 	},
 	getVoteLog: async (token: string) => {
 		try {
-			const response = await fetch(`http://localhost:8080/votes`, {
+			const response = await fetch(`${API_BASE_URL}/votes`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ export const Requests = {
 		const jwt = localStorage.getItem('token');
 
 		try {
-			await fetch(`http://localhost:8080/votes`, {
+			await fetch(`${API_BASE_URL}/votes`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -143,7 +144,7 @@ export const Requests = {
 	},
 	getMemberVoteLog: async (bioguideId: string) => {
 		try {
-			const data = await fetch(`http://localhost:8080/member_votes/${bioguideId}`);
+			const data = await fetch(`${API_BASE_URL}/member_votes/${bioguideId}`);
 			if (!data.ok) throw new Error('Failed to fetch member vote record');
 			const memberVotes = await data.json();
 			return memberVotes;
@@ -154,7 +155,7 @@ export const Requests = {
 	},
 	addMemberVote: async (bioguideId: string, billId: string, vote: string, date: Date) => {
 		try {
-			await fetch(`http://localhost:8080/member_votes`, {
+			await fetch(`${API_BASE_URL}/member_votes`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -176,7 +177,7 @@ export const Requests = {
 		const query = encodeURIComponent(address);
 
 		try {
-			const res = await fetch(`http://localhost:8080/location/geocode?query=${query}`);
+			const res = await fetch(`${API_BASE_URL}/location/geocode?query=${query}`);
 			const data = await res.json();
 
 			return Array.isArray(data.data) && data.data.length > 0 && data.data[0].confidence > 0.8;
@@ -186,7 +187,7 @@ export const Requests = {
 		}
 	},
 	getBills: async (congress: string, billType: string, offset: number) => {
-		const url = `http://localhost:8080/congressGovRoutes/bill${congress ? `/${congress}` : ''}${
+		const url = `${API_BASE_URL}/congressGovRoutes/bill${congress ? `/${congress}` : ''}${
 			billType ? `/${billType}` : ''
 		}${offset !== 0 ? `?offset=${offset}` : ''}`;
 		try {
@@ -205,7 +206,7 @@ export const Requests = {
 		}
 	},
 	getFullBill: async (congress: string, billType: string, billNumber: string, signal?: AbortSignal) => {
-		const url = `http://localhost:8080/congressGovRoutes/bill/${congress}/${billType}/${billNumber}`;
+		const url = `${API_BASE_URL}/congressGovRoutes/bill/${congress}/${billType}/${billNumber}`;
 		try {
 			const response = await fetch(url, {
 				method: 'GET',
@@ -229,7 +230,7 @@ export const Requests = {
 		billDetail: string,
 		signal?: AbortSignal
 	) => {
-		const url = `http://localhost:8080/congressGovRoutes/bill/${congress}/${billType}/${billNumber}/${billDetail}`;
+		const url = `${API_BASE_URL}/congressGovRoutes/bill/${congress}/${billType}/${billNumber}/${billDetail}`;
 		try {
 			const response = await fetch(url, {
 				method: 'GET',
@@ -251,7 +252,7 @@ export const Requests = {
 		console.log('url:', url);
 		try {
 			const params = new URLSearchParams({ url }).toString();
-			const response = await fetch(`http://localhost:8080/congressGovRoutes/extract-text?${params}`, {
+			const response = await fetch(`${API_BASE_URL}/congressGovRoutes/extract-text?${params}`, {
 				method: 'GET',
 			});
 			if (!response.ok) {
@@ -265,39 +266,19 @@ export const Requests = {
 			throw error;
 		}
 	},
-	translateLegalBill: async (text: string) => {
-		const res = await fetch('http://localhost:8080/chatgptRoutes', {
+	// Generate (or fetch the cached) plain-English translation for a bill. The
+	// backend computes it once, stores it on the bill, and serves it free after.
+	translateLegalBill: async (billId: string) => {
+		const res = await fetch(`${API_BASE_URL}/translate/${billId}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ text }),
 		});
+		if (res.status === 402) throw new Error('payment_required');
 		const data = await res.json();
 		return data.translation;
 	},
-	checkExistingReps: async (userId: String) => {
-		const response = await fetch(`http://localhost:8080/users/${userId}/representatives`);
-		if (!response.ok) {
-			return [];
-		}
-		return response.json();
-	},
-	postNewReps: async (rep: CongressMember, userId: string) => {
-		const response = await fetch(`http://localhost:8080/users/${userId}/representatives`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(rep),
-		});
-
-		if (!response.ok) {
-			throw new Error('Failed to post new representative');
-		}
-
-		return response.json();
-	},
 	getCongressMembersFromFive: async (address: string) => {
-		const response = await fetch(`http://localhost:8080/fiveCallsRoutes/representatives?location=${address}`, {
+		const response = await fetch(`${API_BASE_URL}/fiveCallsRoutes/representatives?location=${address}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -306,99 +287,48 @@ export const Requests = {
 
 		return response.json();
 	},
-	getCongressMember: async (bioID: string) => {
-		const url = `http://localhost:8080/congressGovRoutes/member/${bioID}`;
+	// Fetch a roll call straight from the recordedVote's own `url` (clerk.house.gov
+	// or senate.gov), proxied through the backend allowlist. The host tells us which
+	// parser to use, so House and Senate share one path.
+	getRollCallByUrl: async (url: string) => {
 		try {
-			const response = await fetch(url, {
-				method: 'GET',
-			});
-			if (!response.ok) {
-				throw new Error(`Failed to fetch: ${response.statusText}`);
-			}
-			return await response.json();
-		} catch (error) {
-			console.error(error);
-		}
-	},
-	getCongressMembersDB: (reps: string[]) => {
-		const url = `http://localhost:8080/representatives`; // Assuming user has an 'id' property
-		return fetch(url, {
-			method: 'GET',
-			headers: myHeaders,
-		})
-			.then((response) => {
-				return response.json();
-			})
-			.then((members) => {
-				return members.filter((memberName: string) => reps.includes(memberName));
-			})
-			.catch((error) => console.error('Fetch error:', error));
-	},
-	getHouseRollCall: async (rollId: number, year: string) => {
-		try {
-			const res = await fetch(`http://localhost:8080/api/house-roll-call/${rollId}/${year}`);
+			const res = await fetch(`${API_BASE_URL}/api/roll-call?url=${encodeURIComponent(url)}`);
+			if (!res.ok) throw new Error(`HTTP error ${res.status}`);
 			const xmlText = await res.text();
-
-			const parser = new DOMParser();
-			const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
-			const metaData = Array.from(xmlDoc.querySelectorAll('totals-by-party')).map((node) => ({
-				party: node.querySelector('party')?.textContent ?? null,
-				yeas: node.querySelector('yea-total')?.textContent ?? null,
-				nays: node.querySelector('nay-total')?.textContent ?? null,
-				present: node.querySelector('present-total')?.textContent ?? null,
-				no_vote: node.querySelector('not-voting-total')?.textContent ?? null,
-			}));
-			const votes = Array.from(xmlDoc.querySelectorAll('recorded-vote')).map((node) => {
-				const legislator = node.querySelector('legislator');
-				return {
-					id: legislator?.getAttribute('name-id'),
-					name: legislator?.textContent,
-					vote: node.querySelector('vote')?.textContent,
-					party: legislator?.getAttribute('party'),
-				};
-			});
-			return [metaData, votes];
-		} catch (err) {
-			console.error('Failed to fetch or parse XML:', err);
-		}
-	},
-	getSenateRollCall: async (rollId: number, congress: number, sessionNum: number) => {
-		try {
-			const res = await fetch(`http://localhost:8080/api/senate-roll-call/${rollId}/${congress}/${sessionNum}`);
-			const xmlText = await res.text();
-			const { metadata, votes } = parseSenateVoteXML(xmlText);
-
+			const { metadata, votes } = url.includes('senate.gov')
+				? parseSenateVoteXML(xmlText)
+				: parseHouseVoteXML(xmlText);
 			return [metadata, votes];
 		} catch (err) {
-			console.error('Failed to fetch or parse XML:', err);
+			console.error('Failed to fetch or parse roll call:', err);
+		}
+	},
+	// Pre-assembled bills straight from our DB — one call, no per-bill proxy fan-out.
+	getBillsFromDb: async (congress: string, offset: number, limit = 20) => {
+		try {
+			const res = await fetch(`${API_BASE_URL}/bills?congress=${congress}&offset=${offset}&limit=${limit}`);
+			if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+			return await res.json(); // { total, limit, offset, bills }
+		} catch (err) {
+			console.error('Error fetching bills:', err);
+			return { bills: [] };
+		}
+	},
+	getBillById: async (id: string, signal?: AbortSignal) => {
+		try {
+			const res = await fetch(`${API_BASE_URL}/bills/${id}`, { signal });
+			if (!res.ok) return null;
+			return await res.json();
+		} catch (err) {
+			console.error('Error fetching bill:', err);
+			return null;
 		}
 	},
 };
+// Kept for callers that look a bill up by type/number; now reads our assembled DB
+// bill (with congress.gov proxy fallback) instead of 4 separate proxy calls.
 export const searchForBill = async (billType: string, billNumber: string, signal?: AbortSignal) => {
-	try {
-		const fullBillDataPromise = await Requests.getFullBill('119', billType, billNumber, signal);
-		const summariesDataPromise = await Requests.getBillDetail('119', billType, billNumber, 'summaries', signal);
-		const subjectsDataPromise = await Requests.getBillDetail('119', billType, billNumber, 'subjects', signal);
-		const actionsDataPromise = await Requests.getBillDetail('119', billType, billNumber, 'actions');
-
-		const [fullBillData, summariesData, subjectsData, actionsData] = await Promise.all([
-			fullBillDataPromise,
-			summariesDataPromise,
-			subjectsDataPromise,
-			actionsDataPromise,
-		]);
-
-		return {
-			...fullBillData.bill,
-			summary:
-				summariesData.summaries.length > 0
-					? DOMPurify.sanitize(summariesData.summaries[summariesData.summaries.length - 1].text)
-					: 'No Summary Available',
-			subjects: subjectsData.subjects,
-			actions: actionsData.actions,
-		};
-	} catch (error) {
-		console.error('Failed to fetch bills:', error);
-		return null;
-	}
+	const bill = await Requests.getBillById(`119-${billType.toLowerCase()}-${billNumber}`, signal);
+	if (bill && typeof bill.summary === 'string') bill.summary = DOMPurify.sanitize(bill.summary);
+	return bill;
 };

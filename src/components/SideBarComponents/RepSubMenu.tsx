@@ -9,7 +9,7 @@ export const RepSubMenu = () => {
 		<ul className='sub-menu'>
 			<li
 				key={'senate'}
-				className={`list-tab ${chamber === 'senate' ? 'active' : ''}`}
+				className={`sub-list-tab ${chamber === 'senate' ? 'active' : ''}`}
 				onClick={() => {
 					setScreenSelect('reps');
 					setChamber('senate');
@@ -18,7 +18,7 @@ export const RepSubMenu = () => {
 			</li>
 			<li
 				key={'house'}
-				className={`list-tab ${chamber === 'house' ? 'active' : ''}`}
+				className={`sub-list-tab ${chamber === 'house' ? 'active' : ''}`}
 				onClick={() => {
 					setScreenSelect('reps');
 					setChamber('house');

@@ -1,3 +1,28 @@
+export const parseHouseVoteXML = (xmlText: string) => {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+
+  const metadata = Array.from(xmlDoc.querySelectorAll('totals-by-party')).map((node) => ({
+    party: node.querySelector('party')?.textContent ?? null,
+    yeas: node.querySelector('yea-total')?.textContent ?? null,
+    nays: node.querySelector('nay-total')?.textContent ?? null,
+    present: node.querySelector('present-total')?.textContent ?? null,
+    no_vote: node.querySelector('not-voting-total')?.textContent ?? null,
+  }));
+
+  const votes = Array.from(xmlDoc.querySelectorAll('recorded-vote')).map((node) => {
+    const legislator = node.querySelector('legislator');
+    return {
+      id: legislator?.getAttribute('name-id'),
+      name: legislator?.textContent,
+      vote: node.querySelector('vote')?.textContent,
+      party: legislator?.getAttribute('party'),
+    };
+  });
+
+  return { metadata, votes };
+};
+
 export const parseSenateVoteXML = (xmlText: string) => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlText, 'application/xml');

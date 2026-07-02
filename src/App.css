@@ -238,6 +238,8 @@
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	margin-top: 5%;
+
 	width: 100vw;
 	min-height: 100vh;
 	align-items: stretch;
@@ -246,12 +248,10 @@
 .content {
 	flex-grow: 1;
 	width: 80%;
-	margin-top: 150px;
 	background-color: rgb(243, 248, 242);
 }
 .content.scrolled {
 	height: 100%;
-	margin-top: 200px;
 }
 aside.side-bar {
 	display: flex;
@@ -263,7 +263,6 @@ aside.side-bar {
 	max-width: 150px;
 	min-width: 150px;
 	padding-top: 20%;
-	margin-top: 5%;
 	margin-left: 50px;
 	align-self: flex-start;
 	z-index: 10;
@@ -275,8 +274,8 @@ aside.side-bar {
 
 aside.side-bar.scrolled {
 	height: 100%;
-	padding-bottom: 90%;
-	margin-top: 300px;
+	padding-bottom: 80%;
+
 	box-shadow: none;
 	border-right: 1px solid rgba(0, 0, 0, 0.1);
 	border-radius: 0;
@@ -294,21 +293,29 @@ aside.side-bar li {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	font-weight: 800;
 	width: 90%;
 	gap: 20px;
 	padding: 10px 10px;
+	cursor: pointer;
 }
 aside.side-bar li.active {
 	box-shadow: inset 0 2px 5px #37363a;
 	cursor: pointer;
 }
-.list-tab {
-	cursor: pointer;
+
+.sub-menu .sub-list-tab {
+	font-size: 0.65rem;
+	font-weight: 500;
+	text-align: right;
+	display: flex;
+	justify-content: end;
 }
 
-.list-tab:hover:not(.active) {
-	box-shadow: inset 0 0 1px black;
+.sub-menu .sub-list-tab.active {
+	box-shadow: inset 0 1px 2.5px #37363a;
 }
+
 .side-bar li.active .list-tab.active {
 	box-shadow: inset 0 0 10px black;
 }
@@ -362,7 +369,11 @@ aside.side-bar li.active {
 .bill-discover {
 	display: flex;
 	flex-direction: column;
-	width: 100%;
+	max-width: 100%;
+	overflow-x: none;
+	align-items: center;
+	height: 900p;
+	overflow-y: auto;
 }
 .search-options {
 	display: flex;
@@ -494,12 +505,28 @@ aside.side-bar li.active {
 	font-size: 6px;
 }
 
+.bill-feed {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start; /* stack cards top-to-bottom (feed), not centered */
+	width: 100%;
+	margin-top: 10%;
+	max-width: 80%;
+	height: 80vh; /* bounded height is required for overflow-y:auto to actually scroll */
+	overflow-y: auto; /* makes this the scroll box / IntersectionObserver root */
+	gap: 1rem; /* spacing between cards, feed-style */
+}
+/* Keep cards at full height inside the flex-column feed — without this they shrink
+   to fit the bounded container instead of overflowing it (which is what scrolls). */
+.bill-feed .bill-card {
+	flex-shrink: 0;
+}
 .carousel-container {
 	display: flex;
 	justify-content: space-around;
 	gap: 100px;
-
-	height: 60vh;
+	max-width: 80%;
 	align-items: center;
 	margin-top: 20px;
 	min-width: 80%;
@@ -537,21 +564,58 @@ aside.side-bar li.active {
 	background-color: rgb(255, 254, 251);
 	text-align: center;
 	padding: 4%;
-	width: 300px;
-	height: 250px;
-	overflow: scroll;
+	width: 75%;
+	max-width: 450px;
+	height: 599px;
+	overflow: hidden; /* the card no longer scrolls; .bill-slides paginates content */
 	margin: 20px;
 	box-shadow: 0 22px 34px rgba(22, 28, 45, 0.18);
 	border-radius: 10px;
-	transition: all 0.5s ease-in-out;
-	opacity: 0;
+}
+
+/* Overflowing bill content flows into horizontal, swipeable page-slides.
+   column-fill:auto + a definite height pages the text; columnWidth is set inline
+   to the measured card width so each column is exactly one slide. */
+.bill-slides {
+	flex: 1 1 0;
+	min-height: 0; /* lets the flex child take a definite height for paging */
+	column-fill: auto;
+	column-gap: 8%;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-snap-type: x proximity;
+	text-align: left;
+	padding: 8px 2px;
+}
+
+.bill-slides > * {
+	scroll-snap-align: start;
+}
+
+.bill-footer {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding-top: 8px;
 }
 .bill-collection .bill-card {
 	opacity: 1;
 }
 .bill-header {
 	display: flex;
+	flex-direction: column;
 	justify-content: space-between;
+}
+
+.bill-header_top {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-bottom: 5%;
+}
+.bill-header_bottom {
+	text-align: center;
 }
 .vote-container {
 	display: flex;
@@ -560,19 +624,20 @@ aside.side-bar li.active {
 .vote-buttons {
 	display: flex;
 	flex-direction: row;
+	margin-bottom: 5%;
 }
-.vote-container > .selector,
+
 .bill-status {
 	font-size: 0.6rem;
 }
-.vote-buttons > .selector {
+.vote-button-icon {
 	display: flex;
-	align-items: center;
 	gap: 10%;
 	color: white;
-	width: 70px;
+	justify-content: center;
 	padding: 1%;
 	font-size: 0.6rem;
+	width: 40px;
 }
 
 .bill-card.active {

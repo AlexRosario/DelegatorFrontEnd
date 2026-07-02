@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { BillCarousel } from './BillCarousel';
 import BillCard from './BillCard';
 import { searchForBill } from '../../api';
 import type { Bill } from '../../types';
@@ -7,6 +6,7 @@ import { useDisplayBills } from '../../providers/BillProvider';
 import { BillStatus } from './BillStatus';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { BillFeed } from './BillFeed';
 
 type BillFilter = 'All Bills' | 'Passed' | 'Bills with Votes';
 
@@ -25,7 +25,7 @@ export const BillDiscover = () => {
 		const billNumberNotBlank = billNumber !== '';
 
 		if (searchType === 'hopper') {
-			return <BillCarousel />;
+			return <BillFeed />;
 		}
 
 		if (searchedBill && billNumberNotBlank) {

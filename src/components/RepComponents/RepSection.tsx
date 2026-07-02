@@ -46,12 +46,15 @@ export const RepSection = () => {
 				<div
 					className='reps'
 					key={'reps'}>
-					{members?.map((member: CongressMember) => (
-						<RepCard
-							member={member}
-							key={member.bioguideId}
-						/>
-					))}
+					{members?.map((member: CongressMember) => {
+						console.log('member', member.name);
+						return (
+							<RepCard
+								member={member}
+								key={member.id ?? member.bioguideId}
+							/>
+						);
+					})}
 				</div>
 			</div>
 		</section>

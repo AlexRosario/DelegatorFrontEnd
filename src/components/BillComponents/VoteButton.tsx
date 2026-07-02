@@ -7,16 +7,17 @@ type VoteButtonProps = {
 };
 
 export const VoteButton = ({ voteValue, onClick }: VoteButtonProps) => {
-	const color = voteValue == 'No' ? 'red' : 'green';
+	const color = voteValue == 'No' ? '#8f1416' : '#377c29';
 	const vote = voteValue == 'No' ? 'Oppose' : 'Support';
 
 	return (
 		<div
-			className='selector'
-			onClick={onClick ? () => onClick(voteValue) : undefined}
-			style={{ backgroundColor: color }}>
-			{vote}
-			<FontAwesomeIcon icon={voteValue === 'No' ? faThumbsDown : faThumbsUp} />
+			className='vote-button-icon'
+			onClick={onClick ? () => onClick(voteValue) : undefined}>
+			<FontAwesomeIcon
+				icon={voteValue === 'No' ? faThumbsDown : faThumbsUp}
+				style={{ color: color, fontSize: '18px' }}
+			/>
 		</div>
 	);
 };

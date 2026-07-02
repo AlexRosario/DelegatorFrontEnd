@@ -49,6 +49,8 @@ interface Titles {
 }
 
 export interface Bill {
+	id: string;
+	plainSummary?: string | null;
 	subjects: any;
 	actions: Actions[];
 	committees: Committees;
@@ -140,6 +142,7 @@ export type FieldOffice = {
 export type CongressMember = {
 	addressInformation: AddressInformation;
 	area: 'US House' | 'US Senate';
+	chamber?: 'House' | 'Senate';
 	bioguideId: string;
 	birthYear: string;
 	cosponsoredLegislation: LegislationInfo;

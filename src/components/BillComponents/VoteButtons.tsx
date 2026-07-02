@@ -34,7 +34,7 @@ export const VoteButtons = ({ bill }: { bill: Bill }) => {
 	const { user } = useAuthInfo();
 	const { houseReps, senators } = useDisplayMember();
 	const { id } = user;
-	const { voteLog, congress, setVoteLog, setVotedOnThisBill, activeBillTab } = useDisplayBills();
+	const { voteLog, setVoteLog, setVotedOnThisBill, activeBillTab } = useDisplayBills();
 	const billId = bill.type + bill.number;
 	const userHasBillVote =
 		Array.isArray(voteLog) && voteLog.some((vote) => vote.userId === id && vote.billId === billId);
@@ -91,19 +91,19 @@ export const VoteButtons = ({ bill }: { bill: Bill }) => {
 					const senateAction = rollCallActions.find((action) => /senate/i.test(action.sourceSystem.name)) || null;
 					console.log('rollActions', rollCallActions);
 					if (houseAction) {
-						const year = String(new Date()).split(' ')[3];
-						const rollNum = houseAction.recordedVotes[0].rollNumber;
-						const result = (await Requests.getHouseRollCall(rollNum, year)) ?? [[], []];
+						// Fetch the roll call from its own url — no year/roll rebuilding.
+						const result = (await Requests.getRollCallByUrl(houseAction.recordedVotes[0].url)) ?? [[], []];
 						const [metaData, votes] = result as [Meta[], HouseVote[]];
 						console.log('metaDataHouse', metaData);
 						houseReps.forEach((rep) => {
+							// The House XML carries the bioguideId (name-id) — match on that
+							// (robust against duplicate surnames); fall back to last name.
 							const match = votes.find(
-								(voteSearch: HouseVote) =>
-									`${rep.lastName} (${rep.state})` === voteSearch.name || rep.lastName === voteSearch.name
+								(voteSearch: HouseVote) => voteSearch.id === rep.id || rep.lastName === voteSearch.name
 							);
 							if (match) {
 								allRepVotes.push({
-									bioguideId: rep.bioguideId,
+									bioguideId: rep.bioguideId ?? rep.id,
 									vote: match.vote ?? '',
 								});
 							}
@@ -112,9 +112,7 @@ export const VoteButtons = ({ bill }: { bill: Bill }) => {
 					console.log('houseAction', houseAction, 'senateActions', senateAction);
 
 					if (senateAction) {
-						const sessionNum = senateAction.recordedVotes[0].sessionNumber;
-						const rollNum = senateAction.recordedVotes[0].rollNumber;
-						const senateRoll = await Requests.getSenateRollCall(rollNum, congress, sessionNum);
+						const senateRoll = await Requests.getRollCallByUrl(senateAction.recordedVotes[0].url);
 						if (senateRoll && Array.isArray(senateRoll)) {
 							const [metaData, votes] = senateRoll;
 							console.log('Sen meta:', metaData, 'votes:', votes);
@@ -149,13 +147,17 @@ export const VoteButtons = ({ bill }: { bill: Bill }) => {
 							console.log('senateCountsByParty', senateCountsByParty);
 							senators.forEach((rep) => {
 								if (Array.isArray(votes)) {
+									// Senate XML has no bioguideId, so match on last name + first
+									// initial — robust to nicknames (Chuck/Charles, Mike/Michael).
 									const match = votes.find(
 										(voteSearch: SenateVote) =>
-											rep.firstName === voteSearch.firstName && rep.lastName.includes(voteSearch.lastName)
+											(rep.lastName ?? '').includes(voteSearch.lastName) &&
+											(rep.firstName ?? '').charAt(0).toLowerCase() ===
+												voteSearch.firstName.charAt(0).toLowerCase()
 									);
 									if (match) {
 										allRepVotes.push({
-											bioguideId: rep.bioguideId,
+											bioguideId: rep.bioguideId ?? rep.id,
 											vote: match.voteCast,
 										});
 									}

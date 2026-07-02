@@ -28,7 +28,7 @@ type TBillProvider = {
 	setNewBills: React.Dispatch<React.SetStateAction<Bill[]>>;
 	setVotedBills: React.Dispatch<React.SetStateAction<Bill[]>>;
 	currentIndex: number;
-	setCurrentIndex: (index: number) => void;
+	setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
 	billsWithRollCalls: Bill[];
 };
 
@@ -79,13 +79,13 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 
 	const passedBills =
 		billsToDisplay.filter(
-			(bill) => bill.latestAction.text.includes('Became Public Law No:') //this filter covers all bill types, including those not needing presidential signatures
+			(bill) => bill.latestAction.text.includes('Became Public Law No:'), //this filter covers all bill types, including those not needing presidential signatures
 		) || [];
 	const billsWithRollCalls =
 		billsToDisplay.filter(
 			(bill: Bill) =>
 				Array.isArray(bill.actions) &&
-				bill.actions.some((action) => Array.isArray(action.recordedVotes) && action.recordedVotes.length > 0)
+				bill.actions.some((action) => Array.isArray(action.recordedVotes) && action.recordedVotes.length > 0),
 		) || [];
 	const filteredBills =
 		billFilter == 'Passed' ? passedBills : billFilter == 'Bills with Votes' ? billsWithRollCalls : billsToDisplay;
@@ -109,42 +109,12 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	const fetchBills = async () => {
-		let fetchedBills: Bill[] = [];
 		const congressStr = String(congress);
 		try {
-			let data;
-			data = await Requests.getBills(congressStr, '', offset);
-			fetchedBills = [...fetchedBills, ...(data?.bills ?? [])];
-			const billPromises = fetchedBills.map(async (bill) => {
-				const fullBillData = await Requests.getFullBill(congressStr, bill.type.toLowerCase(), bill.number);
-				const summariesData = await Requests.getBillDetail(
-					congressStr,
-					bill.type.toLowerCase(),
-					bill.number,
-					'summaries'
-				);
-				const subjectsData = await Requests.getBillDetail(
-					congressStr,
-					bill.type.toLowerCase(),
-					bill.number,
-					'subjects'
-				);
-				const actionsData = await Requests.getBillDetail(congressStr, bill.type.toLowerCase(), bill.number, 'actions');
-				return {
-					...bill,
-					...fullBillData.bill,
-					summary:
-						summariesData.summaries.length > 0
-							? DOMPurify.sanitize(summariesData.summaries[summariesData.summaries.length - 1].text)
-							: 'No Summary Available',
-					subjects: subjectsData.subjects,
-					actions: actionsData.actions,
-				};
-			});
-
-			fetchedBills = await Promise.all(billPromises);
-
-			return fetchedBills;
+			// One call to our DB — bills arrive already assembled (summary, subjects,
+			// actions with recordedVotes, latestAction). No per-bill proxy fan-out.
+			const data = await Requests.getBillsFromDb(congressStr, offset, 20);
+			return (data?.bills ?? []) as Bill[];
 		} catch (error) {
 			console.error('Failed to fetch bills:', error);
 		} finally {
@@ -154,7 +124,7 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 
 	useEffect(() => {
 		setNewBills(
-			allBills.filter((bill: Bill) => !voteLog?.some((vote: Vote) => vote.billId === bill.type + bill.number))
+			allBills.filter((bill: Bill) => !voteLog?.some((vote: Vote) => vote.billId === bill.type + bill.number)),
 		);
 		if (firstRender || votedOnThisBill) {
 			const log = firstRender ? voteLog : [voteLog[voteLog.length - 1]];
@@ -177,7 +147,7 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 		const isScrollingForward = currentIndex > prevIndexRef.current;
 		const isNearEnd = filteredBills.length - currentIndex <= 20;
 		if (
-			((isScrollingForward && isNearEnd) || firstRender || newBills.length <= 15 || billsToDisplay.length == 0) &&
+			((isScrollingForward && isNearEnd) || firstRender || newBills.length <= 10 || billsToDisplay.length == 0) &&
 			!hasFetchedRef.current
 		) {
 			hasFetchedRef.current = true;
@@ -197,7 +167,7 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 			console.log('Bills', allBills, 'billsWithRollCalls', billsWithRollCalls);
 			prevIndexRef.current = currentIndex;
 		}
-	}, [currentIndex, votedOnThisBill, newBills.length <= 15, currentIndex == newBills.length - 15]);
+	}, [currentIndex, votedOnThisBill, newBills.length <= 10, currentIndex == billsToDisplay.length - 10]);
 
 	return (
 		<BillContext.Provider

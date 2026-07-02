@@ -25,16 +25,37 @@ export const MemberProvider = ({ children }: { children: ReactNode }) => {
 
 	const getRepInfoFromMultipleAPIs = async () => {
 		try {
-			const reps = await Requests.getMembers(userId);
+			// Base member data comes from our DB roster (congress.gov, populated by the cron).
+			// Guard against a null/failed response so the view degrades instead of blanking.
+			const dbReps: CongressMember[] = (await Requests.getMembers(userId)) ?? [];
+			if (dbReps.length === 0) {
+				console.warn(`No members returned for user ${userId} — check the /members/by-user response.`);
+			}
 
-			const congressDataResults = await Promise.all(
-				reps.map(async (member: Representative5Calls) => {
-					return await Requests.getCongressMember(member.id);
-				})
-			);
-			return congressDataResults.map((obj) => {
-				const rep = reps.find((r: Representative5Calls) => r.id == obj.member.bioguideId);
-				return { ...obj.member, ...rep };
+			// 5Calls is the live exception: it enriches each rep with the per-user
+			// context it uniquely owns (area, reason, district field offices).
+			const fiveById: Record<string, Representative5Calls> = {};
+			try {
+				const five = await Requests.getCongressMembersFromFive(user.zipcode);
+				for (const rep of (five?.representatives ?? []) as Representative5Calls[]) {
+					fiveById[rep.id] = rep;
+				}
+			} catch (error) {
+				console.error('5Calls enrichment unavailable; using DB data only', error);
+			}
+
+			return dbReps.map((member) => {
+				const five = fiveById[member.id];
+				// Prefer 5Calls area; fall back to the DB chamber so the view still
+				// works (and the house/senate split holds) if 5Calls is unavailable.
+				const area: 'US House' | 'US Senate' =
+					five?.area ?? member.area ?? (member.chamber === 'Senate' ? 'US Senate' : 'US House');
+				return {
+					...member,
+					area,
+					reason: five?.reason ?? member.reason,
+					field_offices: five?.field_offices ?? member.field_offices ?? [],
+				};
 			});
 		} catch (error) {
 			console.error('Error fetching member bios:', error);

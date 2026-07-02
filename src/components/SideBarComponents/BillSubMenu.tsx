@@ -9,7 +9,7 @@ export const BillSubMenu = () => {
 	return (
 		<ul className='sub-menu'>
 			<li
-				className={`list-tab ${activeBillTab === 'discover-bills' ? 'active' : ''}`}
+				className={`sub-list-tab ${activeBillTab === 'discover-bills' ? 'active' : ''}`}
 				onClick={() => {
 					setScreenSelect('bills');
 					setActiveBillTab('discover-bills');
@@ -19,7 +19,7 @@ export const BillSubMenu = () => {
 
 			{user && (
 				<li
-					className={`list-tab ${activeBillTab === 'voted-bills' ? 'active' : ''}`}
+					className={`sub-list-tab ${activeBillTab === 'voted-bills' ? 'active' : ''}`}
 					onClick={() => {
 						setScreenSelect('bills');
 						setActiveBillTab('voted-bills');
