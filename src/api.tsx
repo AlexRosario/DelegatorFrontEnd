@@ -110,25 +110,26 @@ export const Requests = {
 			throw error;
 		}
 	},
+	// Throws on failure so callers never record a vote locally that the server
+	// rejected. A 401 (expired/invalid JWT) throws 'session_expired' specifically.
 	addVote: async (billId: string, vote: string, date: Date) => {
 		const jwt = localStorage.getItem('token');
 
-		try {
-			await fetch(`${API_BASE_URL}/votes`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${jwt?.replace(/^"|"$/g, '')}`,
-				},
-				body: JSON.stringify({
-					billId: billId,
-					vote: vote,
-					date: date.toISOString(),
-				}),
-			});
-		} catch (error) {
-			console.error('Error posting vote:', error);
-		}
+		const response = await fetch(`${API_BASE_URL}/votes`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${jwt?.replace(/^"|"$/g, '')}`,
+			},
+			body: JSON.stringify({
+				billId: billId,
+				vote: vote,
+				date: date.toISOString(),
+			}),
+		});
+		if (response.status === 401) throw new Error('session_expired');
+		if (!response.ok) throw new Error(`Vote failed with status ${response.status}`);
+		return response.json();
 	},
 	getMemberVoteLog: async (bioguideId: string) => {
 		try {

@@ -1,3 +1,25 @@
+/** The only vote values the backend accepts and alignment can compare. */
+export type CanonicalRollCallVote = 'Yea' | 'Nay' | 'Present' | 'Not Voting';
+
+/**
+ * Map every roll-call vote spelling to a canonical value at the parse boundary,
+ * so all consumers (member-vote posting, party tallies, alignment) see one
+ * vocabulary. Known variants: the House uses Aye/No on suspension votes and
+ * Yea/Nay on passage; "Present, Giving Live Pair" is a historical Present form.
+ * Anything unrecognized (e.g. Senate impeachment Guilty/Not Guilty) returns
+ * null — a vote we can't compare, never a silent 400 at the backend.
+ */
+export const normalizeRollCallVote = (raw: string | null | undefined): CanonicalRollCallVote | null => {
+	const vote = raw?.trim().toLowerCase();
+	if (!vote) return null;
+	if (vote === 'yea' || vote === 'aye' || vote === 'yes') return 'Yea';
+	if (vote === 'nay' || vote === 'no') return 'Nay';
+	if (vote.startsWith('present')) return 'Present';
+	if (vote === 'not voting' || vote === 'absent') return 'Not Voting';
+	console.warn(`normalizeRollCallVote: unrecognized roll-call vote value "${raw}" — skipped`);
+	return null;
+};
+
 export const parseHouseVoteXML = (xmlText: string) => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
@@ -15,7 +37,7 @@ export const parseHouseVoteXML = (xmlText: string) => {
     return {
       id: legislator?.getAttribute('name-id'),
       name: legislator?.textContent,
-      vote: node.querySelector('vote')?.textContent,
+      vote: normalizeRollCallVote(node.querySelector('vote')?.textContent),
       party: legislator?.getAttribute('party'),
     };
   });
@@ -54,7 +76,7 @@ export const parseSenateVoteXML = (xmlText: string) => {
     lastName: node.querySelector('last_name')?.textContent || '',
     party: node.querySelector('party')?.textContent || '',
     state: node.querySelector('state')?.textContent || '',
-    voteCast: node.querySelector('vote_cast')?.textContent || '',
+    voteCast: normalizeRollCallVote(node.querySelector('vote_cast')?.textContent),
     lisMemberId: node.querySelector('lis_member_id')?.textContent || ''
   }));
 

@@ -3,7 +3,7 @@ import { useAlignment, alignmentColor } from '../../hooks/useAlignment';
 export const RepCard = ({ member }: { member: CongressMember }) => {
 	const title = member.area == 'US House' ? 'Representative' : 'Senator';
 	const bioguideId = member.bioguideId ?? member.id;
-	const { score } = useAlignment(bioguideId);
+	const { score, missedCount } = useAlignment(bioguideId);
 
 	return (
 		<div className='rep-card'>
@@ -23,6 +23,11 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 									style={{ width: `${score}%`, backgroundColor: alignmentColor(score) }}></div>
 							</div>
 							<div>Alignment Score: {score.toFixed(2)}</div>
+						</div>
+					)}
+					{missedCount > 0 && (
+						<div className='missed-votes-note'>
+							Missed {missedCount} vote{missedCount === 1 ? '' : 's'} on bills you voted on
 						</div>
 					)}
 				</div>

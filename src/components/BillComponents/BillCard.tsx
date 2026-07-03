@@ -25,7 +25,7 @@ export const BillCard = ({
 	const user = userString ? JSON.parse(userString) : null;
 	// Show the cached translation immediately if this bill already has one.
 	const [translatedText, setTranslatedText] = useState<string | null>(bill.plainSummary ?? null);
-	const vote = voteLog.find((vote) => vote.billId == bill.originChamberCode + bill.number);
+	const vote = voteLog.find((vote) => vote.billId === bill.id);
 	const voteCast = vote?.vote;
 
 	// Measure the slide area so each column is exactly one card-width "page",

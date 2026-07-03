@@ -10,16 +10,17 @@ import { RepCard } from './RepCard';
  */
 const RepBubble = ({ member, onOpen }: { member: CongressMember; onOpen: (member: CongressMember) => void }) => {
 	const bioguideId = member.bioguideId ?? member.id;
-	const { score, comparedCount } = useAlignment(bioguideId);
+	const { score, comparedCount, missedCount } = useAlignment(bioguideId);
 
 	const ringBackground =
 		score === null
 			? alignmentColor(null)
 			: `conic-gradient(${alignmentColor(score)} ${score}%, #e0e0e0 0)`;
+	const missedNote = missedCount > 0 ? `; missed ${missedCount} vote${missedCount === 1 ? '' : 's'}` : '';
 	const label =
 		score === null
-			? `${member.name} — no shared roll-call votes yet`
-			: `${member.name} — ${Math.round(score)}% aligned across ${comparedCount} shared vote${comparedCount === 1 ? '' : 's'}`;
+			? `${member.name} — no shared roll-call votes yet${missedNote}`
+			: `${member.name} — ${Math.round(score)}% aligned across ${comparedCount} shared vote${comparedCount === 1 ? '' : 's'}${missedNote}`;
 	const lastName = member.lastName ?? member.name.split(' ').pop();
 
 	return (

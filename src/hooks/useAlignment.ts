@@ -18,12 +18,21 @@ const getMemberVotes = (bioguideId: string): Promise<MemberVote[]> => {
 	return cached;
 };
 
+/** Drop a member's cached vote log — call after recording new votes for them
+ *  so alignment recomputes from fresh data instead of the page-load snapshot. */
+export const invalidateMemberVotes = (bioguideId: string) => {
+	memberVotesCache.delete(bioguideId);
+};
+
 export type Alignment = {
-	/** 0–100, or null when there's nothing to compare yet (no overlapping roll calls). */
+	/** 0–100, or null when there's nothing to compare yet (no comparable roll calls). */
 	score: number | null;
-	/** How many of the user's votes had a matching member roll-call vote. */
+	/** Overlapping votes where the member took a side (Yea/Nay) — the score's denominator. */
 	comparedCount: number;
 	matchedCount: number;
+	/** Overlapping votes the member missed ("Not Voting") — accounted, but excluded
+	 *  from the score: absence is not disagreement. */
+	missedCount: number;
 };
 
 /** Threshold color scale shared by the alignment bar and the rep-strip ring. */
@@ -39,13 +48,15 @@ export const alignmentColor = (score: number | null): string => {
  * same bills. `score` is null (not 0) when no bills overlap — "no data" and
  * "0% aligned" are different states and must render differently.
  */
+const EMPTY_ALIGNMENT: Alignment = { score: null, comparedCount: 0, matchedCount: 0, missedCount: 0 };
+
 export function useAlignment(bioguideId: string): Alignment {
 	const { voteLog } = useDisplayBills();
-	const [alignment, setAlignment] = useState<Alignment>({ score: null, comparedCount: 0, matchedCount: 0 });
+	const [alignment, setAlignment] = useState<Alignment>(EMPTY_ALIGNMENT);
 
 	useEffect(() => {
 		if (!bioguideId || voteLog.length === 0) {
-			setAlignment({ score: null, comparedCount: 0, matchedCount: 0 });
+			setAlignment(EMPTY_ALIGNMENT);
 			return;
 		}
 
@@ -54,22 +65,31 @@ export function useAlignment(bioguideId: string): Alignment {
 			.then((memberVotes) => {
 				if (!active) return;
 
-				const compared = voteLog.filter((userVote) =>
-					memberVotes.some((memberVote) => memberVote.billId === userVote.billId)
-				);
-				const matched = compared.filter((userVote) => {
-					const memberVote = memberVotes.find((v) => v.billId === userVote.billId);
+				// Bucket the member's position on each bill the user voted on:
+				// Yea/Nay are comparable (they took a side), "Not Voting" is a missed
+				// vote we account for separately, "Present" is neither and counts nowhere.
+				const memberVoteFor = (userVote: { billId: string }) =>
+					memberVotes.find((v) => v.billId === userVote.billId);
+
+				const comparable = voteLog.filter((userVote) => {
+					const vote = memberVoteFor(userVote)?.vote;
+					return vote === 'Yea' || vote === 'Nay';
+				});
+				const matched = comparable.filter((userVote) => {
+					const memberVote = memberVoteFor(userVote);
 					return (
 						(userVote.vote === 'Yes' && memberVote?.vote === 'Yea') ||
 						(userVote.vote === 'No' && memberVote?.vote === 'Nay')
 					);
 				});
+				const missed = voteLog.filter((userVote) => memberVoteFor(userVote)?.vote === 'Not Voting');
 
 				setAlignment({
-					// Guard the 0/0 case: no overlap → null, never NaN.
-					score: compared.length === 0 ? null : (matched.length / compared.length) * 100,
-					comparedCount: compared.length,
+					// Guard the 0/0 case: nothing comparable → null, never NaN.
+					score: comparable.length === 0 ? null : (matched.length / comparable.length) * 100,
+					comparedCount: comparable.length,
 					matchedCount: matched.length,
+					missedCount: missed.length,
 				});
 			})
 			.catch((err) => console.error('Failed to compute alignment:', err));

@@ -617,6 +617,7 @@ aside.side-bar li.active {
 	padding: 4%;
 	width: 75%;
 	max-width: 450px;
+	min-width: 360px;
 	height: 599px;
 	overflow: hidden; /* the card no longer scrolls; .bill-slides paginates content */
 	margin: 20px;
@@ -893,6 +894,20 @@ aside.side-bar li.active {
 	.rep-card-right img.rep-photo {
 		max-height: 100px;
 		max-width: 75px;
+	}
+}
+
+@media (max-width: 728px) {
+	.bill-card {
+		box-shadow: 0 5px 10x rgba(244, 244, 246, 0.18);
+	}
+
+	.header-container .logo-wrapper {
+		margin-left: 10px;
+	}
+
+	.header-user {
+		margin-right: 10px;
 	}
 }
 

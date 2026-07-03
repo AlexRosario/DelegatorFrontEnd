@@ -1,6 +1,6 @@
 import { useContext, createContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
-import { Requests, searchForBill } from '../api';
+import { Requests } from '../api';
 import type { Bill, Vote } from '../types';
 
 const PAGE_SIZE = 20;
@@ -58,9 +58,6 @@ export const BillContext = createContext<TBillProvider>({
 	setSearchType: () => {},
 });
 
-/** The `type+number` key (e.g. "hr1") that vote records use to reference a bill. */
-const billKey = (bill: Bill) => bill.type + bill.number;
-
 const readStoredVoteLog = (): Vote[] => {
 	const stored = localStorage.getItem('userLog');
 	return stored ? JSON.parse(stored) : [];
@@ -98,15 +95,10 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 	const filteredBills =
 		billFilter === 'Passed' ? passedBills : billFilter === 'Bills with Votes' ? billsWithRollCalls : billsToDisplay;
 
-	/** Look up the bills a user has voted on (vote records store `type+number` ids). */
+	/** Look up the bills a user has voted on (vote records store the canonical Bill.id). */
 	const fetchUserBills = async (votes: Vote[]) => {
 		try {
-			const bills = await Promise.all(
-				votes.map((vote) => {
-					const raw = vote.billId.toLowerCase();
-					return searchForBill(raw.replace(/[^a-z]/g, ''), raw.replace(/\D/g, ''));
-				})
-			);
+			const bills = await Promise.all(votes.map((vote) => Requests.getBillById(vote.billId)));
 			return bills.filter((bill): bill is Bill => bill !== null);
 		} catch (error) {
 			console.error('Error fetching bill record:', error);
@@ -124,15 +116,15 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 	// Partition fetched bills into the discover pool (unvoted), and keep the
 	// voted-bills list stocked with the bills behind the user's vote records.
 	useEffect(() => {
-		setNewBills(allBills.filter((bill) => !voteLog.some((vote) => vote.billId === billKey(bill))));
+		setNewBills(allBills.filter((bill) => !voteLog.some((vote) => vote.billId === bill.id)));
 
 		const votesToLoad = isFirstLoad ? voteLog : votedOnThisBill ? voteLog.slice(-1) : [];
 		if (votesToLoad.length > 0) {
 			fetchUserBills(votesToLoad).then((bills) => {
 				if (bills.length === 0) return;
 				setVotedBills((prev) => {
-					const existing = new Set(prev.map(billKey));
-					return [...prev, ...bills.filter((bill) => !existing.has(billKey(bill)))];
+					const existing = new Set(prev.map((bill) => bill.id));
+					return [...prev, ...bills.filter((bill) => !existing.has(bill.id))];
 				});
 				localStorage.setItem('userLog', JSON.stringify(voteLog));
 			});
