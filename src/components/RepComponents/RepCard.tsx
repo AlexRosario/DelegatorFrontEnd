@@ -1,43 +1,9 @@
-import type { CongressMember, MemberVote } from '../../types';
-import { useEffect, useState } from 'react';
-import { useDisplayBills } from '../../providers/BillProvider';
-import { Requests } from '../../api';
+import type { CongressMember } from '../../types';
+import { useAlignment, alignmentColor } from '../../hooks/useAlignment';
 export const RepCard = ({ member }: { member: CongressMember }) => {
 	const title = member.area == 'US House' ? 'Representative' : 'Senator';
 	const bioguideId = member.bioguideId ?? member.id;
-	const [memberVotes, setMemberVotes] = useState<number>(0);
-	const { voteLog } = useDisplayBills();
-	const score = (memberVotes * 100).toFixed(2);
-
-	const getBarColor = (score: number) => {
-		if (score >= 75) return '#4caf50';
-		if (score >= 50) return '#ffeb3b';
-		return '#f44336';
-	};
-	useEffect(() => {
-		const getVotes = async () => {
-			try {
-				const memberVotes = await Requests.getMemberVoteLog(bioguideId);
-				const votesWithRollCalls = voteLog.filter((vote) =>
-					memberVotes.some((v: MemberVote) => v.billId == vote.billId)
-				);
-				const sameRollCallVotes = votesWithRollCalls.filter((userVote) => {
-					const memberVote = memberVotes.find((memVote: MemberVote) => userVote.billId == memVote.billId);
-					return (
-						(userVote?.vote == 'Yes' && memberVote.vote == 'Yea') ||
-						(userVote?.vote == 'No' && memberVote.vote == 'Nay')
-					);
-				});
-				const score = sameRollCallVotes.length / votesWithRollCalls.length;
-
-				setMemberVotes(score);
-			} catch (err) {
-				console.error('Failed to fetch member votes:', err);
-			}
-		};
-
-		getVotes();
-	}, [bioguideId, voteLog.length]);
+	const { score } = useAlignment(bioguideId);
 
 	return (
 		<div className='rep-card'>
@@ -46,22 +12,20 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 					<h3 className='font-face-Barlow'>{member.name.toUpperCase()}</h3>
 					<h5>{`${title} from ${member.state}`}</h5>
 				</div>
-				{title == 'Senator' || title == 'Representative' ? (
-					<div className='rep-score'>
-						{voteLog.length < 0 ? (
-							<div>'No votes from you to compare yet.'</div>
-						) : (
-							<div className='alignment-container'>
-								<div className='alignment-bar'>
-									<div
-										className='fill'
-										style={{ width: `${score}%`, backgroundColor: getBarColor(Number(score)) }}></div>
-								</div>
-								<div>Alignment Score: {score}</div>
+				<div className='rep-score'>
+					{score === null ? (
+						<div>No overlapping roll-call votes to compare yet.</div>
+					) : (
+						<div className='alignment-container'>
+							<div className='alignment-bar'>
+								<div
+									className='fill'
+									style={{ width: `${score}%`, backgroundColor: alignmentColor(score) }}></div>
 							</div>
-						)}
-					</div>
-				) : null}
+							<div>Alignment Score: {score.toFixed(2)}</div>
+						</div>
+					)}
+				</div>
 			</div>
 
 			<div className='rep-card-right'>

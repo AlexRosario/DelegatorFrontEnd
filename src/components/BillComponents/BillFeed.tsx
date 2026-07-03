@@ -2,13 +2,15 @@ import { useRef, useEffect, useState } from 'react';
 import { useDisplayBills } from '../../providers/BillProvider';
 import { BillCard } from './BillCard';
 import { ClipLoader } from 'react-spinners';
+import { BillStatus } from './BillStatus';
+
 declare global {
 	interface Window {
 		__myObserver?: IntersectionObserver;
 	}
 }
 export const BillFeed = () => {
-	const { filteredBills, billFilter, setCurrentIndex, currentIndex } = useDisplayBills();
+	const { filteredBills, billFilter, setCurrentIndex, currentIndex, searchType } = useDisplayBills();
 
 	const [color, setColor] = useState('grey');
 	const containerRef = useRef<HTMLDivElement | null>(null);
@@ -53,6 +55,7 @@ export const BillFeed = () => {
 
 	return (
 		<>
+			<BillStatus searchType={searchType} />
 			{billFilter === 'Bills with Votes' ? (
 				<b>
 					These Bills have already been voted on and will be solely used to better predict alignment with your

@@ -1,18 +1,6 @@
 import type { Representative5Calls } from './types';
 import { API_BASE_URL } from './config';
-import DOMPurify from 'dompurify';
 import { parseSenateVoteXML, parseHouseVoteXML } from './utils/parser-utils';
-export const googleCivicHeader = new Headers();
-googleCivicHeader.append('Content-Type', 'application/json');
-googleCivicHeader.append('key', import.meta.env.VITE_GOOGLE_API_KEY);
-export const myHeaders = {
-	'Content-Type': 'application/json',
-};
-
-export const congressGovHeader = new Headers({
-	...myHeaders,
-	'X-API-Key': import.meta.env.VITE_API_KEY,
-});
 
 export const Requests = {
 	register: (
@@ -186,86 +174,6 @@ export const Requests = {
 			return false;
 		}
 	},
-	getBills: async (congress: string, billType: string, offset: number) => {
-		const url = `${API_BASE_URL}/congressGovRoutes/bill${congress ? `/${congress}` : ''}${
-			billType ? `/${billType}` : ''
-		}${offset !== 0 ? `?offset=${offset}` : ''}`;
-		try {
-			const response = await fetch(url, {
-				method: 'GET',
-			});
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			const data = await response.json();
-			return data;
-		} catch (error) {
-			console.error('Fetch error:', error);
-			throw error;
-		}
-	},
-	getFullBill: async (congress: string, billType: string, billNumber: string, signal?: AbortSignal) => {
-		const url = `${API_BASE_URL}/congressGovRoutes/bill/${congress}/${billType}/${billNumber}`;
-		try {
-			const response = await fetch(url, {
-				method: 'GET',
-				signal,
-			});
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			const data = await response.json();
-			return data;
-		} catch (error) {
-			console.error('Fetch error:', error);
-			throw error;
-		}
-	},
-	getBillDetail: async (
-		congress: string,
-		billType: string,
-		billNumber: string,
-		billDetail: string,
-		signal?: AbortSignal
-	) => {
-		const url = `${API_BASE_URL}/congressGovRoutes/bill/${congress}/${billType}/${billNumber}/${billDetail}`;
-		try {
-			const response = await fetch(url, {
-				method: 'GET',
-				signal,
-			});
-
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			const data = await response.json();
-			return data;
-		} catch (error) {
-			console.error('Fetch error:', error);
-			throw error;
-		}
-	},
-	getBillText: async (url: string) => {
-		console.log('url:', url);
-		try {
-			const params = new URLSearchParams({ url }).toString();
-			const response = await fetch(`${API_BASE_URL}/congressGovRoutes/extract-text?${params}`, {
-				method: 'GET',
-			});
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			const data = await response.json();
-			return data;
-		} catch (error) {
-			console.error('Fetch error:', error);
-			throw error;
-		}
-	},
 	// Generate (or fetch the cached) plain-English translation for a bill. The
 	// backend computes it once, stores it on the bill, and serves it free after.
 	translateLegalBill: async (billId: string) => {
@@ -325,10 +233,8 @@ export const Requests = {
 		}
 	},
 };
-// Kept for callers that look a bill up by type/number; now reads our assembled DB
-// bill (with congress.gov proxy fallback) instead of 4 separate proxy calls.
+// Look a bill up by type/number; reads our assembled DB bill (with congress.gov
+// proxy fallback). Summary HTML is sanitized where it's injected (BillCard).
 export const searchForBill = async (billType: string, billNumber: string, signal?: AbortSignal) => {
-	const bill = await Requests.getBillById(`119-${billType.toLowerCase()}-${billNumber}`, signal);
-	if (bill && typeof bill.summary === 'string') bill.summary = DOMPurify.sanitize(bill.summary);
-	return bill;
+	return Requests.getBillById(`119-${billType.toLowerCase()}-${billNumber}`, signal);
 };

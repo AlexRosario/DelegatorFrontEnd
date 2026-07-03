@@ -3,15 +3,14 @@ import BillCard from './BillCard';
 import { searchForBill } from '../../api';
 import type { Bill } from '../../types';
 import { useDisplayBills } from '../../providers/BillProvider';
-import { BillStatus } from './BillStatus';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { BillFeed } from './BillFeed';
+import { RepStrip } from '../RepComponents/RepStrip';
 
 type BillFilter = 'All Bills' | 'Passed' | 'Bills with Votes';
 
 export const BillDiscover = () => {
-	const [searchType, setSearchType] = useState<'hopper' | 'bill-number'>('hopper');
 	const [searchedBill, setSearchedBill] = useState<Bill | null>(null);
 	const [billNumber, setBillNumber] = useState('');
 	const [billType, setBillType] = useState('hr');
@@ -19,7 +18,8 @@ export const BillDiscover = () => {
 	const isNumeric = (billNumber: string) => {
 		return /^\d+$/.test(billNumber) && billNumber.length > 0;
 	};
-	const { billsToDisplay, setBillFilter, setCurrentIndex, passedBills, billsWithRollCalls } = useDisplayBills();
+	const { billsToDisplay, setBillFilter, setCurrentIndex, passedBills, billsWithRollCalls, searchType, setSearchType } =
+		useDisplayBills();
 
 	const renderDiscoverBills = () => {
 		const billNumberNotBlank = billNumber !== '';
@@ -71,6 +71,7 @@ export const BillDiscover = () => {
 
 	return (
 		<div className='bill-discover'>
+			<RepStrip />
 			<div className='search-options'>
 				<div className='selectors'>
 					<div
@@ -137,7 +138,7 @@ export const BillDiscover = () => {
 					)}
 				</div>
 			</div>
-			<BillStatus searchType={searchType} />
+			
 
 			{renderDiscoverBills()}
 		</div>

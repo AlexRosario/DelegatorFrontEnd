@@ -323,21 +323,6 @@ aside.side-bar li.active {
 	width: 85%;
 	padding: none;
 }
-.bottom-nav {
-	display: none; /*convert back to flex for mobile size*/
-	flex-direction: row;
-	justify-content: space-around;
-	align-items: center;
-	height: 8vh;
-	background-color: rgb(34, 84, 1);
-	color: var(--darkerblue);
-	width: 50%;
-	padding: 0 25% 0 25%;
-}
-.bottom-nav .screenSelect {
-	font-size: 1.5em;
-}
-
 .bill-section {
 	display: flex;
 	flex-direction: column;
@@ -369,7 +354,7 @@ aside.side-bar li.active {
 .bill-discover {
 	display: flex;
 	flex-direction: column;
-	max-width: 100%;
+	width: 100%;
 	overflow-x: none;
 	align-items: center;
 	height: 900p;
@@ -380,7 +365,6 @@ aside.side-bar li.active {
 	flex-direction: column;
 	justify-content: space-between;
 	align-items: start;
-	position: sticky;
 	top: 10%;
 	margin: 20px 0;
 	width: 100%;
@@ -389,10 +373,10 @@ aside.side-bar li.active {
 .selectors {
 	display: flex;
 	flex-direction: row;
-	min-width: 100%;
+	width: 100%;
 	gap: 5%;
 	align-items: center;
-	justify-content: space-evenly;
+	justify-content: center;
 }
 
 .selector {
@@ -511,7 +495,7 @@ aside.side-bar li.active {
 	align-items: center;
 	justify-content: flex-start; /* stack cards top-to-bottom (feed), not centered */
 	width: 100%;
-	margin-top: 10%;
+	margin-top: 5%;
 	max-width: 80%;
 	height: 80vh; /* bounded height is required for overflow-y:auto to actually scroll */
 	overflow-y: auto; /* makes this the scroll box / IntersectionObserver root */
@@ -522,30 +506,97 @@ aside.side-bar li.active {
 .bill-feed .bill-card {
 	flex-shrink: 0;
 }
-.carousel-container {
-	display: flex;
-	justify-content: space-around;
-	gap: 100px;
-	max-width: 80%;
-	align-items: center;
-	margin-top: 20px;
-	min-width: 80%;
-}
 .bill-carousel-info {
 	font-size: 0.8em;
 	color: black;
 }
-.carousel {
+
+/* Stories-style strip of the user's reps; each ring fills/colors by vote alignment. */
+.rep-strip {
 	display: flex;
 	flex-direction: row;
+	justify-content: space-around;
+	gap: 20px;
+	max-width: 600px;
+	width: 100%;
+	padding: 10px 0 4px;
+	overflow-x: auto;
+}
+.rep-bubble {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	font-size: 0.7rem;
+	color: var(--darkblue);
+	cursor: pointer;
+}
+.rep-bubble:hover .rep-ring,
+.rep-bubble:focus-visible .rep-ring {
+	transform: scale(1.07);
+}
+
+/* Clicking a bubble opens the rep's full card over the feed. */
+.rep-modal-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 2000; /* above the sticky header (z-index 1000) */
+	background: rgba(22, 28, 45, 0.55);
+	display: flex;
 	align-items: center;
 	justify-content: center;
-	justify-items: space-around;
-	height: 50vh;
-	margin: 20px;
-	width: 80%;
-
+}
+.rep-modal {
+	position: relative;
+	max-width: min(90vw, 700px);
+	max-height: 85vh;
+	overflow-y: auto;
+	border-radius: 12px;
+}
+.rep-modal .rep-card {
+	width: 100%;
+	height: auto;
+	margin: 0;
+}
+.rep-modal-close {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	z-index: 1;
+	width: 32px;
+	height: 32px;
+	border: none;
+	border-radius: 50%;
+	background: rgba(22, 28, 45, 0.75);
+	color: white;
+	font-size: 1.1rem;
+	line-height: 1;
+	cursor: pointer;
+}
+.rep-ring {
+	border-radius: 50%;
+	padding: 3px; /* ring thickness — background (the conic gradient) shows through */
+	transition: transform 0.15s ease;
+}
+.rep-ring img {
+	display: block;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 2px solid rgb(243, 248, 242); /* gap between photo and ring */
+	background-color: white;
+}
+.rep-bubble-name {
+	font-weight: 700;
+	max-width: 72px;
 	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.rep-bubble-score {
+	font-size: 0.65rem;
+	opacity: 0.75;
 }
 
 .bills-status {
@@ -640,35 +691,6 @@ aside.side-bar li.active {
 	width: 40px;
 }
 
-.bill-card.active {
-	z-index: 10;
-	opacity: 1;
-	transform: scale(1.2);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-	position: absolute;
-}
-
-.bill-card.prev {
-	position: absolute;
-	transform: translate(-60%, 0);
-	opacity: 0.8;
-}
-
-.bill-card.next {
-	position: absolute;
-	opacity: 0.8;
-	transform: translate(60%, 0);
-}
-
-.bill-card.prev:hover {
-	z-index: 1;
-	cursor: pointer;
-}
-
-.bill-card.next:hover {
-	z-index: 1;
-	cursor: pointer;
-}
 .bill-card .bill-url {
 	color: blue;
 	font-size: 0.2em;
@@ -814,12 +836,6 @@ aside.side-bar li.active {
 	.selector-label {
 		display: none;
 	}
-	.bottom-nav {
-		display: flex;
-	}
-	aside.side-bar {
-		display: none;
-	}
 	.bill-section {
 		margin-top: 20px;
 		font-size: 0.7rem;
@@ -844,11 +860,6 @@ aside.side-bar li.active {
 		font-size: 0.6rem;
 		padding: 0 5px;
 	}
-	.bill-card .next,
-	.prev {
-		display: none;
-	}
-
 	.bill-card .vote-buttons {
 		display: flex;
 		flex-direction: row;
@@ -865,7 +876,6 @@ aside.side-bar li.active {
 	}
 	.repChamber .selectors {
 		display: flex;
-		justify-content: start;
 		gap: 20px;
 	}
 	.rep-card {
@@ -912,11 +922,60 @@ aside.side-bar li.active {
 	}
 }
 
-@media (max-width: 2400px) {
-	.bill-card .next {
-		transform: translate(40%, 0);
+/* Below 728px the sidebar becomes a fixed bar along the bottom of the screen.
+   Same <SideBar> component — only the presentation changes. Hover submenus
+   don't exist on touch, so section-level controls take over: BillSection's own
+   Discover/My Bills tabs turn on here, and RepSection's House/Senate selectors
+   are already on screen. */
+@media (width < 728px) {
+	aside.side-bar,
+	aside.side-bar.scrolled {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 60px;
+		flex-direction: row;
+		align-items: stretch;
+		max-width: none;
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		border-radius: 15px 15px 0 0;
+		border-right: none;
+		box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+		z-index: 1500; /* above content, below the rep modal (2000) */
 	}
-	.bill-card .prev {
-		transform: translate(-40%, 0);
+	aside.side-bar ul,
+	aside.side-bar ul.scrolled {
+		position: static; /* cancel the desktop scrolled state's fixed pinning */
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		align-items: center;
+		width: 100%;
+		margin: 0;
+	}
+	aside.side-bar li {
+		flex: 1;
+		width: auto;
+		height: 100%;
+		justify-content: center;
+		gap: 8px;
+		padding: 0;
+	}
+	aside.side-bar .sub-menu {
+		display: none;
+	}
+
+	/* BillSection's dormant tab buttons replace the sidebar submenu on mobile. */
+	.bill-list {
+		display: flex;
+		justify-content: center;
+	}
+
+	/* Keep scrolling content clear of the fixed bottom bar. */
+	.main-body {
+		padding-bottom: 72px;
 	}
 }

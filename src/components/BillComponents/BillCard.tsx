@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import { useDisplayBills } from '../../providers/BillProvider';
 import type { Bill } from '../../types';
 import { VoteButton } from './VoteButton';
@@ -17,14 +18,13 @@ export const BillCard = ({
 	className?: string;
 	onClick?: () => void | number;
 }) => {
-	const { congress, activeBillTab, voteLog } = useDisplayBills();
+	const { activeBillTab, voteLog } = useDisplayBills();
 	const [textLink, setTextLink] = useState<string>('');
 	const [searchedForLink, setSearchedForLink] = useState<boolean>(false);
 	const userString = localStorage.getItem('user');
 	const user = userString ? JSON.parse(userString) : null;
 	// Show the cached translation immediately if this bill already has one.
 	const [translatedText, setTranslatedText] = useState<string | null>(bill.plainSummary ?? null);
-	const [text, setText] = useState<string>('');
 	const vote = voteLog.find((vote) => vote.billId == bill.originChamberCode + bill.number);
 	const voteCast = vote?.vote;
 
@@ -48,6 +48,8 @@ export const BillCard = ({
 	const cardRef = useRef<HTMLDivElement | null>(null);
 	const isVisible = useOnScreen(cardRef);
 	const hasSummary = bill.summary !== 'No Summary Available';
+	// Single sanitization choke point for the summary HTML injected below.
+	const safeSummaryHtml = useMemo(() => DOMPurify.sanitize(bill.summary), [bill.summary]);
 
 	const getMoreInfo = async () => {
 		// The bill already carries its text-version url (served from our DB), so no
@@ -99,7 +101,7 @@ export const BillCard = ({
 						<p>{translatedText}</p>
 					</div>
 				)}
-				{isVisible && <div dangerouslySetInnerHTML={{ __html: bill.summary }} />}
+				{isVisible && <div dangerouslySetInnerHTML={{ __html: safeSummaryHtml }} />}
 			</div>
 			<div className='bill-footer'>
 				{!textLink ? (
@@ -118,13 +120,7 @@ export const BillCard = ({
 							className='bill-url'>
 							{textLink}
 						</a>
-						<button
-							onClick={async () => {
-								const data = await handleTranslate();
-								console.log('dataText:', data);
-							}}>
-							Translate This Bill
-						</button>
+						<button onClick={handleTranslate}>Translate This Bill</button>
 					</>
 				)}
 				<div className='bill-member-positions'>

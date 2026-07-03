@@ -15,12 +15,12 @@ export const RepSection = () => {
 
 	return (
 		<section className='rep-container'>
-			<h2 style={{ position: 'fixed', top: '200px', left: '50%' }}>119th Congress</h2>
-
 			<div className='rep-section'>
 				<div
 					className='repChamber'
 					key={'repChamber'}>
+					<h2 style={{ top: '200px', left: '50%' }}>119th Congress</h2>
+
 					<div className='selectors'>
 						<div
 							key={'house'}

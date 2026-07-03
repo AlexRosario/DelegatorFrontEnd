@@ -1,207 +1,200 @@
 import { useContext, createContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
-import { Requests } from '../api';
+import { Requests, searchForBill } from '../api';
 import type { Bill, Vote } from '../types';
-import DOMPurify from 'dompurify';
-import { searchForBill } from '../api';
+
+const PAGE_SIZE = 20;
+/** Fetch another page when the discover pool drops to this many unseen bills. */
+const LOW_POOL_THRESHOLD = 10;
+
+type BillFilter = 'Passed' | 'Bills with Votes' | 'All Bills';
+type BillTab = 'discover-bills' | 'voted-bills';
+type SearchType = 'hopper' | 'bill-number';
 
 type TBillProvider = {
+	// Bill collections (derived)
 	billsToDisplay: Bill[];
-	billSubject: string;
-	setBillSubject: (subject: string) => void;
-	offset: number;
-	setOffset: (offset: number | ((prevOffset: number) => number)) => void;
-	congress: number;
-	billFilter: 'Passed' | 'Bills with Votes' | 'All Bills';
-	setBillFilter: (filterPassed: 'Passed' | 'Bills with Votes' | 'All Bills') => void;
 	filteredBills: Bill[];
 	passedBills: Bill[];
-	setActiveBillTab: (tab: 'discover-bills' | 'voted-bills') => void;
-	activeBillTab: 'discover-bills' | 'voted-bills';
-	allBills: Bill[];
-	setAllBills: (allBills: Bill[]) => void;
-	newBills: Bill[];
-	votedBills: Bill[];
+	billsWithRollCalls: Bill[];
+	// Config
+	congress: number;
+	// Filters / tabs
+	billSubject: string;
+	setBillSubject: (subject: string) => void;
+	billFilter: BillFilter;
+	setBillFilter: (filter: BillFilter) => void;
+	activeBillTab: BillTab;
+	setActiveBillTab: (tab: BillTab) => void;
+	// User votes
 	voteLog: Vote[];
-	setVoteLog: (voteLog: Vote[]) => void;
-	setVotedOnThisBill: (votedOnThisBill: boolean) => void;
-	setNewBills: React.Dispatch<React.SetStateAction<Bill[]>>;
-	setVotedBills: React.Dispatch<React.SetStateAction<Bill[]>>;
+	setVoteLog: React.Dispatch<React.SetStateAction<Vote[]>>;
+	setVotedOnThisBill: (voted: boolean) => void;
+	// Feed pagination (bumped by BillFeed's scroll sentinel)
 	currentIndex: number;
 	setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
-	billsWithRollCalls: Bill[];
+	searchType: SearchType;
+	setSearchType: React.Dispatch<React.SetStateAction<SearchType>>;
 };
 
 export const BillContext = createContext<TBillProvider>({
 	billsToDisplay: [],
-	billSubject: '',
-	setBillSubject: () => {},
-	offset: 0,
-	setOffset: () => {},
-	congress: 119,
-	billFilter: 'All Bills',
-	setBillFilter: () => {},
 	filteredBills: [],
 	passedBills: [],
-	setActiveBillTab: () => {},
+	billsWithRollCalls: [],
+	congress: 119,
+	billSubject: '',
+	setBillSubject: () => {},
+	billFilter: 'All Bills',
+	setBillFilter: () => {},
 	activeBillTab: 'discover-bills',
-	allBills: [],
-	setAllBills: () => {},
-	newBills: [],
-	votedBills: [],
+	setActiveBillTab: () => {},
 	voteLog: [],
 	setVoteLog: () => {},
 	setVotedOnThisBill: () => {},
-	setNewBills: () => {},
-	setVotedBills: () => {},
 	currentIndex: 0,
 	setCurrentIndex: () => {},
-	billsWithRollCalls: [],
+	searchType: 'hopper',
+	setSearchType: () => {},
 });
 
+/** The `type+number` key (e.g. "hr1") that vote records use to reference a bill. */
+const billKey = (bill: Bill) => bill.type + bill.number;
+
+const readStoredVoteLog = (): Vote[] => {
+	const stored = localStorage.getItem('userLog');
+	return stored ? JSON.parse(stored) : [];
+};
+
 export const BillProvider = ({ children }: { children: ReactNode }) => {
-	const localLogString = localStorage.getItem('userLog');
-	const localLog = localLogString ? JSON.parse(localLogString) : [];
-	const [voteLog, setVoteLog] = useState<Vote[]>(localLog);
+	const [voteLog, setVoteLog] = useState<Vote[]>(readStoredVoteLog);
 	const [votedOnThisBill, setVotedOnThisBill] = useState(false);
 	const [allBills, setAllBills] = useState<Bill[]>([]);
 	const [newBills, setNewBills] = useState<Bill[]>([]);
 	const [votedBills, setVotedBills] = useState<Bill[]>([]);
-	const [activeBillTab, setActiveBillTab] = useState<'discover-bills' | 'voted-bills'>('discover-bills');
-	const [billSubject, setBillSubject] = useState<string>('');
-	const [offset, setOffset] = useState(0);
-	const [billFilter, setBillFilter] = useState<'Passed' | 'Bills with Votes' | 'All Bills'>('All Bills');
+	const [activeBillTab, setActiveBillTab] = useState<BillTab>('discover-bills');
+	const [billSubject, setBillSubject] = useState('');
+	const [billFilter, setBillFilter] = useState<BillFilter>('All Bills');
 	const [congress] = useState(119);
 	const [currentIndex, setCurrentIndex] = useState(0);
-	const prevIndexRef = useRef(currentIndex);
-	const hasFetchedRef = useRef(false);
+	const [searchType, setSearchType] = useState<'hopper' | 'bill-number'>('hopper');
+
+	const prevIndexRef = useRef(currentIndex); // last index the fetch effect saw (scroll-direction detection)
+	const isFetchingRef = useRef(false); // prevents overlapping page fetches
+
+	const isFirstLoad = allBills.length === 0;
+
+	// Derived collections
 	const billsToDisplay = activeBillTab === 'discover-bills' ? newBills : votedBills;
-
-	const passedBills =
-		billsToDisplay.filter(
-			(bill) => bill.latestAction.text.includes('Became Public Law No:'), //this filter covers all bill types, including those not needing presidential signatures
-		) || [];
-	const billsWithRollCalls =
-		billsToDisplay.filter(
-			(bill: Bill) =>
-				Array.isArray(bill.actions) &&
-				bill.actions.some((action) => Array.isArray(action.recordedVotes) && action.recordedVotes.length > 0),
-		) || [];
+	const passedBills = billsToDisplay.filter(
+		// This text covers all bill types, including those not needing presidential signatures.
+		(bill) => bill.latestAction.text.includes('Became Public Law No:')
+	);
+	const billsWithRollCalls = billsToDisplay.filter(
+		(bill) =>
+			Array.isArray(bill.actions) &&
+			bill.actions.some((action) => Array.isArray(action.recordedVotes) && action.recordedVotes.length > 0)
+	);
 	const filteredBills =
-		billFilter == 'Passed' ? passedBills : billFilter == 'Bills with Votes' ? billsWithRollCalls : billsToDisplay;
+		billFilter === 'Passed' ? passedBills : billFilter === 'Bills with Votes' ? billsWithRollCalls : billsToDisplay;
 
-	let firstRender: boolean = allBills.length == 0 ? true : false;
-
-	const fetchUserBills = async (voteLog: Vote[]) => {
+	/** Look up the bills a user has voted on (vote records store `type+number` ids). */
+	const fetchUserBills = async (votes: Vote[]) => {
 		try {
-			const billPromises = voteLog.map(async (vote) => {
-				const raw = vote.billId.toLowerCase();
-				const billType = raw.replace(/[^a-zA-Z]/g, '');
-				const billNumber = raw.replace(/\D/g, '');
-				return await searchForBill(billType, billNumber);
-			});
-
-			const bills = await Promise.all(billPromises);
-			return bills?.filter((bill) => bill !== null);
+			const bills = await Promise.all(
+				votes.map((vote) => {
+					const raw = vote.billId.toLowerCase();
+					return searchForBill(raw.replace(/[^a-z]/g, ''), raw.replace(/\D/g, ''));
+				})
+			);
+			return bills.filter((bill): bill is Bill => bill !== null);
 		} catch (error) {
 			console.error('Error fetching bill record:', error);
+			return [];
 		}
 	};
 
-	const fetchBills = async () => {
-		const congressStr = String(congress);
-		try {
-			// One call to our DB — bills arrive already assembled (summary, subjects,
-			// actions with recordedVotes, latestAction). No per-bill proxy fan-out.
-			const data = await Requests.getBillsFromDb(congressStr, offset, 20);
-			return (data?.bills ?? []) as Bill[];
-		} catch (error) {
-			console.error('Failed to fetch bills:', error);
-		} finally {
-			setOffset((prevOffset) => prevOffset + 20);
-		}
+	/** One page of pre-assembled bills from our DB. Offset derives from what we
+	 *  already hold, so a failed request never skips a page. */
+	const fetchNextPage = async () => {
+		const data = await Requests.getBillsFromDb(String(congress), allBills.length, PAGE_SIZE);
+		return (data?.bills ?? []) as Bill[];
 	};
 
+	// Partition fetched bills into the discover pool (unvoted), and keep the
+	// voted-bills list stocked with the bills behind the user's vote records.
 	useEffect(() => {
-		setNewBills(
-			allBills.filter((bill: Bill) => !voteLog?.some((vote: Vote) => vote.billId === bill.type + bill.number)),
-		);
-		if (firstRender || votedOnThisBill) {
-			const log = firstRender ? voteLog : [voteLog[voteLog.length - 1]];
-			fetchUserBills(log).then((bills) => {
-				if (bills) {
-					setVotedBills((prevBills) => {
-						const existingIds = new Set(prevBills.map((bill) => bill.type + bill.number));
-						const filteredNewBills = bills.filter((bill) => !existingIds.has(bill.type + bill.number));
-						return [...prevBills, ...filteredNewBills];
-					});
-					localStorage.setItem('userLog', JSON.stringify(voteLog));
-				}
+		setNewBills(allBills.filter((bill) => !voteLog.some((vote) => vote.billId === billKey(bill))));
+
+		const votesToLoad = isFirstLoad ? voteLog : votedOnThisBill ? voteLog.slice(-1) : [];
+		if (votesToLoad.length > 0) {
+			fetchUserBills(votesToLoad).then((bills) => {
+				if (bills.length === 0) return;
+				setVotedBills((prev) => {
+					const existing = new Set(prev.map(billKey));
+					return [...prev, ...bills.filter((bill) => !existing.has(billKey(bill)))];
+				});
+				localStorage.setItem('userLog', JSON.stringify(voteLog));
 			});
 		}
-		console.log('bills:', allBills);
-		prevIndexRef.current = currentIndex;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [allBills, voteLog]);
 
+	// Fetch the next page when the feed scrolls near its end (BillFeed bumps
+	// currentIndex), on first load, or when the discover pool runs low.
 	useEffect(() => {
 		const isScrollingForward = currentIndex > prevIndexRef.current;
-		const isNearEnd = filteredBills.length - currentIndex <= 20;
-		if (
-			((isScrollingForward && isNearEnd) || firstRender || newBills.length <= 10 || billsToDisplay.length == 0) &&
-			!hasFetchedRef.current
-		) {
-			hasFetchedRef.current = true;
+		const isNearEnd = filteredBills.length - currentIndex <= PAGE_SIZE;
+		prevIndexRef.current = currentIndex;
 
-			fetchBills()
-				.then(async (bills) => {
-					if (bills && bills.length > 0) {
-						setAllBills((prevBills) => [...prevBills, ...bills]);
-					}
-				})
-				.finally(() => {
-					hasFetchedRef.current = false;
-				})
-				.catch((error) => {
-					console.error('Failed to fetch bills:', error);
+		const shouldFetch =
+			(isScrollingForward && isNearEnd) ||
+			isFirstLoad ||
+			newBills.length <= LOW_POOL_THRESHOLD ||
+			billsToDisplay.length === 0;
+		if (!shouldFetch || isFetchingRef.current) return;
+
+		isFetchingRef.current = true;
+		fetchNextPage()
+			.then((bills) => {
+				if (bills.length === 0) return;
+				setAllBills((prev) => {
+					const existing = new Set(prev.map((bill) => bill.id));
+					return [...prev, ...bills.filter((bill) => !existing.has(bill.id))];
 				});
-			console.log('Bills', allBills, 'billsWithRollCalls', billsWithRollCalls);
-			prevIndexRef.current = currentIndex;
-		}
-	}, [currentIndex, votedOnThisBill, newBills.length <= 10, currentIndex == billsToDisplay.length - 10]);
+			})
+			.catch((error) => console.error('Failed to fetch bills:', error))
+			.finally(() => {
+				isFetchingRef.current = false;
+			});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentIndex, votedOnThisBill, newBills.length, billsToDisplay.length]);
 
 	return (
 		<BillContext.Provider
 			value={{
 				billsToDisplay,
-				billSubject,
-				setBillSubject,
-				offset,
-				setOffset,
-				congress,
-				billFilter,
-				setBillFilter,
 				filteredBills,
 				passedBills,
-				setActiveBillTab,
+				billsWithRollCalls,
+				congress,
+				billSubject,
+				setBillSubject,
+				billFilter,
+				setBillFilter,
 				activeBillTab,
-				allBills,
-				setAllBills,
-				newBills,
-				votedBills,
+				setActiveBillTab,
 				voteLog,
 				setVoteLog,
 				setVotedOnThisBill,
-				setNewBills,
-				setVotedBills,
-				setCurrentIndex,
 				currentIndex,
-				billsWithRollCalls,
+				setCurrentIndex,
+				searchType,
+				setSearchType,
 			}}>
 			{children}
 		</BillContext.Provider>
 	);
 };
 
-export const useDisplayBills = () => {
-	return useContext(BillContext);
-};
+export const useDisplayBills = () => useContext(BillContext);

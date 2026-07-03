@@ -51,7 +51,7 @@ interface Titles {
 export interface Bill {
 	id: string;
 	plainSummary?: string | null;
-	subjects: any;
+	subjects: { legislativeSubjects?: { name: string }[] };
 	actions: Actions[];
 	committees: Committees;
 	congress: number;

@@ -55,7 +55,7 @@ export const BillCollection = () => {
 						<div className='policy-row'>
 							{billsToDisplay
 								.filter(
-									(bill) => !allPolicies.some((policy) => policy.toLowerCase() === bill.policyArea?.name.toLowerCase())
+									(bill) => !allPolicies.some((policy) => policy.toLowerCase() === bill.policyArea?.name.toLowerCase()),
 								)
 								.map((bill, index) => (
 									<BillCard
@@ -71,8 +71,8 @@ export const BillCollection = () => {
 							.filter((bill) => {
 								return (
 									bill.policyArea?.name.toLowerCase() === billSubject.toLowerCase() ||
-									bill.subjects.legislativeSubjects?.some((legislativeSubject: { name: string; date: Date }) =>
-										legislativeSubject.name.toLowerCase().startsWith(billSubject.toLowerCase())
+									bill.subjects.legislativeSubjects?.some((legislativeSubject: { name: string }) =>
+										legislativeSubject.name.toLowerCase().startsWith(billSubject.toLowerCase()),
 									)
 								);
 							})
@@ -86,7 +86,7 @@ export const BillCollection = () => {
 				) : filterType === 'letter-collection' ? (
 					billsToDisplay
 						.filter(
-							(bill) => !bill.latestAction.text.includes('Became Public Law No:') //this filter covers all bill types, including those not needing presidential signatures
+							(bill) => !bill.latestAction.text.includes('Became Public Law No:'), //this filter covers all bill types, including those not needing presidential signatures
 						)
 						.map((bill, index) => (
 							<BillCard

@@ -1,7 +1,5 @@
 import { faAngleLeft, faHamburger } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChair, faLandmarkDome } from '@fortawesome/free-solid-svg-icons';
-import { useScreenInfo } from '../providers/ScreenProvider';
 import { useAuthInfo } from '../providers/AuthProvider';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -9,7 +7,6 @@ import { defaultUser } from '../providers/AuthProvider';
 import { useEffect } from 'react';
 
 export const Header = () => {
-	const { screenSelect, setScreenSelect } = useScreenInfo();
 	const { user, setUser } = useAuthInfo();
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [scrolled, setScrolled] = useState(false);
@@ -77,21 +74,6 @@ export const Header = () => {
 						<Link to='/Home'>Sign in</Link>
 					)}
 				</div>
-			</div>
-			<div className='bottom-nav'>
-				<FontAwesomeIcon
-					icon={faLandmarkDome}
-					className={`screenSelect ${screenSelect === 'bills' ? 'active' : ''}`}
-					onClick={() => setScreenSelect('bills')}
-				/>
-
-				<FontAwesomeIcon
-					icon={faChair}
-					className={`screenSelect ${screenSelect === 'reps' ? 'active' : ''}`}
-					onClick={() => {
-						setScreenSelect('reps');
-					}}
-				/>
 			</div>
 		</>
 	);
