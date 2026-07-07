@@ -30,6 +30,8 @@ type TBillProvider = {
 	voteLog: Vote[];
 	setVoteLog: React.Dispatch<React.SetStateAction<Vote[]>>;
 	setVotedOnThisBill: (voted: boolean) => void;
+	/** The bills behind the user's vote records — alignment inference reads their action histories. */
+	votedBills: Bill[];
 	// Feed pagination (bumped by BillFeed's scroll sentinel)
 	currentIndex: number;
 	setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -52,6 +54,7 @@ export const BillContext = createContext<TBillProvider>({
 	voteLog: [],
 	setVoteLog: () => {},
 	setVotedOnThisBill: () => {},
+	votedBills: [],
 	currentIndex: 0,
 	setCurrentIndex: () => {},
 	searchType: 'hopper',
@@ -179,6 +182,7 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 				voteLog,
 				setVoteLog,
 				setVotedOnThisBill,
+				votedBills,
 				currentIndex,
 				setCurrentIndex,
 				searchType,

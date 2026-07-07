@@ -1,4 +1,7 @@
-/* Mobile-first base styles */
+/* Recovered 2026-07-07 from dist/assets/index-Cg3vT6Y5.css (built Jul 6 18:35)
+   after App.css was overwritten. Comments were lost to minification; all rules,
+   including uncommitted Jul 4-6 styling, are intact. */
+
 #root {
 	width: 100vw;
 	margin: 0;
@@ -26,8 +29,8 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: whitesmoke;
-	box-shadow: 0 0 5px rgba(223, 168, 168, 0.75);
+	background-color: #f5f5f5;
+	box-shadow: 0 0 5px #dfa8a8bf;
 	border-radius: 8px;
 	padding: 1rem;
 	width: 100%;
@@ -43,13 +46,14 @@
 .home h1 span:nth-child(1) {
 	color: red;
 }
+
 .home h1 span:nth-child(2) {
-	color: blue;
+	color: #00f;
 }
 
 .home-right button {
 	width: 100%;
-	color: blue;
+	color: #00f;
 	font-size: 1rem;
 	padding: 0.5rem;
 	border-radius: 5px;
@@ -82,19 +86,21 @@
 }
 
 .contact {
-	background-color: blue;
+	background-color: #00f;
 	height: 50vh;
 }
 
 .register {
-	color: white;
-	background-color: white;
+	color: #fff;
+	background-color: #fff;
 	height: 100vh;
 	font-size: 1rem;
 }
+
 .register button {
 	background-color: #231557;
 }
+
 .register-field {
 	display: flex;
 	flex-direction: column;
@@ -102,7 +108,7 @@
 	align-content: center;
 	justify-content: space-around;
 	margin: 10% auto;
-	padding: 2% 2%;
+	padding: 2%;
 	height: 60%;
 	width: 60%;
 	border-radius: 8px;
@@ -132,7 +138,7 @@
 }
 
 .address-prompt {
-	color: black;
+	color: #000;
 	margin: 0 auto;
 	transform: translatex(-50%, -50%);
 }
@@ -141,9 +147,8 @@
 	width: fit-content;
 	height: fit-content;
 	border-radius: 8px;
-
 	border: transparent;
-	box-shadow: 0 0 5px 1px rgba(78, 76, 76, 0.75);
+	box-shadow: 0 0 5px 1px #4e4c4cbf;
 	padding: 0.6em 1.2em;
 	font-weight: 500;
 }
@@ -162,40 +167,47 @@
 	align-items: center;
 	min-width: 100vw;
 	z-index: 1000;
-
-	background-color: rgb(243, 248, 242);
+	background-color: #f3f8f2;
 	transition: all 2s ease;
 }
 
 .header-container.scrolled {
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 2px 8px #00000026;
 }
+
 .header-container > * {
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-	border-radius: 15px;
 	text-align: center;
 }
 
 .header-container.scrolled > * {
 	box-shadow: none;
-
 	border: none;
 }
+
 .header-container .logo-wrapper {
 	margin-left: 50px;
 }
+
 .header-container img.gator-logo {
 	height: 150px;
+	box-shadow: 0 2px 8px #00000026;
+	border-radius: 15px;
+}
+
+.header_sign-in-link {
+	color: black;
+	font-size: 1.2rem;
+	font-weight: 500;
 }
 
 .menu-burger {
-	color: black;
-	font-size: xx-large;
+	color: #000;
+	font-size: x-large;
 }
 
 .header-user {
 	text-align: center;
-	color: black;
+	color: #000;
 	width: fit-content;
 	font-size: 12px;
 	margin-right: 50px;
@@ -208,6 +220,7 @@
 	width: 100%;
 	height: 100%;
 }
+
 .profile {
 	display: flex;
 	flex-direction: column;
@@ -217,15 +230,18 @@
 	gap: 10px;
 	color: green;
 }
+
 .profile b {
-	color: black;
+	color: #000;
 }
+
 .profile * {
 	padding: 0;
 	margin: 0;
 	text-align: left;
 	text-wrap: wrap;
 }
+
 .log-out {
 	color: red;
 	min-width: max-content;
@@ -234,12 +250,12 @@
 .profile .log-out:hover {
 	cursor: pointer;
 }
+
 .main-body {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	margin-top: 5%;
-
 	width: 100vw;
 	min-height: 100vh;
 	align-items: stretch;
@@ -248,16 +264,18 @@
 .content {
 	flex-grow: 1;
 	width: 80%;
-	background-color: rgb(243, 248, 242);
+	background-color: #f3f8f2;
 }
+
 .content.scrolled {
 	height: 100%;
 }
+
 aside.side-bar {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	color: black;
+	color: #000;
 	font-size: 12px;
 	height: 100vh;
 	max-width: 150px;
@@ -266,29 +284,31 @@ aside.side-bar {
 	margin-left: 50px;
 	align-self: flex-start;
 	z-index: 10;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 2px 8px #00000026;
 	border-radius: 15px;
-	background-color: rgb(243, 248, 242);
+	background-color: #f3f8f2;
 	flex-shrink: 0;
 }
 
 aside.side-bar.scrolled {
 	height: 100%;
 	padding-bottom: 80%;
-
 	box-shadow: none;
 	border-right: 1px solid rgba(0, 0, 0, 0.1);
 	border-radius: 0;
 	z-index: 10;
 }
+
 aside.side-bar ul {
 	text-align: center;
 	padding: 0;
 }
+
 aside.side-bar ul.scrolled {
 	position: fixed;
 	top: 200px;
 }
+
 aside.side-bar li {
 	display: flex;
 	align-items: center;
@@ -296,9 +316,10 @@ aside.side-bar li {
 	font-weight: 800;
 	width: 90%;
 	gap: 20px;
-	padding: 10px 10px;
+	padding: 10px;
 	cursor: pointer;
 }
+
 aside.side-bar li.active {
 	box-shadow: inset 0 2px 5px #37363a;
 	cursor: pointer;
@@ -317,12 +338,14 @@ aside.side-bar li.active {
 }
 
 .side-bar li.active .list-tab.active {
-	box-shadow: inset 0 0 10px black;
+	box-shadow: inset 0 0 10px #000;
 }
+
 .bill-rep-section {
 	width: 85%;
 	padding: none;
 }
+
 .bill-section {
 	display: flex;
 	flex-direction: column;
@@ -340,17 +363,21 @@ aside.side-bar li.active {
 	padding: 0 30px;
 	width: 100%;
 }
+
 .search-subject {
 	width: 100%;
 }
+
 .bill-list {
 	display: none;
 	gap: 30px;
 	margin: 20px;
 }
+
 .bill-list-button.selected {
 	background-color: var(--red);
 }
+
 .bill-discover {
 	display: flex;
 	flex-direction: column;
@@ -360,6 +387,7 @@ aside.side-bar li.active {
 	height: 900p;
 	overflow-y: auto;
 }
+
 .search-options {
 	display: flex;
 	flex-direction: column;
@@ -380,24 +408,26 @@ aside.side-bar li.active {
 }
 
 .selector {
+	-webkit-user-select: none;
 	user-select: none;
 	border: 1px solid black;
 	font-size: 0.8rem;
 	border-radius: 400px;
 	max-height: 45px;
 	width: 100px;
-	padding: 6px 6px;
+	padding: 6px;
 	margin-left: 10px;
 	cursor: pointer;
-	color: rgba(10, 12, 50, 0.8);
-	background-color: rgb(191, 205, 209);
+	color: #0a0c32cc;
+	background-color: #bfcdd1;
 	z-index: 10;
 }
 
 .selector.active {
-	background-color: rgba(10, 12, 50, 0.8);
-	color: white;
+	background-color: #0a0c32cc;
+	color: #fff;
 }
+
 .bill-number {
 	display: flex;
 	flex-direction: row;
@@ -405,24 +435,26 @@ aside.side-bar li.active {
 	justify-content: space-between;
 	width: 20%;
 }
+
 .bill-type-selector {
 	width: 90%;
 	padding: 5px;
 }
+
 .select-wrapper {
 	position: relative;
 	display: inline-block;
-	width: 140px; /* adjust as needed */
+	width: 140px;
 }
 
 .select-wrapper select {
 	appearance: none;
 	width: 100%;
-	padding: 8px 32px 8px 12px; /* extra right padding for icon */
+	padding: 8px 32px 8px 12px;
 	border-radius: 15px;
 	text-align: center;
 	border: 1px solid #ccc;
-	background-color: white;
+	background-color: #fff;
 	font-size: 16px;
 }
 
@@ -430,10 +462,11 @@ aside.side-bar li.active {
 	position: absolute;
 	right: 12px;
 	top: 50%;
-	transform: translateY(-50%) translateX(-60%);
-	pointer-events: none; /* so clicks go to select */
+	transform: translateY(-50%) translate(-60%);
+	pointer-events: none;
 	color: #666;
 }
+
 .bill-filter {
 	display: flex;
 	flex-direction: row;
@@ -443,9 +476,10 @@ aside.side-bar li.active {
 	align-items: center;
 	max-height: 100px;
 }
+
 .bill-filter button {
 	background-color: gray;
-	color: white;
+	color: #fff;
 	border: none;
 	border-radius: 5px;
 	padding: 10px;
@@ -454,14 +488,16 @@ aside.side-bar li.active {
 }
 
 .bill-filter button.active {
-	background-color: rgba(10, 12, 50, 0.8);
+	background-color: #0a0c32cc;
 }
+
 .subject-fields {
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
 	margin: 20px auto;
 }
+
 .subject-fields input {
 	display: flex;
 	flex-direction: row;
@@ -493,25 +529,28 @@ aside.side-bar li.active {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: flex-start; /* stack cards top-to-bottom (feed), not centered */
+	justify-content: flex-start;
 	width: 100%;
 	margin-top: 5%;
 	max-width: 80%;
-	height: 80vh; /* bounded height is required for overflow-y:auto to actually scroll */
-	overflow-y: auto; /* makes this the scroll box / IntersectionObserver root */
-	gap: 1rem; /* spacing between cards, feed-style */
+	height: 80vh;
+	overflow-y: auto;
+	gap: 1rem;
 }
-/* Keep cards at full height inside the flex-column feed — without this they shrink
-   to fit the bounded container instead of overflowing it (which is what scrolls). */
+
 .bill-feed .bill-card {
 	flex-shrink: 0;
 }
-.bill-carousel-info {
-	font-size: 0.8em;
-	color: black;
+
+.bill-card_sign-in-link {
+	font-size: 0.8rem;
 }
 
-/* Stories-style strip of the user's reps; each ring fills/colors by vote alignment. */
+.bill-carousel-info {
+	font-size: 0.8em;
+	color: #000;
+}
+
 .rep-strip {
 	display: flex;
 	flex-direction: row;
@@ -522,6 +561,7 @@ aside.side-bar li.active {
 	padding: 10px 0 4px;
 	overflow-x: auto;
 }
+
 .rep-bubble {
 	display: flex;
 	flex-direction: column;
@@ -531,21 +571,22 @@ aside.side-bar li.active {
 	color: var(--darkblue);
 	cursor: pointer;
 }
+
 .rep-bubble:hover .rep-ring,
 .rep-bubble:focus-visible .rep-ring {
 	transform: scale(1.07);
 }
 
-/* Clicking a bubble opens the rep's full card over the feed. */
 .rep-modal-backdrop {
 	position: fixed;
 	inset: 0;
-	z-index: 2000; /* above the sticky header (z-index 1000) */
-	background: rgba(22, 28, 45, 0.55);
+	z-index: 2000;
+	background: #161c2d8c;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
+
 .rep-modal {
 	position: relative;
 	max-width: min(90vw, 700px);
@@ -553,11 +594,13 @@ aside.side-bar li.active {
 	overflow-y: auto;
 	border-radius: 12px;
 }
+
 .rep-modal .rep-card {
 	width: 100%;
 	height: auto;
 	margin: 0;
 }
+
 .rep-modal-close {
 	position: absolute;
 	top: 8px;
@@ -567,26 +610,127 @@ aside.side-bar li.active {
 	height: 32px;
 	border: none;
 	border-radius: 50%;
-	background: rgba(22, 28, 45, 0.75);
-	color: white;
+	background: #161c2dbf;
+	color: #fff;
 	font-size: 1.1rem;
 	line-height: 1;
 	cursor: pointer;
 }
+
+/* Contact-your-members modal (opened from the card's ✉️ icon). Reuses the
+   rep-modal shell; these style the contact content inside it. */
+.contact-toggle {
+	cursor: pointer;
+	user-select: none;
+}
+.contact-modal {
+	background-color: rgb(255, 254, 251);
+	color: var(--darkblue);
+	padding: 20px 24px;
+	text-align: left;
+	width: min(90vw, 520px);
+}
+.contact-modal-title {
+	margin: 0 24px 10px 0;
+}
+.contact-chamber {
+	margin-bottom: 14px;
+}
+.contact-chamber-title {
+	margin: 0 0 2px;
+}
+.contact-chamber-note {
+	margin: 0 0 8px;
+	font-size: 0.75rem;
+	font-style: italic;
+	opacity: 0.85;
+}
+.contact-member {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+	padding: 6px 0;
+	font-size: 0.8rem;
+}
+.contact-member-photo {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+.contact-member-info {
+	display: flex;
+	flex-direction: column;
+	min-width: 130px;
+}
+.contact-member-party {
+	font-size: 0.7rem;
+	opacity: 0.75;
+}
+.contact-member-actions {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+	margin-left: auto;
+	font-size: 0.75rem;
+	white-space: nowrap;
+}
+.contact-email-button {
+	margin: 0;
+	padding: 4px 10px;
+	font-size: 0.7rem;
+}
+.contact-member-block {
+	border-bottom: 1px solid rgba(22, 28, 45, 0.08);
+}
+.contact-draft {
+	padding: 4px 0 10px;
+}
+.contact-draft textarea {
+	width: 100%;
+	box-sizing: border-box;
+	font-size: 0.75rem;
+	font-family: inherit;
+	padding: 8px;
+	border-radius: 6px;
+	border: 1px solid #ccc;
+	resize: vertical;
+}
+.contact-draft-actions {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+	margin-top: 4px;
+}
+.contact-draft-actions button {
+	margin: 0;
+	padding: 4px 12px;
+	font-size: 0.7rem;
+}
+.contact-draft-hint {
+	font-size: 0.7rem;
+	opacity: 0.8;
+}
+
 .rep-ring {
 	border-radius: 50%;
-	padding: 3px; /* ring thickness — background (the conic gradient) shows through */
+	padding: 3px;
 	transition: transform 0.15s ease;
 }
+
 .rep-ring img {
 	display: block;
 	width: 56px;
 	height: 56px;
 	border-radius: 50%;
 	object-fit: cover;
-	border: 2px solid rgb(243, 248, 242); /* gap between photo and ring */
-	background-color: white;
+	border: 2px solid rgb(243, 248, 242);
+	background-color: #fff;
 }
+
 .rep-bubble-name {
 	font-weight: 700;
 	max-width: 72px;
@@ -594,6 +738,7 @@ aside.side-bar li.active {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+
 .rep-bubble-score {
 	font-size: 0.65rem;
 	opacity: 0.75;
@@ -612,32 +757,246 @@ aside.side-bar li.active {
 	justify-content: space-around;
 	position: relative;
 	color: var(--darkblue);
-	background-color: rgb(255, 254, 251);
+	background-color: #fffefb;
 	text-align: center;
 	padding: 4%;
 	width: 75%;
 	max-width: 450px;
 	min-width: 360px;
 	height: 599px;
-	overflow: hidden; /* the card no longer scrolls; .bill-slides paginates content */
-	margin: 20px;
-	box-shadow: 0 22px 34px rgba(22, 28, 45, 0.18);
+	box-shadow: 0 22px 34px #161c2d2e;
 	border-radius: 10px;
 }
 
-/* Overflowing bill content flows into horizontal, swipeable page-slides.
-   column-fill:auto + a definite height pages the text; columnWidth is set inline
-   to the measured card width so each column is exactly one slide. */
+.bill-member-positions {
+	position: relative;
+	bottom: 0;
+}
+
+.bill-content-flip {
+	flex: 1 1 0;
+	min-height: 0;
+	position: relative;
+	perspective: 1200px;
+}
+
+.bill-content-flip-inner {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	transform-style: preserve-3d;
+	transition: transform 0.6s ease;
+}
+
+.bill-content-flip.flipped .bill-content-flip-inner {
+	transform: rotateY(180deg);
+}
+
+.bill-flip-face {
+	position: absolute;
+	inset: 0;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	background-color: #fffefb;
+}
+
+.bill-flip-back {
+	transform: rotateY(180deg);
+}
+
+.bill-flip-face .bill-slides,
+.bill-flip-face .bill-no-summary {
+	height: 100%;
+}
+
+.bill-chat-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 5;
+	background-color: #fffefb;
+	display: flex;
+}
+
+.bill-chat {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	text-align: left;
+	font-size: 0.8rem;
+}
+
+.bill-chat-list {
+	flex: 1 1 0;
+	min-height: 0;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 6px 2px;
+}
+
+.bill-chat-comment {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: 6px 8px;
+	border-radius: 8px;
+	background-color: #161c2d0d;
+}
+
+.bill-chat-author {
+	font-weight: 700;
+	font-size: 0.7rem;
+}
+
+.bill-chat-date {
+	font-size: 0.6rem;
+	opacity: 0.6;
+}
+
+.bill-chat-empty,
+.bill-chat-signin {
+	opacity: 0.7;
+	text-align: center;
+	margin: auto 0;
+}
+
+.bill-chat-older {
+	align-self: center;
+	font-size: 0.7rem;
+}
+
+.bill-chat-composer {
+	display: flex;
+	gap: 6px;
+	padding-top: 6px;
+}
+
+.bill-chat-composer input {
+	flex: 1;
+	padding: 6px 8px;
+	border-radius: 6px;
+	border: 1px solid #ccc;
+}
+
 .bill-slides {
 	flex: 1 1 0;
-	min-height: 0; /* lets the flex child take a definite height for paging */
+	min-height: 0;
 	column-fill: auto;
 	column-gap: 8%;
 	overflow-x: auto;
 	overflow-y: hidden;
+	overflow-anchor: none;
 	scroll-snap-type: x proximity;
 	text-align: left;
 	padding: 8px 2px;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.bill-slides::-webkit-scrollbar {
+	display: none;
+}
+
+.constituent-votes {
+	margin-top: 10px;
+	text-align: left;
+	font-size: 0.7rem;
+	break-inside: avoid;
+}
+
+.constituent-votes-title {
+	margin: 0 0 4px;
+}
+
+.constituent-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 4px;
+}
+
+.constituent-name {
+	font-weight: 700;
+	min-width: 70px;
+}
+
+.constituent-bar {
+	flex: 1 1 0;
+	height: 10px;
+	border-radius: 400px;
+	background-color: #c94f4f;
+	overflow: hidden;
+}
+
+.constituent-bar-yes {
+	height: 100%;
+	background-color: #4caf50;
+}
+
+.constituent-pcts {
+	white-space: nowrap;
+}
+
+.pct-yes {
+	color: #2c7a24;
+	font-weight: 700;
+}
+
+.pct-no {
+	color: #a12b2b;
+	font-weight: 700;
+}
+
+.constituent-total,
+.constituent-none {
+	opacity: 0.7;
+}
+
+.slide-indicator {
+	position: absolute;
+	top: 4px;
+	left: 50%;
+	transform: translate(-50%);
+	z-index: 4;
+	font-size: 0.65rem;
+	font-weight: 700;
+	padding: 1px 8px;
+	border-radius: 400px;
+	background: #161c2d1f;
+	color: #161c2dcc;
+	pointer-events: none;
+}
+
+.slide-arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 4;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: #161c2d4d;
+	color: #fff;
+	font-size: 1rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.slide-arrow:hover {
+	background: #161c2d99;
+}
+
+.slide-arrow.left {
+	left: 4px;
+}
+
+.slide-arrow.right {
+	right: 4px;
 }
 
 .bill-slides > * {
@@ -647,13 +1006,65 @@ aside.side-bar li.active {
 .bill-footer {
 	flex: 0 0 auto;
 	display: flex;
-	flex-direction: column;
+	justify-content: space-evenly;
 	gap: 6px;
 	padding-top: 8px;
 }
+
+.bill-footer-actions {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	width: 100%;
+}
+
+.bill-flip-toggle {
+	margin: 0;
+}
+
+.translate-error {
+	font-size: 0.7rem;
+	color: #8f1416;
+}
+
+.passage-methods {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	gap: 8px;
+	padding: 4px 0;
+}
+
+.passage-chip {
+	font-size: 0.6rem;
+	font-weight: 700;
+	padding: 2px 8px;
+	border-radius: 400px;
+	cursor: default;
+}
+
+.passage-chip.passage-roll-call {
+	background-color: #377c2926;
+	color: #2c5e22;
+}
+
+.passage-chip.passage-voice,
+.passage-chip.passage-unanimous,
+.passage-chip.passage-unrecorded {
+	background-color: #c494192e;
+	color: #7a5a0e;
+}
+
+.inferred-alignment {
+	font-size: 0.7rem;
+	opacity: 0.85;
+	font-style: italic;
+}
+
 .bill-collection .bill-card {
 	opacity: 1;
 }
+
 .bill-header {
 	display: flex;
 	flex-direction: column;
@@ -666,13 +1077,16 @@ aside.side-bar li.active {
 	justify-content: space-between;
 	margin-bottom: 5%;
 }
+
 .bill-header_bottom {
 	text-align: center;
 }
+
 .vote-container {
 	display: flex;
 	flex-direction: column;
 }
+
 .vote-buttons {
 	display: flex;
 	flex-direction: row;
@@ -682,10 +1096,11 @@ aside.side-bar li.active {
 .bill-status {
 	font-size: 0.6rem;
 }
+
 .vote-button-icon {
 	display: flex;
 	gap: 10%;
-	color: white;
+	color: #fff;
 	justify-content: center;
 	padding: 1%;
 	font-size: 0.6rem;
@@ -693,14 +1108,13 @@ aside.side-bar li.active {
 }
 
 .bill-card .bill-url {
-	color: blue;
-	font-size: 0.2em;
+	color: #00f;
 }
 
 .carousel-container .arrows-carousel {
 	position: relative;
 	font-size: 40px;
-	color: goldenrod;
+	color: #daa520;
 	border: 1px black solid;
 	z-index: 100;
 }
@@ -708,6 +1122,7 @@ aside.side-bar li.active {
 .carousel-container .arrows-carousel:nth-child(1) {
 	left: 20px;
 }
+
 .carousel-container .arrows-carousel:nth-child(2) {
 	right: 20px;
 }
@@ -736,15 +1151,18 @@ aside.side-bar li.active {
 .rep-section {
 	padding: 20px;
 }
+
 .rep-section .selectors {
 	display: none;
 }
+
 .reps {
 	margin-top: 5%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
+
 .rep-card {
 	position: relative;
 	display: flex;
@@ -755,16 +1173,18 @@ aside.side-bar li.active {
 	max-height: 260px;
 	width: 50%;
 	max-width: 750px;
-	background-color: white;
+	background-color: #fff;
 	border: solid #231557 5px;
 	overflow: hidden;
 }
+
 .rep-card-left {
 	font-size: 0.8rem;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 }
+
 .rep-card-right {
 	display: flex;
 	flex-direction: column;
@@ -776,10 +1196,18 @@ aside.side-bar li.active {
 	flex-shrink: 1;
 	flex-grow: 0;
 }
+
 .rep-card-right img.rep-photo {
 	width: 100px;
 	max-height: 50%;
 }
+
+.rep-score {
+	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
 .alignment-bar {
 	width: 100%;
 	height: 20px;
@@ -805,18 +1233,13 @@ aside.side-bar li.active {
 		height: fit-content;
 		overflow: none;
 		font-size: 0.6em;
-		color: blue;
+		color: #00f;
 	}
-
 	.home h1 {
 		font-size: 7.5vw;
 		margin: 25% 0;
 	}
-
-	.sign-in-field input {
-		font-size: 0.6em;
-	}
-
+	.sign-in-field input,
 	.join-link {
 		font-size: 0.6em;
 	}
@@ -826,11 +1249,9 @@ aside.side-bar li.active {
 	.register-field {
 		font-size: 0.6em;
 	}
-
 	.register-field .input-wrap input {
 		font-size: 0.6rem;
 	}
-
 	.header-container img.gator-logo {
 		height: 100px;
 	}
@@ -847,7 +1268,6 @@ aside.side-bar li.active {
 	.bills-status {
 		margin: 10px 0;
 	}
-
 	.congressional-efficacy {
 		display: flex;
 		flex-direction: column;
@@ -855,7 +1275,6 @@ aside.side-bar li.active {
 	.search-subject {
 		flex-direction: column;
 	}
-
 	.bill-number select,
 	input {
 		font-size: 0.6rem;
@@ -866,7 +1285,6 @@ aside.side-bar li.active {
 		flex-direction: row;
 		justify-content: space-around;
 	}
-
 	.bill-collection-container select,
 	input {
 		font-size: 0.6rem;
@@ -899,13 +1317,11 @@ aside.side-bar li.active {
 
 @media (max-width: 728px) {
 	.bill-card {
-		box-shadow: 0 5px 10x rgba(244, 244, 246, 0.18);
+		box-shadow: 0 5px 10x #f4f4f62e;
 	}
-
 	.header-container .logo-wrapper {
 		margin-left: 10px;
 	}
-
 	.header-user {
 		margin-right: 10px;
 	}
@@ -918,10 +1334,7 @@ aside.side-bar li.active {
 	.register {
 		font-size: 0.85rem;
 	}
-	.register-field {
-		overflow: none;
-	}
-
+	.register-field,
 	.register-field .input-wrap label {
 		overflow: none;
 	}
@@ -937,11 +1350,6 @@ aside.side-bar li.active {
 	}
 }
 
-/* Below 728px the sidebar becomes a fixed bar along the bottom of the screen.
-   Same <SideBar> component — only the presentation changes. Hover submenus
-   don't exist on touch, so section-level controls take over: BillSection's own
-   Discover/My Bills tabs turn on here, and RepSection's House/Senate selectors
-   are already on screen. */
 @media (width < 728px) {
 	aside.side-bar,
 	aside.side-bar.scrolled {
@@ -958,12 +1366,12 @@ aside.side-bar li.active {
 		padding: 0;
 		border-radius: 15px 15px 0 0;
 		border-right: none;
-		box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
-		z-index: 1500; /* above content, below the rep modal (2000) */
+		box-shadow: 0 -2px 8px #00000026;
+		z-index: 1500;
 	}
 	aside.side-bar ul,
 	aside.side-bar ul.scrolled {
-		position: static; /* cancel the desktop scrolled state's fixed pinning */
+		position: static;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-around;
@@ -982,14 +1390,10 @@ aside.side-bar li.active {
 	aside.side-bar .sub-menu {
 		display: none;
 	}
-
-	/* BillSection's dormant tab buttons replace the sidebar submenu on mobile. */
 	.bill-list {
 		display: flex;
 		justify-content: center;
 	}
-
-	/* Keep scrolling content clear of the fixed bottom bar. */
 	.main-body {
 		padding-bottom: 72px;
 	}

@@ -1,4 +1,4 @@
-import type { Representative5Calls } from './types';
+import type { BillCommentRecord, Representative5Calls } from './types';
 import { API_BASE_URL } from './config';
 import { parseSenateVoteXML, parseHouseVoteXML } from './utils/parser-utils';
 
@@ -13,7 +13,8 @@ export const Requests = {
 			state: string;
 			zipcode: string;
 		},
-		memberIds: string
+		memberIds: string[],
+		attest: boolean
 	) => {
 		const url = `${API_BASE_URL}/auth/register`;
 
@@ -30,7 +31,10 @@ export const Requests = {
 					state: address.state,
 					zipcode: address.zipcode,
 				},
+				// Advisory 5Calls ids — the server derives the authoritative
+				// delegation from the Census district + roster.
 				memberIds: memberIds,
+				attest: attest,
 			}),
 		})
 			.then(async (response) => {
@@ -222,6 +226,40 @@ export const Requests = {
 			console.error('Error fetching bills:', err);
 			return { bills: [] };
 		}
+	},
+	// Per-bill discussion thread — fetched only when the chat panel opens, never
+	// in the feed payload (the list carries just commentCount).
+	getBillComments: async (billId: string, cursor?: number) => {
+		const params = cursor ? `?cursor=${cursor}` : '';
+		const res = await fetch(`${API_BASE_URL}/bills/${billId}/comments${params}`);
+		if (!res.ok) throw new Error(`Failed to load comments (${res.status})`);
+		return res.json() as Promise<{ comments: BillCommentRecord[]; nextCursor: number | null }>;
+	},
+	// Throws on failure (like addVote) so the panel never shows a comment the
+	// server rejected; 401 throws 'session_expired'.
+	addBillComment: async (billId: string, body: string) => {
+		const jwt = localStorage.getItem('token');
+		const res = await fetch(`${API_BASE_URL}/bills/${billId}/comments`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${jwt?.replace(/^"|"$/g, '')}`,
+			},
+			body: JSON.stringify({ body }),
+		});
+		if (res.status === 401) throw new Error('session_expired');
+		if (!res.ok) throw new Error(`Comment failed with status ${res.status}`);
+		return res.json() as Promise<BillCommentRecord>;
+	},
+	// Aggregate Yes/No counts among each member's constituents (app users who
+	// have that member in their delegation) for one bill.
+	getConstituentVotes: async (billId: string, memberIds: string[]) => {
+		const res = await fetch(`${API_BASE_URL}/bills/${billId}/constituent-votes?members=${memberIds.join(',')}`);
+		if (!res.ok) throw new Error(`Failed to load constituent votes (${res.status})`);
+		return res.json() as Promise<{
+			billId: string;
+			results: { bioguideId: string; yes: number; no: number; total: number }[];
+		}>;
 	},
 	getBillById: async (id: string, signal?: AbortSignal) => {
 		try {

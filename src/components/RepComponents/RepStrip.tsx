@@ -10,13 +10,16 @@ import { RepCard } from './RepCard';
  */
 const RepBubble = ({ member, onOpen }: { member: CongressMember; onOpen: (member: CongressMember) => void }) => {
 	const bioguideId = member.bioguideId ?? member.id;
-	const { score, comparedCount, missedCount } = useAlignment(bioguideId);
+	const chamber = member.area === 'US House' ? 'House' : 'Senate';
+	const { score, comparedCount, missedCount } = useAlignment(bioguideId, chamber);
 
 	const ringBackground =
 		score === null
 			? alignmentColor(null)
 			: `conic-gradient(${alignmentColor(score)} ${score}%, #e0e0e0 0)`;
 	const missedNote = missedCount > 0 ? `; missed ${missedCount} vote${missedCount === 1 ? '' : 's'}` : '';
+	// The inferred (unrecorded-votes) score is deliberately NOT in the tooltip —
+	// it's disclosed by clicking the score on the rep's card.
 	const label =
 		score === null
 			? `${member.name} — no shared roll-call votes yet${missedNote}`

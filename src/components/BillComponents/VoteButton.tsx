@@ -8,7 +8,6 @@ type VoteButtonProps = {
 
 export const VoteButton = ({ voteValue, onClick }: VoteButtonProps) => {
 	const color = voteValue == 'No' ? '#8f1416' : '#377c29';
-	const vote = voteValue == 'No' ? 'Oppose' : 'Support';
 
 	return (
 		<div

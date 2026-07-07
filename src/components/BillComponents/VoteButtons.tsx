@@ -138,7 +138,7 @@ export const VoteButtons = ({ bill }: { bill: Bill }) => {
 					if (senateAction) {
 						const senateRoll = await Requests.getRollCallByUrl(senateAction.recordedVotes[0].url);
 						if (senateRoll && Array.isArray(senateRoll)) {
-							const [metaData, votes] = senateRoll;
+							const [metaData, votes] = senateRoll as [unknown, SenateVote[]];
 							console.log('Sen meta:', metaData, 'votes:', votes);
 							const senateCountsByParty = Array.isArray(votes)
 								? votes.reduce(

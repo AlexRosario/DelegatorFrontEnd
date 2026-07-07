@@ -40,6 +40,7 @@ export const Register = () => {
 	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [isAddressValid, setIsAddressValid] = useState<boolean>(true);
 	const [lockButton, setLockButton] = useState<boolean>(false);
+	const [attested, setAttested] = useState<boolean>(false);
 	const addressErrorMessage = 'This address does not exist.';
 	const navigate = useNavigate();
 
@@ -49,6 +50,10 @@ export const Register = () => {
 
 	const handleRegister = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!attested) {
+			toast.error('Please confirm that you live at this address.');
+			return;
+		}
 		setIsFormSubmitted(true);
 		setIsAddressValid(true);
 		setErrorMessage('');
@@ -69,7 +74,8 @@ export const Register = () => {
 				email,
 				password,
 				address,
-				members.representatives.map((m: Representative5Calls) => m.id)
+				members.representatives.map((m: Representative5Calls) => m.id),
+				attested
 			);
 
 			if (typeof message === 'string') {
@@ -268,9 +274,18 @@ export const Register = () => {
 					show={!isAddressValid}
 				/>
 
+				<label className='attest-checkbox'>
+					<input
+						type='checkbox'
+						checked={attested}
+						onChange={(e) => setAttested(e.target.checked)}
+					/>
+					I certify that I reside at this address and that messages sent through Delegator reflect my own views.
+				</label>
+
 				<button
 					type='submit'
-					disabled={isFormSubmitted || lockButton}>
+					disabled={isFormSubmitted || lockButton || !attested}>
 					Submit
 				</button>
 			</form>

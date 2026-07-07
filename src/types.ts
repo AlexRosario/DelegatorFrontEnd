@@ -48,9 +48,19 @@ interface Titles {
 	url: string;
 }
 
+export type BillCommentRecord = {
+	id: number;
+	body: string;
+	username: string;
+	createdAt: string;
+};
+
 export interface Bill {
 	id: string;
 	plainSummary?: string | null;
+	commentCount?: number;
+	/** Derived legislative stage (Introduced / In Committee / Passed House|Senate|Both Chambers / To President / Became Law / Vetoed / Failed). */
+	stage?: string | null;
 	subjects: { legislativeSubjects?: { name: string }[] };
 	actions: Actions[];
 	committees: Committees;
@@ -93,6 +103,9 @@ export type User = {
 	username: string;
 	email: string;
 	zipcode: string;
+	emailVerified?: boolean;
+	district?: number | null; // Census-verified congressional district
+	verificationSource?: string | null;
 };
 
 export interface Vote {

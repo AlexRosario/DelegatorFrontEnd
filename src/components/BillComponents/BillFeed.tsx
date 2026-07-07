@@ -78,6 +78,7 @@ export const BillFeed = () => {
 					<ClipLoader
 						color={color}
 						size={48}
+						cssOverride={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
 					/>
 				) : (
 					<>

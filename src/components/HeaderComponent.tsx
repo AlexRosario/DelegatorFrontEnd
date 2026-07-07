@@ -71,7 +71,11 @@ export const Header = () => {
 							</div>
 						)
 					) : (
-						<Link to='/Home'>Sign in</Link>
+						<Link
+							to='/Home'
+							className='header_sign-in-link'>
+							Sign in
+						</Link>
 					)}
 				</div>
 			</div>
