@@ -8,7 +8,7 @@ import { ErrorMessage } from '../components/errorMessages';
 import { useNavigate } from 'react-router-dom';
 import * as _ from 'lodash-es';
 import { faker } from '@faker-js/faker';
-import type { FrontEndRegistrant, Representative5Calls } from '../types';
+import type { FrontEndRegistrant } from '../types';
 export function RegisterInput({ labelText, inputProps }: { labelText: string; inputProps: ComponentProps<'input'> }) {
 	return (
 		<div className='input-wrap'>
@@ -44,10 +44,6 @@ export const Register = () => {
 	const addressErrorMessage = 'This address does not exist.';
 	const navigate = useNavigate();
 
-	const findReps = async (addressString: string) => {
-		return await Requests.getCongressMembersFromFive(addressString).then((reps) => reps);
-	};
-
 	const handleRegister = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!attested) {
@@ -57,26 +53,22 @@ export const Register = () => {
 		setIsFormSubmitted(true);
 		setIsAddressValid(true);
 		setErrorMessage('');
-		const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipcode}`;
-		const isValid = await Requests.isValidAddress(addressString);
-		const members = await findReps(addressString);
-		//address validator api reached free monthly limit. FiveCalls api doesnt validate address, but prioritizes a criteria
-		if (members.error || !isValid) {
+		// Census-backed verification: validates the address and previews the district.
+		// The server independently re-resolves the delegation at registration.
+		const verification = await Requests.verifyAddress(address);
+		if (!verification.valid) {
 			setIsAddressValid(false);
-			toast.error('Invalid address. Please try again.');
+			toast.error('We could not verify that address. Please check it and try again.');
 			setIsFormSubmitted(false);
 			return;
 		}
-		await Promise.all(members.representatives.map((member: Representative5Calls) => Requests.addNewMember(member)));
+		toast.success(
+			verification.district !== undefined
+				? `Address verified — ${verification.state}, District ${verification.district}`
+				: 'Address verified'
+		);
 		try {
-			const message = await Requests.register(
-				username,
-				email,
-				password,
-				address,
-				members.representatives.map((m: Representative5Calls) => m.id),
-				attested
-			);
+			const message = await Requests.register(username, email, password, address, attested);
 
 			if (typeof message === 'string') {
 				setErrorMessage(message);

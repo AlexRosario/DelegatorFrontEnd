@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Bill, CongressMember } from '../../types';
 import { useDisplayMember } from '../../providers/MemberProvider';
 import { useDisplayBills } from '../../providers/BillProvider';
+import { Requests } from '../../api';
 import { chamberHasPassed, billStillInCongress } from '../../utils/passage-utils';
 
 /** Draft a constituent message for one member, personalized with the user's
@@ -50,6 +51,11 @@ const MemberContactRow = ({ member, bill, stance }: { member: CongressMember; bi
 			// Clipboard blocked (permissions/http) — user can still select + copy manually.
 			console.error('Clipboard unavailable — select the text and copy manually.');
 		}
+		// Record the contact in the audit trail (CWC-gated server-side). Copying is
+		// the moment of intent; a gate rejection must not block the manual send.
+		Requests.recordContactMessage(member.bioguideId ?? member.id, bill.id, draft).catch((err) => {
+			console.warn('Contact not recorded:', err instanceof Error ? err.message : err);
+		});
 	};
 
 	return (

@@ -13,11 +13,12 @@ export const Requests = {
 			state: string;
 			zipcode: string;
 		},
-		memberIds: string[],
 		attest: boolean
 	) => {
 		const url = `${API_BASE_URL}/auth/register`;
 
+		// The server derives the delegation itself (Census district + roster) —
+		// no client-side member resolution needed.
 		return fetch(url, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -31,9 +32,6 @@ export const Requests = {
 					state: address.state,
 					zipcode: address.zipcode,
 				},
-				// Advisory 5Calls ids — the server derives the authoritative
-				// delegation from the Census district + roster.
-				memberIds: memberIds,
 				attest: attest,
 			}),
 		})
@@ -165,18 +163,39 @@ export const Requests = {
 		}
 	},
 
-	//External api calls
-	isValidAddress: async (address: string): Promise<boolean> => {
-		const query = encodeURIComponent(address);
-
+	// Record a constituent→member contact (CWC audit trail). The backend gates
+	// this on verified email + Census-verified district + delegation membership.
+	recordContactMessage: async (bioguideId: string, billId: string, body: string) => {
+		const jwt = localStorage.getItem('token');
+		const res = await fetch(`${API_BASE_URL}/contact/messages`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${jwt?.replace(/^"|"$/g, '')}`,
+			},
+			body: JSON.stringify({ bioguideId, billId, body }),
+		});
+		if (!res.ok) {
+			const data = await res.json().catch(() => ({}));
+			throw new Error(data.code ?? `contact_failed_${res.status}`);
+		}
+		return res.json();
+	},
+	// Census-backed address verification: validates the address AND returns the
+	// congressional district it resolves to (free, authoritative, key-less).
+	verifyAddress: async (address: { street: string; city: string; state: string; zipcode: string }) => {
 		try {
-			const res = await fetch(`${API_BASE_URL}/location/geocode?query=${query}`);
-			const data = await res.json();
-
-			return Array.isArray(data.data) && data.data.length > 0 && data.data[0].confidence > 0.8;
+			const params = new URLSearchParams(address).toString();
+			const res = await fetch(`${API_BASE_URL}/location/verify?${params}`);
+			return (await res.json()) as {
+				valid: boolean;
+				matchedAddress?: string;
+				state?: string;
+				district?: number;
+			};
 		} catch (error) {
 			console.error('Error validating address:', error);
-			return false;
+			return { valid: false };
 		}
 	},
 	// Generate (or fetch the cached) plain-English translation for a bill. The
