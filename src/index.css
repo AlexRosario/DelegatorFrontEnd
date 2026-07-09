@@ -99,7 +99,7 @@ button:focus-visible {
 }
 @font-face {
 	font-family: 'Barlow';
-	src: local('Barlow'), url('src/fonts/BarlowCondensed-SemiBold.ttf') format('truetype');
+	src: local('Barlow'), url('./fonts/BarlowCondensed-SemiBold.ttf') format('truetype');
 
 	font-weight: bold;
 }
