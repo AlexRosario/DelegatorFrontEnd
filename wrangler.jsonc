@@ -7,5 +7,11 @@
 		// SPA fallback: deep links like /Home resolve to index.html so
 		// react-router can take over (otherwise direct navigation 404s).
 		"not_found_handling": "single-page-application"
-	}
+	},
+	// Custom domains bound at deploy time (the dashboard blocks the Triggers UI
+	// for asset-only Workers; declaring them here attaches them on deploy).
+	"routes": [
+		{ "pattern": "delegatorus.org", "custom_domain": true },
+		{ "pattern": "www.delegatorus.org", "custom_domain": true }
+	]
 }
