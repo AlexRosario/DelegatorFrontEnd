@@ -1,5 +1,6 @@
 import { faAngleLeft, faHamburger } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import mainLogo from '../assets/main-logo.png';
 import { useAuthInfo } from '../providers/AuthProvider';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -31,7 +32,7 @@ export const Header = () => {
 			<div className={`header-container ${scrolled ? 'scrolled' : ''}`}>
 				<div className='logo-wrapper'>
 					<img
-						src='src/assets/main-logo.png'
+						src={mainLogo}
 						alt='Delegator Logo'
 						className='gator-logo'
 					/>
