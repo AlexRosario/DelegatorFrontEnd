@@ -9,11 +9,11 @@ import { useNavigate } from 'react-router-dom';
 import * as _ from 'lodash-es';
 import { faker } from '@faker-js/faker';
 import type { FrontEndRegistrant } from '../types';
+
 export function RegisterInput({ labelText, inputProps }: { labelText: string; inputProps: ComponentProps<'input'> }) {
 	return (
 		<div className='input-wrap'>
-			<label>{labelText}:</label>
-
+			<label>{labelText}</label>
 			<input {...inputProps} />
 		</div>
 	);
@@ -39,15 +39,20 @@ export const Register = () => {
 	const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [isAddressValid, setIsAddressValid] = useState<boolean>(true);
-	const [lockButton, setLockButton] = useState<boolean>(false);
 	const [attested, setAttested] = useState<boolean>(false);
-	const addressErrorMessage = 'This address does not exist.';
+	const addressErrorMessage = 'We could not verify this address.';
 	const navigate = useNavigate();
+
+	const passwordsMismatch = confirm !== '' && password !== confirm;
 
 	const handleRegister = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!attested) {
 			toast.error('Please confirm that you live at this address.');
+			return;
+		}
+		if (password !== confirm) {
+			toast.error('Passwords do not match.');
 			return;
 		}
 		setIsFormSubmitted(true);
@@ -96,6 +101,9 @@ export const Register = () => {
 			setIsFormSubmitted(false);
 		}
 	};
+
+	// Dev-only convenience: prefill the form with a synthetic user. Never shipped
+	// to production (and faker addresses fail Census verification anyway).
 	const generateUser = () => {
 		const capitalize = _.capitalize;
 		return {
@@ -113,174 +121,204 @@ export const Register = () => {
 
 	return (
 		<div className='register'>
-			<Link to='/'>
-				<button type='button'>Home</button>
-			</Link>
+			<div className='register-card'>
+				<div className='register-head'>
+					<h2>Create your account</h2>
+					<Link
+						to='/'
+						className='register-back'>
+						← Back to sign in
+					</Link>
+				</div>
 
-			<form
-				className='register-field'
-				onSubmit={handleRegister}>
-				<button
-					className='btn'
-					onClick={(e) => {
-						e.preventDefault();
-						const generatedUser = generateUser();
-						setFrontEndRegistrant(generatedUser as FrontEndRegistrant);
-						setConfirm(generatedUser.password);
-					}}>
-					Generate User
-				</button>
-				<RegisterInput
-					labelText='Username'
-					inputProps={{
-						placeholder: 'Boogey',
-						onChange: (e) =>
-							setFrontEndRegistrant({
-								...frontEndRegistrant,
-								username: e.target.value,
-							}),
-						value: username,
-					}}
-				/>
+				<form
+					className='register-field'
+					onSubmit={handleRegister}>
+					{import.meta.env.DEV && (
+						<button
+							type='button'
+							className='register-dev-fill'
+							onClick={() => {
+								const generatedUser = generateUser();
+								setFrontEndRegistrant(generatedUser as FrontEndRegistrant);
+								setConfirm(generatedUser.password);
+							}}>
+							Generate User (dev)
+						</button>
+					)}
 
-				<ErrorMessage
-					message={errorMessage}
-					show={errorMessage.includes(username)}
-				/>
-
-				<RegisterInput
-					labelText='Email'
-					inputProps={{
-						placeholder: 'HarrietT@email.com',
-						onChange: (e) =>
-							setFrontEndRegistrant({
-								...frontEndRegistrant,
-								email: e.target.value,
-							}),
-						value: email,
-					}}
-				/>
-
-				<ErrorMessage
-					message={errorMessage}
-					show={errorMessage.includes('email')}
-				/>
-
-				<RegisterInput
-					labelText='Password'
-					inputProps={{
-						placeholder: 'Password',
-						onChange: (e) =>
-							setFrontEndRegistrant({
-								...frontEndRegistrant,
-								password: e.target.value,
-							}),
-						value: password,
-					}}
-				/>
-				<RegisterInput
-					labelText='Confirm Password'
-					inputProps={{
-						placeholder: 'Confirm Password',
-						onChange: (e) => {
-							if (e.target.value !== password) {
-								setLockButton(true);
-							}
-							setConfirm(e.target.value);
-							setLockButton(false);
-						},
-						value: confirm,
-					}}
-				/>
-
-				<ErrorMessage
-					message={'Passwords do not match'}
-					show={password !== confirm}
-				/>
-
-				<div className='address-prompt'>Give us your address and we'll find your representatives for you.</div>
-				<RegisterInput
-					labelText={`Street Address`}
-					inputProps={{
-						placeholder: '123 Main St.',
-						onChange: (e) =>
-							setFrontEndRegistrant({
-								...frontEndRegistrant,
-								address: {
-									...frontEndRegistrant.address,
-									street: e.target.value,
-								},
-							}),
-						value: street,
-					}}
-				/>
-
-				<RegisterInput
-					labelText={`City or Town`}
-					inputProps={{
-						placeholder: 'New York',
-						onChange: (e) =>
-							setFrontEndRegistrant({
-								...frontEndRegistrant,
-								address: {
-									...frontEndRegistrant.address,
-									city: e.target.value,
-								},
-							}),
-						value: city,
-					}}
-				/>
-				<RegisterInput
-					labelText={`State`}
-					inputProps={{
-						placeholder: 'NY',
-						onChange: (e) =>
-							setFrontEndRegistrant({
-								...frontEndRegistrant,
-								address: {
-									...frontEndRegistrant.address,
-									state: e.target.value,
-								},
-							}),
-						value: state,
-					}}
-				/>
-				<RegisterInput
-					labelText={`Zipcode`}
-					inputProps={{
-						placeholder: '12345',
-						onChange: (e) =>
-							setFrontEndRegistrant({
-								...frontEndRegistrant,
-								address: {
-									...frontEndRegistrant.address,
-									zipcode: e.target.value,
-								},
-							}),
-						value: zipcode,
-					}}
-				/>
-
-				<ErrorMessage
-					message={addressErrorMessage}
-					show={!isAddressValid}
-				/>
-
-				<label className='attest-checkbox'>
-					<input
-						type='checkbox'
-						checked={attested}
-						onChange={(e) => setAttested(e.target.checked)}
+					<RegisterInput
+						labelText='Username'
+						inputProps={{
+							placeholder: 'Boogey',
+							autoComplete: 'username',
+							onChange: (e) =>
+								setFrontEndRegistrant({
+									...frontEndRegistrant,
+									username: e.target.value,
+								}),
+							value: username,
+						}}
 					/>
-					I certify that I reside at this address and that messages sent through Delegator reflect my own views.
-				</label>
 
-				<button
-					type='submit'
-					disabled={isFormSubmitted || lockButton || !attested}>
-					Submit
-				</button>
-			</form>
+					<ErrorMessage
+						message={errorMessage}
+						show={errorMessage.includes(username)}
+					/>
+
+					<RegisterInput
+						labelText='Email'
+						inputProps={{
+							type: 'email',
+							placeholder: 'HarrietT@email.com',
+							autoComplete: 'email',
+							onChange: (e) =>
+								setFrontEndRegistrant({
+									...frontEndRegistrant,
+									email: e.target.value,
+								}),
+							value: email,
+						}}
+					/>
+
+					<ErrorMessage
+						message={errorMessage}
+						show={errorMessage.includes('email')}
+					/>
+
+					<div className='register-row'>
+						<RegisterInput
+							labelText='Password'
+							inputProps={{
+								type: 'password',
+								placeholder: '8+ characters',
+								autoComplete: 'new-password',
+								onChange: (e) =>
+									setFrontEndRegistrant({
+										...frontEndRegistrant,
+										password: e.target.value,
+									}),
+								value: password,
+							}}
+						/>
+						<RegisterInput
+							labelText='Confirm password'
+							inputProps={{
+								type: 'password',
+								placeholder: 'Repeat it',
+								autoComplete: 'new-password',
+								onChange: (e) => setConfirm(e.target.value),
+								value: confirm,
+							}}
+						/>
+					</div>
+
+					<ErrorMessage
+						message={'Passwords do not match'}
+						show={passwordsMismatch}
+					/>
+
+					<div className='register-section'>
+						<h3>Your address</h3>
+						<p className='address-prompt'>
+							We use it to find your congressional district and your representatives — verified against U.S. Census
+							records. It's never shown to other users.
+						</p>
+					</div>
+
+					<RegisterInput
+						labelText='Street address'
+						inputProps={{
+							placeholder: '123 Main St.',
+							autoComplete: 'street-address',
+							onChange: (e) =>
+								setFrontEndRegistrant({
+									...frontEndRegistrant,
+									address: {
+										...frontEndRegistrant.address,
+										street: e.target.value,
+									},
+								}),
+							value: street,
+						}}
+					/>
+
+					<div className='register-row register-row-3'>
+						<RegisterInput
+							labelText='City or town'
+							inputProps={{
+								placeholder: 'New York',
+								autoComplete: 'address-level2',
+								onChange: (e) =>
+									setFrontEndRegistrant({
+										...frontEndRegistrant,
+										address: {
+											...frontEndRegistrant.address,
+											city: e.target.value,
+										},
+									}),
+								value: city,
+							}}
+						/>
+						<RegisterInput
+							labelText='State'
+							inputProps={{
+								placeholder: 'NY',
+								autoComplete: 'address-level1',
+								onChange: (e) =>
+									setFrontEndRegistrant({
+										...frontEndRegistrant,
+										address: {
+											...frontEndRegistrant.address,
+											state: e.target.value,
+										},
+									}),
+								value: state,
+							}}
+						/>
+						<RegisterInput
+							labelText='Zipcode'
+							inputProps={{
+								placeholder: '12345',
+								autoComplete: 'postal-code',
+								inputMode: 'numeric',
+								onChange: (e) =>
+									setFrontEndRegistrant({
+										...frontEndRegistrant,
+										address: {
+											...frontEndRegistrant.address,
+											zipcode: e.target.value,
+										},
+									}),
+								value: zipcode,
+							}}
+						/>
+					</div>
+
+					<ErrorMessage
+						message={addressErrorMessage}
+						show={!isAddressValid}
+					/>
+
+					<label className='attest-checkbox'>
+						<input
+							type='checkbox'
+							checked={attested}
+							onChange={(e) => setAttested(e.target.checked)}
+						/>
+						<span>
+							I certify that I reside at this address and that messages sent through Delegator reflect my own views.
+						</span>
+					</label>
+
+					<button
+						type='submit'
+						className='register-submit'
+						disabled={isFormSubmitted || passwordsMismatch || !attested}>
+						{isFormSubmitted ? 'Verifying…' : 'Create account'}
+					</button>
+				</form>
+			</div>
 		</div>
 	);
 };

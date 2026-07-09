@@ -150,7 +150,10 @@ export const BillCard = ({
 	return (
 		<div
 			ref={cardRef}
-			className={`bill-card${className == undefined ? '' : className}`}
+			// Chamber accent: House bills carry the brand red, Senate the brand blue.
+			className={`bill-card ${bill.originChamberCode === 'S' ? 'bill-card--senate' : 'bill-card--house'}${
+				className ? ` ${className}` : ''
+			}`}
 			onClick={onClick}>
 			<div className='bill-header'>
 				<div className='bill-header_top'>
@@ -170,8 +173,21 @@ export const BillCard = ({
 					)}
 				</div>
 				<div className='bill-header_bottom'>{!hasSummary ? <b>{bill.title}</b> : ''}</div>
-				{(housePassage || senatePassage) && (
+				{(bill.stage || housePassage || senatePassage) && (
 					<div className='passage-methods'>
+						{bill.stage && (
+							<span
+								className={`stage-chip ${
+									bill.stage === 'Became Law'
+										? 'stage-law'
+										: bill.stage === 'Vetoed' || bill.stage === 'Failed'
+											? 'stage-dead'
+											: ''
+								}`}
+								title='Where this bill is in the legislative process'>
+								{bill.stage}
+							</span>
+						)}
 						{housePassage && (
 							<span
 								className={`passage-chip passage-${housePassage}`}
