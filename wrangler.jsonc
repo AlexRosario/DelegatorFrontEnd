@@ -1,0 +1,11 @@
+{
+	// Cloudflare Workers static-assets config: serves the Vite build output.
+	"name": "delegatorus",
+	"compatibility_date": "2026-07-01",
+	"assets": {
+		"directory": "./dist",
+		// SPA fallback: deep links like /Home resolve to index.html so
+		// react-router can take over (otherwise direct navigation 404s).
+		"not_found_handling": "single-page-application"
+	}
+}
