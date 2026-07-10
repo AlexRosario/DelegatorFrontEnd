@@ -6,10 +6,13 @@ import './fonts/BarlowCondensed-SemiBold.ttf';
 import { BillProvider } from './providers/BillProvider';
 import { MemberProvider } from './providers/MemberProvider';
 import { useScreenInfo } from './providers/ScreenProvider';
+import { useAuthInfo } from './providers/AuthProvider';
 import { SideBar } from './components/SideBarComponents/SideBar';
 import { useEffect, useState } from 'react';
 function App() {
 	const { screenSelect } = useScreenInfo();
+	const { user } = useAuthInfo();
+	const isSignedIn = Boolean(user.username);
 
 	const [scrolled, setScrolled] = useState(false);
 	useEffect(() => {
@@ -26,8 +29,10 @@ function App() {
 
 			<BillProvider>
 				<MemberProvider>
-					<div className={`main-body ${scrolled ? 'scrolled' : ''}`}>
-						<SideBar scrolled={scrolled} />
+					<div className={`main-body ${scrolled ? 'scrolled' : ''}${isSignedIn ? '' : ' no-nav'}`}>
+						{/* Guests browse bills only — the Bills/Reps nav (sidebar on desktop,
+						    bottom bar on mobile) appears once they sign in. */}
+						{isSignedIn && <SideBar scrolled={scrolled} />}
 
 						<div className={`content ${scrolled ? 'scrolled' : ''}`}>
 							{screenSelect == 'bills' ? <BillSection /> : <RepSection />}

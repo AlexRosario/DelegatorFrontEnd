@@ -22,8 +22,7 @@
 	box-sizing: border-box;
 	background:
 		radial-gradient(1100px 550px at 85% 12%, rgba(63, 120, 130, 0.14), transparent 60%),
-		radial-gradient(900px 500px at 8% 88%, rgba(154, 61, 24, 0.1), transparent 60%),
-		rgb(243, 248, 242);
+		radial-gradient(900px 500px at 8% 88%, rgba(154, 61, 24, 0.1), transparent 60%), rgb(243, 248, 242);
 }
 
 .home-hero {
@@ -52,7 +51,7 @@
 }
 
 .home h1 span:nth-child(2) {
-	color: var(--darkblue);
+	color: var(--lightblue);
 }
 
 .home-tagline {
@@ -89,7 +88,7 @@
 .home-card h2 {
 	margin: 0;
 	text-align: left;
-	color: var(--darkblue);
+	color: var(--lightblue);
 	font-size: 1.35rem;
 }
 
@@ -111,7 +110,7 @@
 }
 
 .sign-in-field input:focus {
-	outline: 2px solid var(--darkblue);
+	outline: 2px solid var(--lightblue);
 	border-color: transparent;
 }
 
@@ -123,7 +122,7 @@
 	border-radius: 8px;
 	border: none;
 	box-shadow: none;
-	background-color: var(--darkblue);
+	background-color: var(--lightblue);
 	color: white;
 }
 
@@ -160,16 +159,16 @@
 	padding: 0.65rem;
 	font-size: 0.95rem;
 	border-radius: 8px;
-	border: 1.5px solid var(--darkblue);
+	border: 1.5px solid var(--lightblue);
 	box-shadow: none;
 	background-color: white;
-	color: var(--darkblue);
+	color: var(--lightblue);
 	font-weight: 600;
 }
 
 .home-secondary:hover {
 	background-color: rgba(63, 120, 130, 0.08);
-	border-color: var(--darkblue);
+	border-color: var(--lightblue);
 }
 
 /* Stack the landing page on narrow screens. */
@@ -202,8 +201,7 @@
 	box-sizing: border-box;
 	background:
 		radial-gradient(1100px 550px at 85% 12%, rgba(63, 120, 130, 0.14), transparent 60%),
-		radial-gradient(900px 500px at 8% 88%, rgba(154, 61, 24, 0.1), transparent 60%),
-		rgb(243, 248, 242);
+		radial-gradient(900px 500px at 8% 88%, rgba(154, 61, 24, 0.1), transparent 60%), rgb(243, 248, 242);
 }
 
 .register-card {
@@ -228,13 +226,13 @@
 
 .register-head h2 {
 	margin: 0;
-	color: var(--darkblue);
+	color: var(--lightblue);
 	font-size: 1.35rem;
 }
 
 .register-back {
 	font-size: 0.8rem;
-	color: var(--darkblue);
+	color: var(--lightblue);
 	text-decoration: none;
 	white-space: nowrap;
 }
@@ -274,7 +272,7 @@
 }
 
 .register-field .input-wrap input:focus {
-	outline: 2px solid var(--darkblue);
+	outline: 2px solid var(--lightblue);
 	border-color: transparent;
 }
 
@@ -299,7 +297,7 @@
 .register-section h3 {
 	margin: 0 0 0.25rem;
 	font-size: 1rem;
-	color: var(--darkblue);
+	color: var(--lightblue);
 }
 
 .address-prompt {
@@ -337,7 +335,7 @@
 	border-radius: 8px;
 	border: none;
 	box-shadow: none;
-	background-color: var(--darkblue);
+	background-color: var(--lightblue);
 	color: white;
 	font-weight: 600;
 }
@@ -617,24 +615,37 @@ aside.side-bar li.active {
 	justify-content: center;
 }
 
+/* Segmented pill toggles (Hopper/Bill Number, House/Senate, filters) —
+   outlined brand pills, solid darkblue when active. */
 .selector {
 	-webkit-user-select: none;
 	user-select: none;
-	border: 1px solid black;
+	border: 1px solid rgba(63, 120, 130, 0.45);
 	font-size: 0.8rem;
+	font-weight: 600;
 	border-radius: 400px;
 	max-height: 45px;
 	width: 100px;
 	padding: 6px;
 	margin-left: 10px;
 	cursor: pointer;
-	color: #0a0c32cc;
-	background-color: #bfcdd1;
+	color: var(--lightblue);
+	background-color: white;
 	z-index: 10;
+	transition:
+		background-color 0.15s ease,
+		color 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.selector:hover {
+	background-color: rgba(63, 120, 130, 0.1);
+	border-color: var(--lightblue);
 }
 
 .selector.active {
-	background-color: #0a0c32cc;
+	background-color: var(--darkblue);
+	border-color: var(--lightblue);
 	color: #fff;
 }
 
@@ -651,6 +662,27 @@ aside.side-bar li.active {
 	padding: 5px;
 }
 
+/* Bill-number search controls, themed to match the pills. */
+.bill-type-selector select,
+.bill-type-selector input {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 7px 12px;
+	border-radius: 400px;
+	border: 1px solid rgba(63, 120, 130, 0.45);
+	background-color: white;
+	color: var(--lightblue);
+	font-size: 0.85rem;
+	text-align: center;
+}
+
+.bill-type-selector input:focus,
+.bill-type-selector select:focus,
+.select-wrapper select:focus {
+	outline: 2px solid var(--lightblue);
+	border-color: transparent;
+}
+
 .select-wrapper {
 	position: relative;
 	display: inline-block;
@@ -661,11 +693,14 @@ aside.side-bar li.active {
 	appearance: none;
 	width: 100%;
 	padding: 8px 32px 8px 12px;
-	border-radius: 15px;
+	border-radius: 400px;
 	text-align: center;
-	border: 1px solid #ccc;
-	background-color: #fff;
-	font-size: 16px;
+	border: 1px solid rgba(63, 120, 130, 0.45);
+	background-color: white;
+	color: var(--lightblue);
+	font-weight: 600;
+	cursor: pointer;
+	font-size: 14px;
 }
 
 .caret-select {
@@ -674,7 +709,7 @@ aside.side-bar li.active {
 	top: 50%;
 	transform: translateY(-50%) translate(-60%);
 	pointer-events: none;
-	color: #666;
+	color: var(--lightblue);
 }
 
 .bill-filter {
@@ -698,7 +733,7 @@ aside.side-bar li.active {
 }
 
 .bill-filter button.active {
-	background-color: #0a0c32cc;
+	background-color: var(--lightblue);
 }
 
 .subject-fields {
@@ -778,7 +813,7 @@ aside.side-bar li.active {
 	align-items: center;
 	gap: 2px;
 	font-size: 0.7rem;
-	color: var(--darkblue);
+	color: var(--lightblue);
 	cursor: pointer;
 }
 
@@ -835,7 +870,7 @@ aside.side-bar li.active {
 }
 .contact-modal {
 	background-color: rgb(255, 254, 251);
-	color: var(--darkblue);
+	color: var(--lightblue);
 	padding: 20px 24px;
 	text-align: left;
 	width: min(90vw, 520px);
@@ -966,7 +1001,7 @@ aside.side-bar li.active {
 	flex-direction: column;
 	justify-content: space-around;
 	position: relative;
-	color: var(--darkblue);
+	color: var(--lightblue);
 	background-color: #fffefb;
 	text-align: center;
 	padding: 4%;
@@ -985,7 +1020,7 @@ aside.side-bar li.active {
 	border-top-color: var(--red);
 }
 .bill-card--senate {
-	border-top-color: var(--darkblue);
+	border-top-color: var(--lightblue);
 }
 
 /* Bill number as a "docket stamp" in the brand display face. */
@@ -1005,7 +1040,7 @@ aside.side-bar li.active {
 	border-radius: 400px;
 	cursor: default;
 	background-color: rgba(63, 120, 130, 0.14);
-	color: var(--darkblue);
+	color: var(--lightblue);
 }
 .stage-chip.stage-law {
 	background-color: rgba(55, 124, 41, 0.15);
@@ -1280,7 +1315,7 @@ aside.side-bar li.active {
 	border-radius: 400px;
 	border: 1px solid rgba(63, 120, 130, 0.45);
 	background-color: transparent;
-	color: var(--darkblue);
+	color: var(--lightblue);
 	box-shadow: none;
 	text-decoration: none;
 	white-space: nowrap;
@@ -1293,7 +1328,7 @@ aside.side-bar li.active {
 .bill-footer-actions .bill-fulltext-toggle:hover,
 .bill-footer-actions .bill-url:hover {
 	background-color: rgba(63, 120, 130, 0.1);
-	border-color: var(--darkblue);
+	border-color: var(--lightblue);
 }
 
 .bill-footer-actions button:disabled {
@@ -1369,7 +1404,7 @@ aside.side-bar li.active {
 	flex-direction: column;
 }
 
-.vote-buttons {
+.vote-butto {
 	display: flex;
 	flex-direction: row;
 	margin-bottom: 5%;
@@ -1390,7 +1425,7 @@ aside.side-bar li.active {
 }
 
 .bill-card .bill-url {
-	color: var(--darkblue);
+	color: var(--lightblue);
 }
 
 /* Below ~620px the width chain (.bill-rep-section 85% × container padding ×
@@ -1483,7 +1518,7 @@ aside.side-bar li.active {
 	width: 50%;
 	max-width: 750px;
 	background-color: #fff;
-	border: solid #231557 5px;
+	border: solid var(--lightblue) 5px;
 	overflow: hidden;
 }
 
@@ -1533,10 +1568,14 @@ aside.side-bar li.active {
 }
 
 @media (max-width: 600px) {
-	/* Stack the register field rows on phones. */
-	.register-row,
-	.register-row-3 {
-		grid-template-columns: 1fr;
+	.register {
+		font-size: 0.6rem;
+	}
+	.register-field {
+		font-size: 0.6em;
+	}
+	.register-field .input-wrap input {
+		font-size: 0.6rem;
 	}
 	.header-container img.gator-logo {
 		height: 100px;
@@ -1614,6 +1653,16 @@ aside.side-bar li.active {
 }
 
 @media (max-width: 1000px) {
+	.register {
+		font-size: 0.85rem;
+	}
+	.register-field,
+	.register-field .input-wrap label {
+		overflow: none;
+	}
+	.register-field .input-wrap input {
+		font-size: 0.85rem;
+	}
 	.selector {
 		font-size: 0.8rem;
 		height: 100%;
@@ -1669,5 +1718,9 @@ aside.side-bar li.active {
 	}
 	.main-body {
 		padding-bottom: 72px;
+	}
+	/* Guests have no bottom bar — no need to reserve space for it. */
+	.main-body.no-nav {
+		padding-bottom: 0;
 	}
 }

@@ -9,15 +9,17 @@ export const BillSection = () => {
 
 	return (
 		<section className='bill-section'>
-			<div className='bill-list'>
-				<button
-					className={`bill-list-button ${activeBillTab === 'discover-bills' ? 'selected' : ''}`}
-					onClick={() => {
-						setActiveBillTab('discover-bills');
-					}}>
-					Discover Bills
-				</button>
-				{user && (
+			{/* Tab switcher only exists for members — guests have a single view
+			    (discover), so a lone tab button is just noise. */}
+			{user && (
+				<div className='bill-list'>
+					<button
+						className={`bill-list-button ${activeBillTab === 'discover-bills' ? 'selected' : ''}`}
+						onClick={() => {
+							setActiveBillTab('discover-bills');
+						}}>
+						Discover Bills
+					</button>
 					<button
 						className={`bill-list-button ${activeBillTab === 'voted-bills' ? 'selected' : ''}`}
 						onClick={() => {
@@ -25,8 +27,8 @@ export const BillSection = () => {
 						}}>
 						My Bills
 					</button>
-				)}
-			</div>
+				</div>
+			)}
 
 			<div className='bill-container'>
 				{activeBillTab === 'discover-bills' ? <BillDiscover /> : user && <BillCollection />}

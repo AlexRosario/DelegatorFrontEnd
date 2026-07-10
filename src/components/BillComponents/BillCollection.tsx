@@ -6,6 +6,8 @@ import type { Bill } from '../../types';
 import { BillStatus } from './BillStatus';
 import { BillCollectionFilter } from './BillFilter';
 
+const devMode = import.meta.env.DEV;
+
 export const BillCollection = () => {
 	const { billsToDisplay, billSubject } = useDisplayBills();
 	const [filterType, setFilterType] = useState<string>('all');
@@ -42,7 +44,7 @@ export const BillCollection = () => {
 				filterType={filterType}
 				setFilterType={setFilterType}
 			/>
-			<BillStatus />
+			{devMode && <BillStatus />}
 
 			<div className='bill-collection'>
 				{filterType === 'all' ? (

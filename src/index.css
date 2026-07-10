@@ -16,12 +16,11 @@
 	padding: 0;
 	box-sizing: border-box;
 
+	/* Brand palette: red + lightblue accents, darkblue for deep contrast, offblack for text. */
 	--red: rgb(154, 61, 24);
-	--lightblue: rgb(191, 205, 209);
-	--darkerblue: rgb(163, 189, 195);
-	--darkblue: #3f7882;
+	--lightblue: #3f7882;
+	--darkblue: #213547;
 	--offblack: rgb(45, 46, 44);
-	--offwhite: rgb(249, 247, 246);
 
 	--size-10: 0.625rem;
 	--size-14: 0.875rem;
@@ -39,11 +38,11 @@
 
 a {
 	font-weight: 400;
-	color: #646cff;
+	color: var(--lightblue);
 	text-decoration: inherit;
 }
 a:hover {
-	color: var(--darkblue);
+	color: var(--lightblue);
 }
 
 body {
@@ -77,7 +76,7 @@ button {
 	margin: 10px auto;
 }
 button:hover {
-	border-color: #646cff;
+	border-color: var(--lightblue);
 }
 button:focus,
 button:focus-visible {
@@ -87,11 +86,11 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
 	:root {
-		color: #213547;
-		background-color: var(--bg);
+		color: var(--darkblue);
+		background-color: rgb(243, 248, 242); /* was var(--bg) — never declared */
 	}
 	a:hover {
-		color: #242ef0;
+		color: var(--lightblue);
 	}
 	button {
 		background-color: rgb(227, 219, 219);
