@@ -573,14 +573,14 @@ aside.side-bar li.active {
 	width: 100%;
 }
 
-/* Back-to-top arrow: absolutely positioned against .bill-discover (which is
-   position:relative for exactly this), fading in once the feed has scrolled
-   past the threshold set in BillFeed. */
+/* Back-to-top arrow: fixed to the VIEWPORT (not the container — the container's
+   bottom edge sits below the fold while the inner feed scrolls, which hid it).
+   Fades in once the feed passes the threshold set in BillFeed. */
 .scroll-top-arrow {
-	position: absolute;
-	bottom: 2%;
-	right: 5%;
-	z-index: 20;
+	position: fixed;
+	bottom: 24px;
+	right: 24px;
+	z-index: 1200; /* above content, below the rep/contact modals (2000) */
 	background-color: white;
 	border: var(--darkblue) 1px solid;
 	border-radius: 50%;
@@ -1755,5 +1755,10 @@ aside.side-bar li.active {
 	/* Guests have no bottom bar — no need to reserve space for it. */
 	.main-body.no-nav {
 		padding-bottom: 0;
+	}
+	/* Keep the back-to-top arrow above the bottom nav bar. */
+	.scroll-top-arrow {
+		bottom: 76px;
+		right: 12px;
 	}
 }

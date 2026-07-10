@@ -20,10 +20,11 @@ export const BillFeed = () => {
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const sentinelRef = useRef<HTMLDivElement | null>(null);
 	// Show the back-to-top arrow once the feed has scrolled this far down.
-	const SHOW_TOP_ARROW_AFTER_PX = 500;
+	const SHOW_TOP_ARROW_AFTER_PX = 1500;
 	const isPastThreshold = useComponentScrollThreshold(containerRef, SHOW_TOP_ARROW_AFTER_PX);
 
 	const isLoading = filteredBills.length === 0;
+	const devMode = import.meta.env.DEV;
 
 	// Infinite scroll: when the bottom sentinel scrolls into the feed's view, bump
 	// the provider index — that triggers BillProvider's next fetch batch. Using a
@@ -62,7 +63,7 @@ export const BillFeed = () => {
 
 	return (
 		<>
-			<BillStatus searchType={searchType} />
+			{devMode && <BillStatus searchType={searchType} />}
 			{billFilter === 'Bills with Votes' ? (
 				<b>
 					These Bills have already been voted on and will be solely used to better predict alignment with your
@@ -74,7 +75,6 @@ export const BillFeed = () => {
 					representative.
 				</b>
 			)}
-
 			<div
 				ref={containerRef}
 				id='bill-container'
