@@ -560,6 +560,7 @@ aside.side-bar li.active {
 	align-items: center;
 	margin: 0;
 	padding: 20px;
+	position: relative;
 }
 
 .bill-container {
@@ -570,6 +571,38 @@ aside.side-bar li.active {
 	text-align: center;
 	padding: 0 30px;
 	width: 100%;
+}
+
+/* Back-to-top arrow: absolutely positioned against .bill-discover (which is
+   position:relative for exactly this), fading in once the feed has scrolled
+   past the threshold set in BillFeed. */
+.scroll-top-arrow {
+	position: absolute;
+	bottom: 2%;
+	right: 5%;
+	z-index: 20;
+	background-color: white;
+	border: var(--darkblue) 1px solid;
+	border-radius: 50%;
+	color: var(--darkblue);
+	font-size: x-large;
+	width: var(--size-16);
+	height: var(--size-16);
+	padding: 8px;
+	cursor: pointer;
+	box-shadow: 0 4px 12px rgba(22, 28, 45, 0.2);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.25s ease;
+}
+
+.scroll-top-arrow.in-view {
+	opacity: 0.9;
+	pointer-events: auto;
+}
+
+.scroll-top-arrow.in-view:hover {
+	opacity: 1;
 }
 
 .search-subject {
@@ -592,8 +625,8 @@ aside.side-bar li.active {
 	width: 100%;
 	overflow-x: none;
 	align-items: center;
-	height: 900p;
 	overflow-y: auto;
+	position: relative; /* positioning context for .scroll-top-arrow */
 }
 
 .search-options {

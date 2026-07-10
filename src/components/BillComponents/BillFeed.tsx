@@ -3,6 +3,10 @@ import { useDisplayBills } from '../../providers/BillProvider';
 import { BillCard } from './BillCard';
 import { ClipLoader } from 'react-spinners';
 import { BillStatus } from './BillStatus';
+import { useComponentScrollThreshold } from '../../hooks/useComponentScrollThreshold';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import '@fortawesome/free-solid-svg-icons';
+import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 declare global {
 	interface Window {
@@ -15,6 +19,9 @@ export const BillFeed = () => {
 	const [color, setColor] = useState('grey');
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const sentinelRef = useRef<HTMLDivElement | null>(null);
+	// Show the back-to-top arrow once the feed has scrolled this far down.
+	const SHOW_TOP_ARROW_AFTER_PX = 500;
+	const isPastThreshold = useComponentScrollThreshold(containerRef, SHOW_TOP_ARROW_AFTER_PX);
 
 	const isLoading = filteredBills.length === 0;
 
@@ -96,6 +103,14 @@ export const BillFeed = () => {
 					</>
 				)}
 			</div>
+			{/* Always mounted; the .in-view class fades it in/out (a conditional
+			    render would skip the opacity transition). */}
+			<FontAwesomeIcon
+				icon={faArrowUp}
+				title='Back to top'
+				className={`scroll-top-arrow ${isPastThreshold ? 'in-view' : ''}`}
+				onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+			/>
 		</>
 	);
 };

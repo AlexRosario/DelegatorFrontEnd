@@ -9,7 +9,7 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 	// The inferred (unrecorded-votes) score is progressive disclosure: it only
 	// shows once the reader clicks the recorded score.
 	const [showInferred, setShowInferred] = useState(false);
-	console.log('member:', member);
+
 	return (
 		<div className='rep-card'>
 			<div className='rep-card-left'>
