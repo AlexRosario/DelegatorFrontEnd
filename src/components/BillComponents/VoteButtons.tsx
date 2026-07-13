@@ -51,6 +51,9 @@ export const VoteButtons = ({ bill }: { bill: Bill }) => {
 	const latestActionDateOnBill = new Date(bill.latestAction.actionDate);
 
 	const [newActionsSinceVoted, setNewActionsSinceVoted] = useState<boolean | undefined>(undefined);
+	// Voting first fetches roll-call XML (seconds) before posting — block repeat
+	// clicks in that window or the same vote posts twice.
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	useEffect(() => {
 		if (userVoteDate) {
@@ -98,6 +101,16 @@ export const VoteButtons = ({ bill }: { bill: Bill }) => {
 	};
 
 	const handleVote = async (vote: 'Yes' | 'No') => {
+		if (isSubmitting) return;
+		setIsSubmitting(true);
+		try {
+			await castVote(vote);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	const castVote = async (vote: 'Yes' | 'No') => {
 		let allRepVotes: { bioguideId: string; vote: CanonicalRollCallVote }[] = [];
 		if (!userHasBillVote) {
 			const rollCallActions = bill.actions.filter((action) => action.recordedVotes?.length > 0);

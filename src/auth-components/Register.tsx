@@ -92,6 +92,9 @@ export const Register = () => {
 			const data = await Requests.loginUser({ username, password });
 			localStorage.setItem('user', JSON.stringify(data.userInfo));
 			localStorage.setItem('token', JSON.stringify(data.token));
+			// Fresh account, fresh vote log — without this, a previous account's
+			// votes (shared localStorage key) leak in and hide bills from the feed.
+			localStorage.setItem('userLog', JSON.stringify([]));
 
 			await setUser(data.userInfo);
 
