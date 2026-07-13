@@ -2,6 +2,7 @@ import { useContext, createContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { Requests } from '../api';
 import type { Bill, Vote } from '../types';
+import { useAuthInfo } from './AuthProvider';
 
 const PAGE_SIZE = 20;
 /** Fetch another page when the discover pool drops to this many unseen bills. */
@@ -67,6 +68,7 @@ const readStoredVoteLog = (): Vote[] => {
 };
 
 export const BillProvider = ({ children }: { children: ReactNode }) => {
+	const { user } = useAuthInfo();
 	const [voteLog, setVoteLog] = useState<Vote[]>(readStoredVoteLog);
 	const [votedOnThisBill, setVotedOnThisBill] = useState(false);
 	const [allBills, setAllBills] = useState<Bill[]>([]);
@@ -119,7 +121,12 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 	// Partition fetched bills into the discover pool (unvoted), and keep the
 	// voted-bills list stocked with the bills behind the user's vote records.
 	useEffect(() => {
-		setNewBills(allBills.filter((bill) => !voteLog.some((vote) => vote.billId === bill.id)));
+		// Hide only bills THIS user voted on — userLog is a per-browser key, so
+		// entries from other accounts (shared machine, test accounts) must be inert,
+		// not hide bills from whoever is signed in now.
+		setNewBills(
+			allBills.filter((bill) => !voteLog.some((vote) => vote.userId === user.id && vote.billId === bill.id))
+		);
 
 		const votesToLoad = isFirstLoad ? voteLog : votedOnThisBill ? voteLog.slice(-1) : [];
 		if (votesToLoad.length > 0) {
@@ -133,7 +140,7 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [allBills, voteLog]);
+	}, [allBills, voteLog, user.id]);
 
 	// Fetch the next page when the feed scrolls near its end (BillFeed bumps
 	// currentIndex), on first load, or when the discover pool runs low.
