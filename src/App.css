@@ -927,6 +927,9 @@ aside.side-bar li.active {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	/* Narrow screens (<~525px): the actions can't fit beside the name — let them
+	   drop to their own line instead of clipping past the modal edge. */
+	flex-wrap: wrap;
 	gap: 10px;
 	padding: 6px 0;
 	font-size: 0.8rem;
@@ -950,7 +953,10 @@ aside.side-bar li.active {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	gap: 10px;
+	/* nowrap keeps each action (phone, website, button) intact; wrapping happens
+	   between actions when even their own line is too narrow. */
+	flex-wrap: wrap;
+	gap: 6px 10px;
 	margin-left: auto;
 	font-size: 0.75rem;
 	white-space: nowrap;
@@ -1074,6 +1080,7 @@ aside.side-bar li.active {
 	cursor: default;
 	background-color: rgba(63, 120, 130, 0.14);
 	color: var(--lightblue);
+	width: fit-content;
 }
 .stage-chip.stage-law {
 	background-color: rgba(55, 124, 41, 0.15);
@@ -1435,16 +1442,22 @@ aside.side-bar li.active {
 .vote-container {
 	display: flex;
 	flex-direction: column;
+	align-items: center;
+	font-size: var(--size-10);
 }
 
-.vote-butto {
+.vote-buttons {
 	display: flex;
 	flex-direction: row;
 	margin-bottom: 5%;
 }
 
 .bill-status {
-	font-size: 0.6rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
 }
 
 .vote-button-icon {
@@ -1620,9 +1633,6 @@ aside.side-bar li.active {
 		margin-top: 20px;
 		font-size: 0.7rem;
 	}
-	.bill-list {
-		display: flex;
-	}
 	.bills-status {
 		margin: 10px 0;
 	}
@@ -1638,11 +1648,7 @@ aside.side-bar li.active {
 		font-size: 0.6rem;
 		padding: 0 5px;
 	}
-	.bill-card .vote-buttons {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-around;
-	}
+
 	.bill-collection-container select,
 	input {
 		font-size: 0.6rem;
@@ -1745,9 +1751,41 @@ aside.side-bar li.active {
 	aside.side-bar .sub-menu {
 		display: none;
 	}
-	.bill-list {
+	/* The Bills item itself is redundant on mobile — its sub-tabs ARE the bills
+	   navigation, so the bar reads Discover / My Bills / Reps. */
+	aside.side-bar li.bills-select {
+		display: none;
+	}
+	/* …except the bills submenu: Discover / My Bills live IN the bar on mobile,
+	   inline before the Reps item (no top tabs eating feed space). */
+	aside.side-bar .bill-sub-menu {
 		display: flex;
+		flex-direction: row;
+		align-items: stretch;
+		flex: 2;
+		width: auto;
+		margin: 0;
+		padding: 0;
+	}
+	aside.side-bar .bill-sub-menu .sub-list-tab {
+		flex: 1;
+		display: flex;
+		align-items: center;
 		justify-content: center;
+		text-align: center;
+		font-size: 0.68rem;
+		font-weight: 700;
+		padding: 0 4px;
+		cursor: pointer;
+	}
+	aside.side-bar .bill-sub-menu .sub-list-tab.active {
+		box-shadow: none;
+		background-color: rgba(63, 120, 130, 0.15);
+		border-radius: 8px;
+	}
+	/* The top-of-feed tab bar is redundant on mobile — the bar owns the tabs. */
+	.bill-list {
+		display: none;
 	}
 	.main-body {
 		padding-bottom: 72px;

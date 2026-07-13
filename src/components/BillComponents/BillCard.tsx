@@ -11,7 +11,6 @@ import { useOnScreen } from '../../hooks/useOnScreen';
 import { BillChat } from './BillChat';
 import { ConstituentVotes } from './ConstituentVotes';
 import { chamberPassage, PASSAGE_LABEL } from '../../utils/passage-utils';
-
 export const BillCard = ({
 	bill,
 	className,
