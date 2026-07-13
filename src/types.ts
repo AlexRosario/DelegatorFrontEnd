@@ -241,3 +241,16 @@ export type RollCall = {
 	};
 	status: string;
 };
+
+// Campaign-finance summary served by /members/:bioguideId/donors (FEC data).
+export type DonorEntry = { name: string; total: number };
+export type DonorSummary = {
+	bioguideId: string;
+	candidateId: string;
+	committee: { id: string; name: string };
+	/** Two-year cycle the numbers cover, e.g. 2026 = 2025–2026. */
+	cycle: number;
+	topEmployers: DonorEntry[];
+	topPacs: DonorEntry[];
+	fetchedAt: string;
+};

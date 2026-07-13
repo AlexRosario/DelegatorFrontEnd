@@ -880,12 +880,17 @@ aside.side-bar li.active {
 }
 
 .rep-modal-close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	position: absolute;
 	top: 8px;
 	right: 8px;
 	z-index: 1;
-	width: 32px;
-	height: 32px;
+	width: 25px;
+	height: 25px;
+	padding: 0;
+	gap: 10px;
 	border: none;
 	border-radius: 50%;
 	background: #161c2dbf;
@@ -1555,9 +1560,6 @@ aside.side-bar li.active {
 
 .rep-card {
 	position: relative;
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
 	padding: 20px 0;
 	margin-bottom: 20px;
 	max-height: 260px;
@@ -1566,6 +1568,98 @@ aside.side-bar li.active {
 	background-color: #fff;
 	border: solid var(--lightblue) 5px;
 	overflow: hidden;
+	perspective: 1200px;
+}
+
+/* Flip machinery: both faces share one grid cell so the card keeps its natural
+   (content-driven) height — unlike the bill flip, which has a fixed height. */
+.rep-flip-inner {
+	display: grid;
+	width: 100%;
+	transform-style: preserve-3d;
+	transition: transform 0.6s ease;
+}
+.rep-card.flipped .rep-flip-inner {
+	transform: rotateY(180deg);
+}
+.rep-flip-face {
+	grid-area: 1 / 1;
+	position: relative;
+	min-width: 0;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+.rep-flip-front {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+.rep-flip-back {
+	transform: rotateY(180deg);
+	padding: 0 16px 26px;
+	max-height: 215px;
+	overflow-y: auto;
+	font-size: 0.75rem;
+}
+.rep-flip-toggle {
+	position: absolute;
+	bottom: 6px;
+	right: 10px;
+	margin: 0;
+	padding: 3px 10px;
+	font-size: 0.65rem;
+	cursor: pointer;
+}
+
+/* Donors face content */
+.rep-donors-title {
+	margin: 0 0 8px;
+}
+.rep-donors-columns {
+	display: flex;
+	flex-direction: row;
+	gap: 16px;
+}
+.rep-donors-list {
+	flex: 1;
+	min-width: 0;
+}
+.rep-donors-list h6 {
+	margin: 0 0 4px;
+	font-size: 0.7rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	opacity: 0.8;
+}
+.rep-donors-list ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.rep-donors-list li {
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 1px 0;
+}
+.rep-donor-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.rep-donor-total {
+	flex-shrink: 0;
+	font-weight: 700;
+}
+.rep-donors-note {
+	margin: 8px 0;
+	font-style: italic;
+	opacity: 0.85;
+}
+.rep-donors-footnote {
+	margin: 8px 0 0;
+	font-size: 0.65rem;
+	opacity: 0.75;
 }
 
 .rep-card-left {
@@ -1665,6 +1759,14 @@ aside.side-bar li.active {
 		width: 75%;
 		height: 20vh;
 		font-size: 0.7rem;
+	}
+	/* Donors face: stack the two lists and scroll within the fixed card height. */
+	.rep-donors-columns {
+		flex-direction: column;
+		gap: 10px;
+	}
+	.rep-flip-back {
+		max-height: calc(20vh - 40px);
 	}
 	.rep-card-right {
 		font-size: 0.6rem;

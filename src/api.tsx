@@ -1,4 +1,4 @@
-import type { BillCommentRecord, Representative5Calls } from './types';
+import type { BillCommentRecord, DonorSummary, Representative5Calls } from './types';
 import { API_BASE_URL } from './config';
 import { parseSenateVoteXML, parseHouseVoteXML } from './utils/parser-utils';
 
@@ -279,6 +279,13 @@ export const Requests = {
 			billId: string;
 			results: { bioguideId: string; yes: number; no: number; total: number }[];
 		}>;
+	},
+	// FEC donor summary for a member (cached server-side). 404 = no FEC mapping.
+	getMemberDonors: async (bioguideId: string, signal?: AbortSignal) => {
+		const res = await fetch(`${API_BASE_URL}/members/${bioguideId}/donors`, { signal });
+		if (res.status === 404) return null;
+		if (!res.ok) throw new Error(`Failed to load donor data (${res.status})`);
+		return res.json() as Promise<DonorSummary>;
 	},
 	getBillById: async (id: string, signal?: AbortSignal) => {
 		try {
