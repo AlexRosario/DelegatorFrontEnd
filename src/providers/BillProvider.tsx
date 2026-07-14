@@ -12,12 +12,32 @@ type BillFilter = 'Passed' | 'Bills with Votes' | 'All Bills';
 type BillTab = 'discover-bills' | 'voted-bills';
 type SearchType = 'hopper' | 'bill-number';
 
+/** Each facet is a SERVER query (its own where-clause + pagination), not a
+ *  client-side subset — so "Bills with Votes" never depends on which page of
+ *  "All Bills" happens to be loaded. */
+const FILTER_PARAM: Record<BillFilter, 'passed' | 'roll-call' | undefined> = {
+	'All Bills': undefined,
+	Passed: 'passed',
+	'Bills with Votes': 'roll-call',
+};
+
+type Pool = { bills: Bill[]; total: number | null }; // total null = not fetched yet
+
+const EMPTY_POOLS: Record<BillFilter, Pool> = {
+	'All Bills': { bills: [], total: null },
+	Passed: { bills: [], total: null },
+	'Bills with Votes': { bills: [], total: null },
+};
+
 type TBillProvider = {
 	// Bill collections (derived)
 	billsToDisplay: Bill[];
 	filteredBills: Bill[];
 	passedBills: Bill[];
 	billsWithRollCalls: Bill[];
+	// Feed state for the active facet
+	feedTotal: number | null;
+	feedExhausted: boolean;
 	// Config
 	congress: number;
 	// Filters / tabs
@@ -45,6 +65,8 @@ export const BillContext = createContext<TBillProvider>({
 	filteredBills: [],
 	passedBills: [],
 	billsWithRollCalls: [],
+	feedTotal: null,
+	feedExhausted: false,
 	congress: 119,
 	billSubject: '',
 	setBillSubject: () => {},
@@ -71,34 +93,32 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 	const { user } = useAuthInfo();
 	const [voteLog, setVoteLog] = useState<Vote[]>(readStoredVoteLog);
 	const [votedOnThisBill, setVotedOnThisBill] = useState(false);
-	const [allBills, setAllBills] = useState<Bill[]>([]);
-	const [newBills, setNewBills] = useState<Bill[]>([]);
+	const [pools, setPools] = useState<Record<BillFilter, Pool>>(EMPTY_POOLS);
 	const [votedBills, setVotedBills] = useState<Bill[]>([]);
 	const [activeBillTab, setActiveBillTab] = useState<BillTab>('discover-bills');
 	const [billSubject, setBillSubject] = useState('');
 	const [billFilter, setBillFilter] = useState<BillFilter>('All Bills');
 	const [congress] = useState(119);
 	const [currentIndex, setCurrentIndex] = useState(0);
-	const [searchType, setSearchType] = useState<'hopper' | 'bill-number'>('hopper');
+	const [searchType, setSearchType] = useState<SearchType>('hopper');
 
 	const prevIndexRef = useRef(currentIndex); // last index the fetch effect saw (scroll-direction detection)
 	const isFetchingRef = useRef(false); // prevents overlapping page fetches
+	const loadedVoteLogRef = useRef(false); // first voteLog load fetches every voted bill; later ones only the newest
 
-	const isFirstLoad = allBills.length === 0;
-
-	// Derived collections
+	// Derived collections — the active facet's pool, minus bills THIS user voted
+	// on (userLog is a per-browser key; other accounts' entries must be inert).
+	const activePool = pools[billFilter];
+	const newBills = activePool.bills.filter(
+		(bill) => !voteLog.some((vote) => vote.userId === user.id && vote.billId === bill.id)
+	);
 	const billsToDisplay = activeBillTab === 'discover-bills' ? newBills : votedBills;
-	const passedBills = billsToDisplay.filter(
-		// This text covers all bill types, including those not needing presidential signatures.
-		(bill) => bill.latestAction.text.includes('Became Public Law No:')
-	);
-	const billsWithRollCalls = billsToDisplay.filter(
-		(bill) =>
-			Array.isArray(bill.actions) &&
-			bill.actions.some((action) => Array.isArray(action.recordedVotes) && action.recordedVotes.length > 0)
-	);
-	const filteredBills =
-		billFilter === 'Passed' ? passedBills : billFilter === 'Bills with Votes' ? billsWithRollCalls : billsToDisplay;
+	const filteredBills = billsToDisplay; // facet filtering already happened server-side
+	const passedBills = pools['Passed'].bills;
+	const billsWithRollCalls = pools['Bills with Votes'].bills;
+
+	const feedTotal = activePool.total;
+	const feedExhausted = activePool.total !== null && activePool.bills.length >= activePool.total;
 
 	/** Look up the bills a user has voted on (vote records store the canonical Bill.id). */
 	const fetchUserBills = async (votes: Vote[]) => {
@@ -111,66 +131,64 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
-	/** One page of pre-assembled bills from our DB. Offset derives from what we
-	 *  already hold, so a failed request never skips a page. */
-	const fetchNextPage = async () => {
-		const data = await Requests.getBillsFromDb(String(congress), allBills.length, PAGE_SIZE);
-		return (data?.bills ?? []) as Bill[];
+	/** One page of the given facet from our DB. Offset derives from what the pool
+	 *  already holds, so a failed request never skips a page. */
+	const fetchNextPage = async (key: BillFilter, offset: number) => {
+		const data = await Requests.getBillsFromDb(String(congress), offset, PAGE_SIZE, FILTER_PARAM[key]);
+		const incoming = (data?.bills ?? []) as Bill[];
+		setPools((prev) => {
+			const pool = prev[key];
+			const existing = new Set(pool.bills.map((bill) => bill.id));
+			return {
+				...prev,
+				[key]: {
+					bills: [...pool.bills, ...incoming.filter((bill) => !existing.has(bill.id))],
+					total: typeof data?.total === 'number' ? data.total : pool.total,
+				},
+			};
+		});
 	};
 
-	// Partition fetched bills into the discover pool (unvoted), and keep the
-	// voted-bills list stocked with the bills behind the user's vote records.
+	// Keep the voted-bills list stocked with the bills behind the user's vote records.
 	useEffect(() => {
-		// Hide only bills THIS user voted on — userLog is a per-browser key, so
-		// entries from other accounts (shared machine, test accounts) must be inert,
-		// not hide bills from whoever is signed in now.
-		setNewBills(
-			allBills.filter((bill) => !voteLog.some((vote) => vote.userId === user.id && vote.billId === bill.id))
-		);
-
-		const votesToLoad = isFirstLoad ? voteLog : votedOnThisBill ? voteLog.slice(-1) : [];
-		if (votesToLoad.length > 0) {
-			fetchUserBills(votesToLoad).then((bills) => {
-				if (bills.length === 0) return;
-				setVotedBills((prev) => {
-					const existing = new Set(prev.map((bill) => bill.id));
-					return [...prev, ...bills.filter((bill) => !existing.has(bill.id))];
-				});
-				localStorage.setItem('userLog', JSON.stringify(voteLog));
+		const votesToLoad = !loadedVoteLogRef.current ? voteLog : votedOnThisBill ? voteLog.slice(-1) : [];
+		loadedVoteLogRef.current = true;
+		if (votesToLoad.length === 0) return;
+		fetchUserBills(votesToLoad).then((bills) => {
+			if (bills.length === 0) return;
+			setVotedBills((prev) => {
+				const existing = new Set(prev.map((bill) => bill.id));
+				return [...prev, ...bills.filter((bill) => !existing.has(bill.id))];
 			});
-		}
+			localStorage.setItem('userLog', JSON.stringify(voteLog));
+		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [allBills, voteLog, user.id]);
+	}, [voteLog]);
 
-	// Fetch the next page when the feed scrolls near its end (BillFeed bumps
-	// currentIndex), on first load, or when the discover pool runs low.
+	// Fetch the active facet's next page when: it has never been fetched, the
+	// feed scrolls near its end (BillFeed bumps currentIndex), or the discover
+	// pool runs low. feedExhausted stops the loop when the facet is fully loaded
+	// — an empty facet renders as empty instead of spinning forever.
 	useEffect(() => {
+		const pool = pools[billFilter];
+		const exhausted = pool.total !== null && pool.bills.length >= pool.total;
 		const isScrollingForward = currentIndex > prevIndexRef.current;
 		const isNearEnd = filteredBills.length - currentIndex <= PAGE_SIZE;
 		prevIndexRef.current = currentIndex;
 
 		const shouldFetch =
-			(isScrollingForward && isNearEnd) ||
-			isFirstLoad ||
-			newBills.length <= LOW_POOL_THRESHOLD ||
-			billsToDisplay.length === 0;
+			!exhausted &&
+			(pool.total === null || (isScrollingForward && isNearEnd) || newBills.length <= LOW_POOL_THRESHOLD);
 		if (!shouldFetch || isFetchingRef.current) return;
 
 		isFetchingRef.current = true;
-		fetchNextPage()
-			.then((bills) => {
-				if (bills.length === 0) return;
-				setAllBills((prev) => {
-					const existing = new Set(prev.map((bill) => bill.id));
-					return [...prev, ...bills.filter((bill) => !existing.has(bill.id))];
-				});
-			})
+		fetchNextPage(billFilter, pool.bills.length)
 			.catch((error) => console.error('Failed to fetch bills:', error))
 			.finally(() => {
 				isFetchingRef.current = false;
 			});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentIndex, votedOnThisBill, newBills.length, billsToDisplay.length]);
+	}, [billFilter, currentIndex, pools, votedOnThisBill, voteLog, user.id]);
 
 	return (
 		<BillContext.Provider
@@ -179,6 +197,8 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 				filteredBills,
 				passedBills,
 				billsWithRollCalls,
+				feedTotal,
+				feedExhausted,
 				congress,
 				billSubject,
 				setBillSubject,

@@ -236,9 +236,10 @@ export const Requests = {
 		}
 	},
 	// Pre-assembled bills straight from our DB — one call, no per-bill proxy fan-out.
-	getBillsFromDb: async (congress: string, offset: number, limit = 20) => {
+	getBillsFromDb: async (congress: string, offset: number, limit = 20, filter?: 'passed' | 'roll-call') => {
 		try {
-			const res = await fetch(`${API_BASE_URL}/bills?congress=${congress}&offset=${offset}&limit=${limit}`);
+			const facet = filter ? `&filter=${filter}` : '';
+			const res = await fetch(`${API_BASE_URL}/bills?congress=${congress}&offset=${offset}&limit=${limit}${facet}`);
 			if (!res.ok) throw new Error(`HTTP error ${res.status}`);
 			return await res.json(); // { total, limit, offset, bills }
 		} catch (err) {

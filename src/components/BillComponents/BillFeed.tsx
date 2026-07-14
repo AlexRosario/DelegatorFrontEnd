@@ -14,7 +14,8 @@ declare global {
 	}
 }
 export const BillFeed = () => {
-	const { filteredBills, billFilter, setCurrentIndex, currentIndex, searchType } = useDisplayBills();
+	const { filteredBills, billFilter, setCurrentIndex, currentIndex, searchType, feedTotal, feedExhausted } =
+		useDisplayBills();
 
 	const [color, setColor] = useState('grey');
 	const containerRef = useRef<HTMLDivElement | null>(null);
@@ -23,7 +24,11 @@ export const BillFeed = () => {
 	const SHOW_TOP_ARROW_AFTER_PX = 1500;
 	const isPastThreshold = useComponentScrollThreshold(containerRef, SHOW_TOP_ARROW_AFTER_PX);
 
-	const isLoading = filteredBills.length === 0;
+	// Three honest states: still fetching (total unknown), genuinely empty
+	// (facet loaded, nothing to show), or has bills. The old `length === 0 →
+	// spinner` conflated "loading" with "empty" and spun forever.
+	const isLoading = filteredBills.length === 0 && feedTotal === null;
+	const isEmpty = filteredBills.length === 0 && feedTotal !== null;
 	const devMode = import.meta.env.DEV;
 
 	// Infinite scroll: when the bottom sentinel scrolls into the feed's view, bump
@@ -87,6 +92,12 @@ export const BillFeed = () => {
 						size={48}
 						cssOverride={{ marginTop: '50%' }}
 					/>
+				) : isEmpty ? (
+					<p className='feed-empty-note'>
+						{billFilter === 'All Bills'
+							? 'No more bills to discover — you’re all caught up.'
+							: 'No bills match this filter yet.'}
+					</p>
 				) : (
 					<>
 						{filteredBills.map((bill, index) => (
@@ -100,6 +111,7 @@ export const BillFeed = () => {
 							ref={sentinelRef}
 							style={{ height: 1 }}
 						/>
+						{feedExhausted && <p className='feed-empty-note'>You’re all caught up.</p>}
 					</>
 				)}
 			</div>

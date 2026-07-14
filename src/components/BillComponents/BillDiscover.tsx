@@ -18,8 +18,7 @@ export const BillDiscover = () => {
 	const isNumeric = (billNumber: string) => {
 		return /^\d+$/.test(billNumber) && billNumber.length > 0;
 	};
-	const { billsToDisplay, setBillFilter, setCurrentIndex, passedBills, billsWithRollCalls, searchType, setSearchType } =
-		useDisplayBills();
+	const { setBillFilter, setCurrentIndex, searchType, setSearchType } = useDisplayBills();
 
 	const renderDiscoverBills = () => {
 		const billNumberNotBlank = billNumber !== '';
@@ -125,10 +124,11 @@ export const BillDiscover = () => {
 									setCurrentIndex(0);
 									setBillFilter(e.target.value as BillFilter);
 								}}>
-								<option value='default'>Filter Bills</option>
-								{billsToDisplay.length > 0 && <option value='All Bills'>All Bills</option>}
-								{billsWithRollCalls.length > 0 && <option value='Bills with Votes'>Bills with RollCalls</option>}
-								{passedBills.length > 0 && <option value='Passed'>Passed Bills</option>}
+								{/* Facets are server queries now — always offered, never gated on
+								    what the current page of results happens to contain. */}
+								<option value='All Bills'>All Bills</option>
+								<option value='Bills with Votes'>Bills with RollCalls</option>
+								<option value='Passed'>Passed Bills</option>
 							</select>
 							<FontAwesomeIcon
 								icon={faCaretDown}
@@ -138,7 +138,6 @@ export const BillDiscover = () => {
 					)}
 				</div>
 			</div>
-			
 
 			{renderDiscoverBills()}
 		</div>
