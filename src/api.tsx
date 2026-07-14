@@ -236,10 +236,29 @@ export const Requests = {
 		}
 	},
 	// Pre-assembled bills straight from our DB — one call, no per-bill proxy fan-out.
-	getBillsFromDb: async (congress: string, offset: number, limit = 20, filter?: 'passed' | 'roll-call') => {
+	getBillsFromDb: async (
+		congress: string,
+		offset: number,
+		limit = 20,
+		filter?: 'passed' | 'roll-call',
+		voted?: 'exclude' | 'only'
+	) => {
+		const params = new URLSearchParams({ congress, offset: String(offset), limit: String(limit) });
+		if (filter) params.set('filter', filter);
+		const headers: Record<string, string> = {};
+		if (voted) {
+			params.set('voted', voted);
+			const jwt = localStorage.getItem('token');
+			if (jwt) headers.Authorization = `Bearer ${jwt.replace(/^"|"$/g, '')}`;
+		}
 		try {
-			const facet = filter ? `&filter=${filter}` : '';
-			const res = await fetch(`${API_BASE_URL}/bills?congress=${congress}&offset=${offset}&limit=${limit}${facet}`);
+			let res = await fetch(`${API_BASE_URL}/bills?${params}`, { headers });
+			if (res.status === 401 && voted === 'exclude') {
+				// Stale session: serve the unpersonalized feed rather than nothing —
+				// the client-side vote filter still hides this user's own votes.
+				params.delete('voted');
+				res = await fetch(`${API_BASE_URL}/bills?${params}`);
+			}
 			if (!res.ok) throw new Error(`HTTP error ${res.status}`);
 			return await res.json(); // { total, limit, offset, bills }
 		} catch (err) {

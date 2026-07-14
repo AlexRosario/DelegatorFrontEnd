@@ -132,9 +132,17 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	/** One page of the given facet from our DB. Offset derives from what the pool
-	 *  already holds, so a failed request never skips a page. */
+	 *  already holds, so a failed request never skips a page. Signed-in users get
+	 *  server-side vote exclusion (the DB owns the votes); the client-side filter
+	 *  above stays as instant-feedback for votes cast this session. */
 	const fetchNextPage = async (key: BillFilter, offset: number) => {
-		const data = await Requests.getBillsFromDb(String(congress), offset, PAGE_SIZE, FILTER_PARAM[key]);
+		const data = await Requests.getBillsFromDb(
+			String(congress),
+			offset,
+			PAGE_SIZE,
+			FILTER_PARAM[key],
+			user.id ? 'exclude' : undefined
+		);
 		const incoming = (data?.bills ?? []) as Bill[];
 		setPools((prev) => {
 			const pool = prev[key];
@@ -149,10 +157,41 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 		});
 	};
 
-	// Keep the voted-bills list stocked with the bills behind the user's vote records.
+	// Initial voted-bills load: ONE server query per page (voted=only) instead of
+	// a getBillById call per vote record — the DB knows which bills this user voted on.
 	useEffect(() => {
-		const votesToLoad = !loadedVoteLogRef.current ? voteLog : votedOnThisBill ? voteLog.slice(-1) : [];
-		loadedVoteLogRef.current = true;
+		if (!user.id) return;
+		let cancelled = false;
+		(async () => {
+			const collected: Bill[] = [];
+			for (let offset = 0; ; ) {
+				const data = await Requests.getBillsFromDb(String(congress), offset, 100, undefined, 'only');
+				const page = (data?.bills ?? []) as Bill[];
+				if (page.length === 0) break;
+				collected.push(...page);
+				offset += page.length;
+				if (typeof data?.total === 'number' && collected.length >= data.total) break;
+			}
+			if (!cancelled && collected.length > 0) {
+				setVotedBills((prev) => {
+					const existing = new Set(prev.map((bill) => bill.id));
+					return [...prev, ...collected.filter((bill) => !existing.has(bill.id))];
+				});
+			}
+		})().catch((error) => console.error('Failed to load voted bills:', error));
+		return () => {
+			cancelled = true;
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user.id]);
+
+	// New votes cast this session: append just the newest bill and sync userLog.
+	useEffect(() => {
+		if (!loadedVoteLogRef.current) {
+			loadedVoteLogRef.current = true; // mount-time log came from localStorage — already loaded above
+			return;
+		}
+		const votesToLoad = votedOnThisBill ? voteLog.slice(-1) : [];
 		if (votesToLoad.length === 0) return;
 		fetchUserBills(votesToLoad).then((bills) => {
 			if (bills.length === 0) return;
