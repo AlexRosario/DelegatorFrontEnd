@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import BillCard from './BillCard';
-import { searchForBill } from '../../api';
+import { searchForBill, Requests } from '../../api';
 import type { Bill } from '../../types';
 import { useDisplayBills } from '../../providers/BillProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { BillFeed } from './BillFeed';
 import { RepStrip } from '../RepComponents/RepStrip';
-
-type BillFilter = 'All Bills' | 'Passed' | 'Bills with Votes';
+import { BILL_FACETS, facetCount, type BillFacetCounts } from '../../constants/billFacets';
 
 export const BillDiscover = () => {
 	const [searchedBill, setSearchedBill] = useState<Bill | null>(null);
@@ -18,7 +17,28 @@ export const BillDiscover = () => {
 	const isNumeric = (billNumber: string) => {
 		return /^\d+$/.test(billNumber) && billNumber.length > 0;
 	};
-	const { setBillFilter, setCurrentIndex, searchType, setSearchType } = useDisplayBills();
+	const { congress, setBillFilter, setCurrentIndex, searchType, setSearchType } = useDisplayBills();
+
+	// Server truth about facet sizes: label counts in the menu and hide facets
+	// with nothing in them. Menu still works (uncounted) if the fetch fails.
+	const [facetCounts, setFacetCounts] = useState<BillFacetCounts | null>(null);
+	useEffect(() => {
+		Requests.getBillFacets(congress)
+			.then(setFacetCounts)
+			.catch((err) => console.error('Facet counts unavailable:', err));
+	}, [congress]);
+
+	// A facet shows if we don't know its size yet, it has bills, or it's the default.
+	const visibleFacets = BILL_FACETS.filter((facet) => {
+		const count = facetCount(facet, facetCounts);
+		return count === null || count > 0 || facet.label === 'All Bills';
+	});
+	const ungrouped = visibleFacets.filter((facet) => !facet.group);
+	const stageGroup = visibleFacets.filter((facet) => facet.group === 'By stage');
+	const optionLabel = (facet: (typeof BILL_FACETS)[number]) => {
+		const count = facetCount(facet, facetCounts);
+		return count === null ? facet.label : `${facet.label} (${count})`;
+	};
 
 	const renderDiscoverBills = () => {
 		const billNumberNotBlank = billNumber !== '';
@@ -122,13 +142,28 @@ export const BillDiscover = () => {
 							<select
 								onChange={(e) => {
 									setCurrentIndex(0);
-									setBillFilter(e.target.value as BillFilter);
+									setBillFilter(e.target.value);
 								}}>
-								{/* Facets are server queries now — always offered, never gated on
-								    what the current page of results happens to contain. */}
-								<option value='All Bills'>All Bills</option>
-								<option value='Bills with Votes'>Bills with RollCalls</option>
-								<option value='Passed'>Passed Bills</option>
+								{/* The menu IS the config: one BILL_FACETS entry per option,
+								    sized and pruned by server counts. */}
+								{ungrouped.map((facet) => (
+									<option
+										key={facet.label}
+										value={facet.label}>
+										{optionLabel(facet)}
+									</option>
+								))}
+								{stageGroup.length > 0 && (
+									<optgroup label='By stage'>
+										{stageGroup.map((facet) => (
+											<option
+												key={facet.label}
+												value={facet.label}>
+												{optionLabel(facet)}
+											</option>
+										))}
+									</optgroup>
+								)}
 							</select>
 							<FontAwesomeIcon
 								icon={faCaretDown}

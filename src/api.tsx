@@ -1,4 +1,5 @@
 import type { BillCommentRecord, DonorSummary, Representative5Calls } from './types';
+import type { BillQuery, BillFacetCounts } from './constants/billFacets';
 import { API_BASE_URL } from './config';
 import { parseSenateVoteXML, parseHouseVoteXML } from './utils/parser-utils';
 
@@ -236,24 +237,31 @@ export const Requests = {
 		}
 	},
 	// Pre-assembled bills straight from our DB — one call, no per-bill proxy fan-out.
-	getBillsFromDb: async (
-		congress: string,
-		offset: number,
-		limit = 20,
-		filter?: 'passed' | 'roll-call',
-		voted?: 'exclude' | 'only'
-	) => {
-		const params = new URLSearchParams({ congress, offset: String(offset), limit: String(limit) });
-		if (filter) params.set('filter', filter);
+	// The one place a bill-list query becomes a URL — facets (stage/roll-call),
+	// personalization (voted), and pagination all serialize here.
+	getBillsFromDb: async (opts: {
+		congress: string | number;
+		offset: number;
+		limit?: number;
+		query?: BillQuery;
+		voted?: 'exclude' | 'only';
+	}) => {
+		const params = new URLSearchParams({
+			congress: String(opts.congress),
+			offset: String(opts.offset),
+			limit: String(opts.limit ?? 20),
+		});
+		if (opts.query?.stage?.length) params.set('stage', opts.query.stage.join(','));
+		if (opts.query?.hasRollCall) params.set('hasRollCall', 'true');
 		const headers: Record<string, string> = {};
-		if (voted) {
-			params.set('voted', voted);
+		if (opts.voted) {
+			params.set('voted', opts.voted);
 			const jwt = localStorage.getItem('token');
 			if (jwt) headers.Authorization = `Bearer ${jwt.replace(/^"|"$/g, '')}`;
 		}
 		try {
 			let res = await fetch(`${API_BASE_URL}/bills?${params}`, { headers });
-			if (res.status === 401 && voted === 'exclude') {
+			if (res.status === 401 && opts.voted === 'exclude') {
 				// Stale session: serve the unpersonalized feed rather than nothing —
 				// the client-side vote filter still hides this user's own votes.
 				params.delete('voted');
@@ -265,6 +273,12 @@ export const Requests = {
 			console.error('Error fetching bills:', err);
 			return { bills: [] };
 		}
+	},
+	// Facet counts for the filter menu (which facets exist and how big).
+	getBillFacets: async (congress: string | number) => {
+		const res = await fetch(`${API_BASE_URL}/bills/facets?congress=${congress}`);
+		if (!res.ok) throw new Error(`Failed to load bill facets (${res.status})`);
+		return res.json() as Promise<BillFacetCounts>;
 	},
 	// Per-bill discussion thread — fetched only when the chat panel opens, never
 	// in the feed payload (the list carries just commentCount).

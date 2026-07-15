@@ -3,31 +3,22 @@ import type { ReactNode } from 'react';
 import { Requests } from '../api';
 import type { Bill, Vote } from '../types';
 import { useAuthInfo } from './AuthProvider';
+import { BILL_FACETS, DEFAULT_FACET, facetByLabel } from '../constants/billFacets';
 
 const PAGE_SIZE = 20;
 /** Fetch another page when the discover pool drops to this many unseen bills. */
 const LOW_POOL_THRESHOLD = 10;
 
-type BillFilter = 'Passed' | 'Bills with Votes' | 'All Bills';
 type BillTab = 'discover-bills' | 'voted-bills';
 type SearchType = 'hopper' | 'bill-number';
 
-/** Each facet is a SERVER query (its own where-clause + pagination), not a
- *  client-side subset — so "Bills with Votes" never depends on which page of
- *  "All Bills" happens to be loaded. */
-const FILTER_PARAM: Record<BillFilter, 'passed' | 'roll-call' | undefined> = {
-	'All Bills': undefined,
-	Passed: 'passed',
-	'Bills with Votes': 'roll-call',
-};
-
 type Pool = { bills: Bill[]; total: number | null }; // total null = not fetched yet
 
-const EMPTY_POOLS: Record<BillFilter, Pool> = {
-	'All Bills': { bills: [], total: null },
-	Passed: { bills: [], total: null },
-	'Bills with Votes': { bills: [], total: null },
-};
+/** Each facet is a SERVER query (its own where-clause + pagination), not a
+ *  client-side subset — the menu, queries, and pools all key off BILL_FACETS. */
+const EMPTY_POOLS: Record<string, Pool> = Object.fromEntries(
+	BILL_FACETS.map((facet) => [facet.label, { bills: [], total: null }])
+);
 
 type TBillProvider = {
 	// Bill collections (derived)
@@ -43,8 +34,9 @@ type TBillProvider = {
 	// Filters / tabs
 	billSubject: string;
 	setBillSubject: (subject: string) => void;
-	billFilter: BillFilter;
-	setBillFilter: (filter: BillFilter) => void;
+	/** Active facet label — must match a BILL_FACETS entry. */
+	billFilter: string;
+	setBillFilter: (filter: string) => void;
 	activeBillTab: BillTab;
 	setActiveBillTab: (tab: BillTab) => void;
 	// User votes
@@ -93,11 +85,11 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 	const { user } = useAuthInfo();
 	const [voteLog, setVoteLog] = useState<Vote[]>(readStoredVoteLog);
 	const [votedOnThisBill, setVotedOnThisBill] = useState(false);
-	const [pools, setPools] = useState<Record<BillFilter, Pool>>(EMPTY_POOLS);
+	const [pools, setPools] = useState<Record<string, Pool>>(EMPTY_POOLS);
 	const [votedBills, setVotedBills] = useState<Bill[]>([]);
 	const [activeBillTab, setActiveBillTab] = useState<BillTab>('discover-bills');
 	const [billSubject, setBillSubject] = useState('');
-	const [billFilter, setBillFilter] = useState<BillFilter>('All Bills');
+	const [billFilter, setBillFilter] = useState<string>(DEFAULT_FACET.label);
 	const [congress] = useState(119);
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [searchType, setSearchType] = useState<SearchType>('hopper');
@@ -108,14 +100,14 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 
 	// Derived collections — the active facet's pool, minus bills THIS user voted
 	// on (userLog is a per-browser key; other accounts' entries must be inert).
-	const activePool = pools[billFilter];
+	const activePool = pools[billFilter] ?? pools[DEFAULT_FACET.label];
 	const newBills = activePool.bills.filter(
 		(bill) => !voteLog.some((vote) => vote.userId === user.id && vote.billId === bill.id)
 	);
 	const billsToDisplay = activeBillTab === 'discover-bills' ? newBills : votedBills;
 	const filteredBills = billsToDisplay; // facet filtering already happened server-side
-	const passedBills = pools['Passed'].bills;
-	const billsWithRollCalls = pools['Bills with Votes'].bills;
+	const passedBills = pools['Became Law']?.bills ?? [];
+	const billsWithRollCalls = pools['With Roll Calls']?.bills ?? [];
 
 	const feedTotal = activePool.total;
 	const feedExhausted = activePool.total !== null && activePool.bills.length >= activePool.total;
@@ -135,14 +127,14 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 	 *  already holds, so a failed request never skips a page. Signed-in users get
 	 *  server-side vote exclusion (the DB owns the votes); the client-side filter
 	 *  above stays as instant-feedback for votes cast this session. */
-	const fetchNextPage = async (key: BillFilter, offset: number) => {
-		const data = await Requests.getBillsFromDb(
-			String(congress),
+	const fetchNextPage = async (key: string, offset: number) => {
+		const data = await Requests.getBillsFromDb({
+			congress,
 			offset,
-			PAGE_SIZE,
-			FILTER_PARAM[key],
-			user.id ? 'exclude' : undefined
-		);
+			limit: PAGE_SIZE,
+			query: facetByLabel(key).query,
+			voted: user.id ? 'exclude' : undefined,
+		});
 		const incoming = (data?.bills ?? []) as Bill[];
 		setPools((prev) => {
 			const pool = prev[key];
@@ -165,7 +157,7 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 		(async () => {
 			const collected: Bill[] = [];
 			for (let offset = 0; ; ) {
-				const data = await Requests.getBillsFromDb(String(congress), offset, 100, undefined, 'only');
+				const data = await Requests.getBillsFromDb({ congress, offset, limit: 100, voted: 'only' });
 				const page = (data?.bills ?? []) as Bill[];
 				if (page.length === 0) break;
 				collected.push(...page);
