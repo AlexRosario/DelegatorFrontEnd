@@ -274,9 +274,13 @@ export const Requests = {
 			return { bills: [] };
 		}
 	},
-	// Facet counts for the filter menu (which facets exist and how big).
+	// Facet counts for the filter menu. Signed in, the token personalizes them
+	// to the caller's unvoted remainder — same question the feed answers.
 	getBillFacets: async (congress: string | number) => {
-		const res = await fetch(`${API_BASE_URL}/bills/facets?congress=${congress}`);
+		const headers: Record<string, string> = {};
+		const jwt = localStorage.getItem('token');
+		if (jwt) headers.Authorization = `Bearer ${jwt.replace(/^"|"$/g, '')}`;
+		const res = await fetch(`${API_BASE_URL}/bills/facets?congress=${congress}`, { headers });
 		if (!res.ok) throw new Error(`Failed to load bill facets (${res.status})`);
 		return res.json() as Promise<BillFacetCounts>;
 	},

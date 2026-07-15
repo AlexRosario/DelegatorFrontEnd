@@ -57,8 +57,10 @@ export function chamberHasPassed(actions: Actions[] | undefined, chamber: 'House
  *  - 'Passed Both Chambers' — versions may differ; amendments ping-pong a bill
  *    back to a chamber that already passed it, forcing a new vote.
  *  - 'Vetoed' — a two-thirds override vote is possible in both chambers.
+ *  - 'To President' — a veto would return the bill for an override vote, so a
+ *    veto-watch message ("if vetoed, vote X on the override") is still timely.
  */
-const OUT_OF_CONGRESS_STAGES = ['Became Law', 'To President', 'Failed'];
+const OUT_OF_CONGRESS_STAGES = ['Became Law', 'Failed'];
 
 /** Can a constituent's message still influence a chamber vote on this bill? */
 export function billStillInCongress(stage: string | null | undefined): boolean {
