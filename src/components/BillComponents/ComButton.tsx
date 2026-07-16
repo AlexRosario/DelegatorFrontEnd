@@ -21,8 +21,7 @@ import { chamberHasPassed, chamberPassage, billStillInCongress, PASSAGE_LABEL } 
  */
 type DraftVariant = 'advocate' | 'roll-call' | 'disclose' | 'veto-watch' | 'override';
 
-const memberChamber = (member: CongressMember): 'House' | 'Senate' =>
-	member.area === 'US House' ? 'House' : 'Senate';
+const memberChamber = (member: CongressMember): 'House' | 'Senate' => (member.area === 'US House' ? 'House' : 'Senate');
 
 export const resolveDraftVariant = (bill: Bill, chamber: 'House' | 'Senate'): DraftVariant => {
 	if (bill.stage === 'Vetoed') return 'override';
@@ -47,7 +46,7 @@ const draftMessage = (
 	variant: DraftVariant,
 	/** This member's vote from our records — undefined means WE don't know, not
 	 *  that they didn't vote (rows only exist once an app user recorded them). */
-	memberVote?: string
+	memberVote?: string,
 ) => {
 	const honorific = member.area === 'US House' ? 'Representative' : 'Senator';
 	const lastName = member.lastName ?? member.name.split(' ').pop();
@@ -110,7 +109,8 @@ ${returnNote}`;
 		}
 		case 'disclose': {
 			const method = chamberPassage(bill.actions, chamber);
-			const methodLabel = method && method !== 'roll-call' ? PASSAGE_LABEL[method].toLowerCase() : 'without a recorded vote';
+			const methodLabel =
+				method && method !== 'roll-call' ? PASSAGE_LABEL[method].toLowerCase() : 'without a recorded vote';
 			body = `The ${chamber} passed this bill by ${methodLabel}, so the public record does not show where you stood. Absent a recorded vote, constituents are left to infer that you supported its passage — if that inference is wrong, I would welcome a correction.
 
 I am writing because, as your constituent, I want to know your position — please state it publicly or in a reply to this message. Going forward, I ask you to support recorded roll-call votes so constituents never have to write letters like this one to learn where their representatives stand.`;

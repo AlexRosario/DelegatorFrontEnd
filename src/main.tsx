@@ -8,10 +8,12 @@ import { Home } from './components/Home';
 import { Register } from './auth-components/Register';
 import App from './App';
 import { Toaster } from 'react-hot-toast';
+import { PrototypeBanner } from './components/PrototypeBanner';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<Toaster />
+		<PrototypeBanner />
 		<AuthProvider>
 			<ScreenProvider>
 				<BrowserRouter>

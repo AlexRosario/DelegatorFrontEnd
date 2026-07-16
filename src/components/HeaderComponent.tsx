@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { defaultUser } from '../providers/AuthProvider';
 import { useEffect } from 'react';
+import { Requests } from '../api';
 
 export const Header = () => {
 	const { user, setUser } = useAuthInfo();
@@ -21,9 +22,11 @@ export const Header = () => {
 		return () => window.removeEventListener('scroll', handleScroll);
 	}, []);
 
-	const logOut = () => {
+	const logOut = async () => {
 		setUser(defaultUser);
 		localStorage.clear();
+		// The session lives in an httpOnly cookie — ask the server to clear it.
+		await Requests.logout();
 		window.location.href = '/';
 	};
 
@@ -62,7 +65,6 @@ export const Header = () => {
 								<div className='profile'>
 									<b>Settings</b>
 									<h4>{user?.username}</h4>
-									<h5>Zipcode: {user?.zipcode}</h5>
 									<h6
 										onClick={logOut}
 										className='log-out'>

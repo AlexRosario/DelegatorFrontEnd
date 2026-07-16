@@ -52,6 +52,9 @@ export const Requests = {
 		try {
 			const response = await fetch(`${API_BASE_URL}/auth/login`, {
 				method: 'POST',
+				// Without credentials the browser DISCARDS the Set-Cookie on the
+				// response — the session would never exist.
+				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -82,9 +85,19 @@ export const Requests = {
 			console.error('Error posting member:', error);
 		}
 	},
-	getMembers: async (userId: number) => {
+	// The session cookie is httpOnly — only the server can clear it.
+	logout: async () => {
 		try {
-			const res = await fetch(`${API_BASE_URL}/members/by-user/${userId}`);
+			await fetch(`${API_BASE_URL}/logout`, { credentials: 'include' });
+		} catch {
+			// Cookie expires on its own within a day; local state is cleared regardless.
+		}
+	},
+	// The caller's own delegation — cookie-authenticated. (The old by-user/:id
+	// route let anyone enumerate users' districts.)
+	getMembers: async () => {
+		try {
+			const res = await fetch(`${API_BASE_URL}/members/mine`, { credentials: 'include' });
 			if (!res.ok) throw new Error('Failed to fetch members');
 			const data = await res.json();
 			return data;
@@ -93,14 +106,11 @@ export const Requests = {
 			return null;
 		}
 	},
-	getVoteLog: async (token: string) => {
+	getVoteLog: async () => {
 		try {
 			const response = await fetch(`${API_BASE_URL}/votes`, {
 				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${token?.replace(/^"|"$/g, '')}`,
-				},
+				credentials: 'include', // session rides in the httpOnly cookie
 			});
 			if (response.ok) {
 				return await response.json();
@@ -116,13 +126,11 @@ export const Requests = {
 	// Throws on failure so callers never record a vote locally that the server
 	// rejected. A 401 (expired/invalid JWT) throws 'session_expired' specifically.
 	addVote: async (billId: string, vote: string, date: Date) => {
-		const jwt = localStorage.getItem('token');
-
 		const response = await fetch(`${API_BASE_URL}/votes`, {
 			method: 'POST',
+			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${jwt?.replace(/^"|"$/g, '')}`,
 			},
 			body: JSON.stringify({
 				billId: billId,
@@ -167,12 +175,11 @@ export const Requests = {
 	// Record a constituent→member contact (CWC audit trail). The backend gates
 	// this on verified email + Census-verified district + delegation membership.
 	recordContactMessage: async (bioguideId: string, billId: string, body: string) => {
-		const jwt = localStorage.getItem('token');
 		const res = await fetch(`${API_BASE_URL}/contact/messages`, {
 			method: 'POST',
+			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${jwt?.replace(/^"|"$/g, '')}`,
 			},
 			body: JSON.stringify({ bioguideId, billId, body }),
 		});
@@ -210,14 +217,13 @@ export const Requests = {
 		const data = await res.json();
 		return data.translation;
 	},
-	getCongressMembersFromFive: async (address: string) => {
-		const response = await fetch(`${API_BASE_URL}/fiveCallsRoutes/representatives?location=${address}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-			},
+	// The signed-in user's 5Calls enrichment — the server locates them from the
+	// zipcode on their account, so the client never holds location PII.
+	getMyFiveCallsReps: async () => {
+		const response = await fetch(`${API_BASE_URL}/fiveCallsRoutes/representatives/mine`, {
+			credentials: 'include',
 		});
-
+		if (!response.ok) throw new Error(`5Calls lookup failed (${response.status})`);
 		return response.json();
 	},
 	// Fetch a roll call straight from the recordedVote's own `url` (clerk.house.gov
@@ -253,14 +259,10 @@ export const Requests = {
 		});
 		if (opts.query?.stage?.length) params.set('stage', opts.query.stage.join(','));
 		if (opts.query?.hasRollCall) params.set('hasRollCall', 'true');
-		const headers: Record<string, string> = {};
-		if (opts.voted) {
-			params.set('voted', opts.voted);
-			const jwt = localStorage.getItem('token');
-			if (jwt) headers.Authorization = `Bearer ${jwt.replace(/^"|"$/g, '')}`;
-		}
+		if (opts.voted) params.set('voted', opts.voted);
 		try {
-			let res = await fetch(`${API_BASE_URL}/bills?${params}`, { headers });
+			// Cookie-authenticated when a session exists; harmless for guests.
+			let res = await fetch(`${API_BASE_URL}/bills?${params}`, { credentials: 'include' });
 			if (res.status === 401 && opts.voted === 'exclude') {
 				// Stale session: serve the unpersonalized feed rather than nothing —
 				// the client-side vote filter still hides this user's own votes.
@@ -277,10 +279,7 @@ export const Requests = {
 	// Facet counts for the filter menu. Signed in, the token personalizes them
 	// to the caller's unvoted remainder — same question the feed answers.
 	getBillFacets: async (congress: string | number) => {
-		const headers: Record<string, string> = {};
-		const jwt = localStorage.getItem('token');
-		if (jwt) headers.Authorization = `Bearer ${jwt.replace(/^"|"$/g, '')}`;
-		const res = await fetch(`${API_BASE_URL}/bills/facets?congress=${congress}`, { headers });
+		const res = await fetch(`${API_BASE_URL}/bills/facets?congress=${congress}`, { credentials: 'include' });
 		if (!res.ok) throw new Error(`Failed to load bill facets (${res.status})`);
 		return res.json() as Promise<BillFacetCounts>;
 	},
@@ -295,12 +294,11 @@ export const Requests = {
 	// Throws on failure (like addVote) so the panel never shows a comment the
 	// server rejected; 401 throws 'session_expired'.
 	addBillComment: async (billId: string, body: string) => {
-		const jwt = localStorage.getItem('token');
 		const res = await fetch(`${API_BASE_URL}/bills/${billId}/comments`, {
 			method: 'POST',
+			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${jwt?.replace(/^"|"$/g, '')}`,
 			},
 			body: JSON.stringify({ body }),
 		});

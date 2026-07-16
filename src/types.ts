@@ -98,14 +98,12 @@ export type FrontEndRegistrant = {
 		zipcode: string;
 	};
 };
+// Deliberately PII-free: this object lives in localStorage. Location data
+// (zipcode/district/address) stays server-side behind authenticated routes.
 export type User = {
 	id: number;
 	username: string;
-	email: string;
-	zipcode: string;
 	emailVerified?: boolean;
-	district?: number | null; // Census-verified congressional district
-	verificationSource?: string | null;
 };
 
 export interface Vote {

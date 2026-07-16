@@ -217,11 +217,13 @@ export const BillCard = ({
 			<div className={`bill-content-flip ${showTranslation && translatedText ? 'flipped' : ''}`}>
 				<div className='bill-content-flip-inner'>
 					<div className='bill-flip-face'>
-						{/* Overflowing content auto-flows into horizontal, scrollable slides. */}
+						{/* Overflowing content auto-flows into horizontal, scrollable slides.
+						    Columns ONLY on the slides class — .bill-no-summary has no
+						    horizontal-scroll containment, so columns there spill past the card. */}
 						<div
 							className={`${!hasSummary ? 'bill-no-summary' : 'bill-slides'}`}
 							ref={slidesRef}
-							style={slideWidth ? { columnWidth: `${slideWidth}px` } : undefined}>
+							style={hasSummary && slideWidth ? { columnWidth: `${slideWidth}px` } : undefined}>
 							{isVisible && <div dangerouslySetInnerHTML={{ __html: safeSummaryHtml }} />}
 							{translateError && <div className='translate-error'>{translateError}</div>}
 							{/* How this member's constituents (app users) voted — flows into the slides. */}

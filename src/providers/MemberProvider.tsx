@@ -27,16 +27,17 @@ export const MemberProvider = ({ children }: { children: ReactNode }) => {
 		try {
 			// Base member data comes from our DB roster (congress.gov, populated by the cron).
 			// Guard against a null/failed response so the view degrades instead of blanking.
-			const dbReps: CongressMember[] = (await Requests.getMembers(userId)) ?? [];
+			const dbReps: CongressMember[] = (await Requests.getMembers()) ?? [];
 			if (dbReps.length === 0) {
-				console.warn(`No members returned for user ${userId} — check the /members/by-user response.`);
+				console.warn(`No members returned for user ${userId} — check the /members/mine response.`);
 			}
 
 			// 5Calls is the live exception: it enriches each rep with the per-user
-			// context it uniquely owns (area, reason, district field offices).
+			// context it uniquely owns (area, reason, district field offices). The
+			// server resolves the caller's location — no zipcode on the client.
 			const fiveById: Record<string, Representative5Calls> = {};
 			try {
-				const five = await Requests.getCongressMembersFromFive(user.zipcode);
+				const five = await Requests.getMyFiveCallsReps();
 				for (const rep of (five?.representatives ?? []) as Representative5Calls[]) {
 					fiveById[rep.id] = rep;
 				}

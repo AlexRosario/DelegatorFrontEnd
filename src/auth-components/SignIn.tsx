@@ -26,12 +26,12 @@ export const SignIn = () => {
           throw new Error('User not found or incorrect password');
         }
 
+        // Session JWT arrives as an httpOnly cookie (never touchable from JS);
+        // the vote log is server-seeded by BillProvider on mount. Only the
+        // PII-free user object persists client-side.
         localStorage.setItem('user', JSON.stringify(data.userInfo));
-        localStorage.setItem('token', data.token);
 
         setUser(data.userInfo);
-        const userLog = await Requests.getVoteLog(data.token);
-        localStorage.setItem('userLog', JSON.stringify(userLog));
         navigate('/', {
           state: data.address
         });

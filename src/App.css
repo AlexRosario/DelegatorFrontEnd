@@ -5,6 +5,19 @@
 	text-align: center;
 }
 
+/* Site-wide prototype disclaimer — every page, above the header. */
+.prototype-banner {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 6px 14px;
+	background-color: #fff3cd;
+	color: #664d03;
+	border-bottom: 1px solid #ffe69c;
+	font-size: 0.72rem;
+	line-height: 1.4;
+	text-align: center;
+}
+
 /* ---- Landing / sign-in page ---- */
 .home {
 	display: flex;
@@ -301,6 +314,14 @@
 	font-size: 0.82rem;
 	line-height: 1.45;
 	color: rgba(45, 46, 44, 0.75);
+}
+
+/* Testing-period note under the address prompt — same amber as the banner. */
+.address-testing-note {
+	padding: 6px 10px;
+	border-radius: 6px;
+	background-color: #fff3cd;
+	color: #664d03;
 }
 
 .attest-checkbox {
@@ -1141,6 +1162,13 @@ aside.side-bar li.active {
 	height: 100%;
 }
 
+/* Safety net: whatever lands in the no-summary face stays inside the card —
+   wide/unbreakable content clips instead of spilling past the right edge. */
+.bill-no-summary {
+	overflow: hidden;
+	overflow-wrap: break-word;
+}
+
 .bill-chat-overlay {
 	position: absolute;
 	inset: 0;
@@ -1217,6 +1245,7 @@ aside.side-bar li.active {
 	min-height: 0;
 	column-fill: auto;
 	column-gap: 8%;
+	overflow-wrap: break-word; /* long URLs/words wrap instead of widening a column */
 	overflow-x: auto;
 	overflow-y: hidden;
 	overflow-anchor: none;
@@ -1769,9 +1798,7 @@ aside.side-bar li.active {
 		flex-direction: column;
 		gap: 10px;
 	}
-	.rep-flip-back {
-		max-height: calc(20vh - 40px);
-	}
+
 	.rep-card-right {
 		font-size: 0.6rem;
 	}

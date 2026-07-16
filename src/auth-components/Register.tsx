@@ -90,11 +90,8 @@ export const Register = () => {
 			toast.success('Registration successful');
 
 			const data = await Requests.loginUser({ username, password });
+			// Session cookie is set by the server; vote log is server-seeded.
 			localStorage.setItem('user', JSON.stringify(data.userInfo));
-			localStorage.setItem('token', JSON.stringify(data.token));
-			// Fresh account, fresh vote log — without this, a previous account's
-			// votes (shared localStorage key) leak in and hide bills from the feed.
-			localStorage.setItem('userLog', JSON.stringify([]));
 
 			await setUser(data.userInfo);
 
@@ -226,6 +223,13 @@ export const Register = () => {
 						<p className='address-prompt'>
 							We use it to find your congressional district and your representatives — verified against U.S. Census
 							records. It's never shown to other users.
+						</p>
+						{/* Testing-period note (pairs with the site-wide prototype banner):
+						    the Census geocoder needs a REAL street address to resolve a
+						    district, so steer testers to a real-but-impersonal one. */}
+						<p className='address-prompt address-testing-note'>
+							While we're in testing: don't use your home address — any real street address in your state (a
+							library or city hall works) is enough to try the district features.
 						</p>
 					</div>
 

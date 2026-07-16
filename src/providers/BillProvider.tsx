@@ -76,14 +76,11 @@ export const BillContext = createContext<TBillProvider>({
 	setSearchType: () => {},
 });
 
-const readStoredVoteLog = (): Vote[] => {
-	const stored = localStorage.getItem('userLog');
-	return stored ? JSON.parse(stored) : [];
-};
-
 export const BillProvider = ({ children }: { children: ReactNode }) => {
 	const { user } = useAuthInfo();
-	const [voteLog, setVoteLog] = useState<Vote[]>(readStoredVoteLog);
+	// Server-seeded (see effect below) — a user's voting history is sensitive,
+	// so it lives in memory only, never in localStorage.
+	const [voteLog, setVoteLog] = useState<Vote[]>([]);
 	const [votedOnThisBill, setVotedOnThisBill] = useState(false);
 	const [pools, setPools] = useState<Record<string, Pool>>(EMPTY_POOLS);
 	const [votedBills, setVotedBills] = useState<Bill[]>([]);
@@ -96,10 +93,10 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 
 	const prevIndexRef = useRef(currentIndex); // last index the fetch effect saw (scroll-direction detection)
 	const isFetchingRef = useRef(false); // prevents overlapping page fetches
-	const loadedVoteLogRef = useRef(false); // first voteLog load fetches every voted bill; later ones only the newest
 
 	// Derived collections — the active facet's pool, minus bills THIS user voted
-	// on (userLog is a per-browser key; other accounts' entries must be inert).
+	// on (instant feedback for votes cast this session; the server excludes the
+	// rest via voted=exclude).
 	const activePool = pools[billFilter] ?? pools[DEFAULT_FACET.label];
 	const newBills = activePool.bills.filter(
 		(bill) => !voteLog.some((vote) => vote.userId === user.id && vote.billId === bill.id)
@@ -149,6 +146,15 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 		});
 	};
 
+	// Seed the vote log from the server whenever a session exists — it never
+	// touches localStorage (political history stays off-device).
+	useEffect(() => {
+		if (!user.id) return;
+		Requests.getVoteLog()
+			.then((votes) => setVoteLog(Array.isArray(votes) ? votes : []))
+			.catch((error) => console.error('Failed to load vote log:', error));
+	}, [user.id]);
+
 	// Initial voted-bills load: ONE server query per page (voted=only) instead of
 	// a getBillById call per vote record — the DB knows which bills this user voted on.
 	useEffect(() => {
@@ -177,12 +183,8 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [user.id]);
 
-	// New votes cast this session: append just the newest bill and sync userLog.
+	// New votes cast this session: append just the newest bill to the voted list.
 	useEffect(() => {
-		if (!loadedVoteLogRef.current) {
-			loadedVoteLogRef.current = true; // mount-time log came from localStorage — already loaded above
-			return;
-		}
 		const votesToLoad = votedOnThisBill ? voteLog.slice(-1) : [];
 		if (votesToLoad.length === 0) return;
 		fetchUserBills(votesToLoad).then((bills) => {
@@ -191,7 +193,6 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
 				const existing = new Set(prev.map((bill) => bill.id));
 				return [...prev, ...bills.filter((bill) => !existing.has(bill.id))];
 			});
-			localStorage.setItem('userLog', JSON.stringify(voteLog));
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [voteLog]);
