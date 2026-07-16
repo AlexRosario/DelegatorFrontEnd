@@ -64,7 +64,7 @@ export const BillDiscover = () => {
 			return <h2>No Bill found</h2>;
 		}
 
-		return <h2>Search for Bill by number</h2>;
+		return <h2>Search for bill by number</h2>;
 	};
 
 	useEffect(() => {

@@ -500,7 +500,7 @@ aside.side-bar {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	color: #000;
+	color: var(--darkblue);
 	font-size: 12px;
 	height: 100vh;
 	max-width: 150px;
@@ -546,6 +546,9 @@ aside.side-bar li {
 }
 
 aside.side-bar li.active {
+	background-color: var(--darkblue);
+	color: rgba(255, 255, 255, 0.87);
+
 	box-shadow: inset 0 2px 5px #37363a;
 	cursor: pointer;
 }
@@ -673,26 +676,28 @@ aside.side-bar li.active {
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
-	width: 20%;
-}
-
-.bill-type-selector {
-	width: 90%;
-	padding: 5px;
+	width: 100%;
+	max-width: 300px;
 }
 
 /* Bill-number search controls, themed to match the pills. */
 .bill-type-selector select,
 .bill-type-selector input {
-	width: 100%;
 	box-sizing: border-box;
-	padding: 7px 12px;
 	border-radius: 400px;
 	border: 1px solid rgba(63, 120, 130, 0.45);
 	background-color: white;
 	color: var(--lightblue);
 	font-size: 0.85rem;
 	text-align: center;
+}
+
+.bill-type-selector select {
+	width: 100%;
+}
+
+.bill-type-selector input {
+	width: 200px;
 }
 
 .bill-type-selector input:focus,
@@ -1673,11 +1678,7 @@ aside.side-bar li.active {
 	.search-subject {
 		flex-direction: column;
 	}
-	.bill-number select,
-	input {
-		font-size: 0.6rem;
-		padding: 0 5px;
-	}
+
 	.selector {
 		font-size: 0.7rem;
 		font-weight: 900;
@@ -1788,7 +1789,6 @@ aside.side-bar li.active {
 	}
 	aside.side-bar li.active {
 		box-shadow: none;
-		background-color: rgba(63, 120, 130, 0.15);
 		border-radius: 8px;
 	}
 	.main-body {
