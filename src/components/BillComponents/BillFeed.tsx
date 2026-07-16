@@ -69,17 +69,6 @@ export const BillFeed = () => {
 	return (
 		<>
 			{devMode && <BillStatus searchType={searchType} />}
-			{billFilter === 'Bills with Votes' ? (
-				<b>
-					These Bills have already been voted on and will be solely used to better predict alignment with your
-					representative(s).
-				</b>
-			) : (
-				<b className='bill-carousel-info'>
-					If a bill has not been voted on, you will later have the option to send a letter to your senator or
-					representative.
-				</b>
-			)}
 			<div
 				ref={containerRef}
 				id='bill-container'

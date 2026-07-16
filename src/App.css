@@ -550,11 +550,6 @@ aside.side-bar li.active {
 	cursor: pointer;
 }
 
-.bill-rep-section {
-	width: 85%;
-	padding: none;
-}
-
 .bill-section {
 	display: flex;
 	flex-direction: column;
@@ -724,7 +719,7 @@ aside.side-bar li.active {
 	color: var(--lightblue);
 	font-weight: 600;
 	cursor: pointer;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .caret-select {
@@ -734,30 +729,6 @@ aside.side-bar li.active {
 	transform: translateY(-50%) translate(-60%);
 	pointer-events: none;
 	color: var(--lightblue);
-}
-
-.bill-filter {
-	display: flex;
-	flex-direction: row;
-	width: max-content;
-	gap: 100px;
-	justify-content: space-around;
-	align-items: center;
-	max-height: 100px;
-}
-
-.bill-filter button {
-	background-color: gray;
-	color: #fff;
-	border: none;
-	border-radius: 5px;
-	padding: 10px;
-	margin: 20px;
-	cursor: pointer;
-}
-
-.bill-filter button.active {
-	background-color: var(--lightblue);
 }
 
 .subject-fields {
@@ -821,11 +792,6 @@ aside.side-bar li.active {
 
 .bill-card_sign-in-link {
 	font-size: 0.8rem;
-}
-
-.bill-carousel-info {
-	font-size: 0.8em;
-	color: #000;
 }
 
 .rep-strip {
@@ -1093,11 +1059,6 @@ aside.side-bar li.active {
 .stage-chip.stage-dead {
 	background-color: rgba(161, 43, 43, 0.14);
 	color: #a12b2b;
-}
-
-.bill-member-positions {
-	position: relative;
-	bottom: 0;
 }
 
 .bill-content-flip {
@@ -1482,13 +1443,10 @@ aside.side-bar li.active {
 	color: var(--lightblue);
 }
 
-/* Below ~620px the width chain (.bill-rep-section 85% × container padding ×
-   .bill-feed 80%) leaves less room than the card's old 360px minimum — the card
-   was cropping its content. Let the card own the viewport instead. */
+/* Below ~620px the width chain (container padding × .bill-feed 80%) leaves
+   less room than the card's old 360px minimum — the card was cropping its
+   content. Let the card own the viewport instead. */
 @media (max-width: 620px) {
-	.bill-rep-section {
-		width: 100%;
-	}
 	.bill-container {
 		padding: 0 8px;
 	}
@@ -1507,27 +1465,6 @@ aside.side-bar li.active {
 	.bill-footer-actions {
 		flex-wrap: wrap;
 	}
-}
-
-.carousel-container .arrows-carousel {
-	position: relative;
-	font-size: 40px;
-	color: #daa520;
-	border: 1px black solid;
-	z-index: 100;
-}
-
-.carousel-container .arrows-carousel:nth-child(1) {
-	left: 20px;
-}
-
-.carousel-container .arrows-carousel:nth-child(2) {
-	right: 20px;
-}
-
-.carousel .slider-wrapper.axis-horizontal .slider .slide {
-	display: flex;
-	justify-content: space-around;
 }
 
 .bill-collection {
@@ -1733,10 +1670,6 @@ aside.side-bar li.active {
 	.bills-status {
 		margin: 10px 0;
 	}
-	.congressional-efficacy {
-		display: flex;
-		flex-direction: column;
-	}
 	.search-subject {
 		flex-direction: column;
 	}
@@ -1744,11 +1677,6 @@ aside.side-bar li.active {
 	input {
 		font-size: 0.6rem;
 		padding: 0 5px;
-	}
-
-	.bill-collection-container select,
-	input {
-		font-size: 0.6rem;
 	}
 	.selector {
 		font-size: 0.7rem;
