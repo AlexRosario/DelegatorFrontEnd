@@ -527,11 +527,14 @@ aside.side-bar.scrolled {
 aside.side-bar ul {
 	text-align: center;
 	padding: 0;
+	max-width: 100%;
+	width: 100%;
 }
 
 aside.side-bar ul.scrolled {
 	position: fixed;
 	top: 200px;
+	max-width: 140px;
 }
 
 aside.side-bar li {
