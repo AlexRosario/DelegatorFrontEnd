@@ -52,18 +52,17 @@ export const Header = () => {
 								}}
 							/>
 						) : (
-							<div className='settings-header'>
-								<div>
+							<>
+								<div className='settings-header'>
 									<FontAwesomeIcon
 										icon={faAngleLeft}
 										onClick={() => {
 											setMenuOpen(!menuOpen);
 										}}
 									/>
-								</div>
-
-								<div className='profile'>
 									<b>Settings</b>
+								</div>
+								<div className='profile'>
 									<h4>{user?.username}</h4>
 									<h6
 										onClick={logOut}
@@ -71,7 +70,7 @@ export const Header = () => {
 										Log Out
 									</h6>
 								</div>
-							</div>
+							</>
 						)
 					) : (
 						<Link

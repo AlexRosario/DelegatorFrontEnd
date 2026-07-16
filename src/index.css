@@ -93,12 +93,14 @@ button:focus-visible {
 		color: var(--lightblue);
 	}
 	button {
-		background-color: rgb(227, 219, 219);
+		background-color: var(--darkblue);
 	}
 }
 @font-face {
 	font-family: 'Barlow';
-	src: local('Barlow'), url('./fonts/BarlowCondensed-SemiBold.ttf') format('truetype');
+	src:
+		local('Barlow'),
+		url('./fonts/BarlowCondensed-SemiBold.ttf') format('truetype');
 
 	font-weight: bold;
 }

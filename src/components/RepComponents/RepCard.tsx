@@ -29,37 +29,46 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 							<h3 className='font-face-Barlow'>{member.name.toUpperCase()}</h3>
 							<h5>{`${title} from ${member.state}`}</h5>
 						</div>
-						<div
-							className='rep-score'
-							onClick={() => setShowInferred((showing) => !showing)}
-							title='Click to show the inferred score for votes this chamber never recorded'>
-							{score === null ? (
-								<div>No overlapping roll-call votes to compare yet.</div>
-							) : (
-								<div className='alignment-container'>
-									<div className='alignment-bar'>
-										<div
-											className='fill'
-											style={{ width: `${score}%`, backgroundColor: alignmentColor(score) }}></div>
-									</div>
-									<div>Alignment Score: {score.toFixed(2)}</div>
-								</div>
-							)}
-							{missedCount > 0 && (
-								<div className='missed-votes-note'>
-									Missed {missedCount} vote{missedCount === 1 ? '' : 's'} on bills you voted on
-								</div>
-							)}
-							{showInferred &&
-								(inferredScore !== null ? (
-									<div
-										className='inferred-alignment'
-										title={`Bills the ${chamber} passed or failed without a roll call — an unrecorded pass counts as an inferred Yes from every member, an unrecorded fail as an inferred No`}>
-										Inferred alignment (unrecorded votes): {inferredScore.toFixed(0)}% across {inferredCount}
-									</div>
+						<div className='rep-creds'>
+							{' '}
+							<button
+								className='rep-flip-toggle to-donors'
+								title='See top campaign donors (FEC)'
+								onClick={toggleFlip}>
+								💰 Donors
+							</button>
+							<div
+								className='rep-score'
+								onClick={() => setShowInferred((showing) => !showing)}
+								title='Click to show the inferred score for votes this chamber never recorded'>
+								{score === null ? (
+									<div>No overlapping roll-call votes to compare yet.</div>
 								) : (
-									<div className='inferred-alignment'>No unrecorded (voice/unanimous) votes to infer from yet.</div>
-								))}
+									<div className='alignment-container'>
+										<div className='alignment-bar'>
+											<div
+												className='fill'
+												style={{ width: `${score}%`, backgroundColor: alignmentColor(score) }}></div>
+										</div>
+										<div>Alignment Score: {score.toFixed(2)}</div>
+									</div>
+								)}
+								{missedCount > 0 && (
+									<div className='missed-votes-note'>
+										Missed {missedCount} vote{missedCount === 1 ? '' : 's'} on bills you voted on
+									</div>
+								)}
+								{showInferred &&
+									(inferredScore !== null ? (
+										<div
+											className='inferred-alignment'
+											title={`Bills the ${chamber} passed or failed without a roll call — an unrecorded pass counts as an inferred Yes from every member, an unrecorded fail as an inferred No`}>
+											Inferred alignment (unrecorded votes): {inferredScore.toFixed(0)}% across {inferredCount}
+										</div>
+									) : (
+										<div className='inferred-alignment'>No unrecorded (voice/unanimous) votes to infer from yet.</div>
+									))}
+							</div>
 						</div>
 					</div>
 
@@ -95,22 +104,16 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 							</div>
 						</div>
 					</div>
-					<button
-						className='rep-flip-toggle'
-						title='See top campaign donors (FEC)'
-						onClick={toggleFlip}>
-						💰 Donors
-					</button>
 				</div>
 
 				<div className='rep-flip-face rep-flip-back'>
-					{backMounted && <RepDonors member={member} />}
 					<button
-						className='rep-flip-toggle'
+						className='rep-flip-toggle back-to-profile'
 						title='Back to profile'
 						onClick={toggleFlip}>
 						↩ Profile
 					</button>
+					{backMounted && <RepDonors member={member} />}
 				</div>
 			</div>
 		</div>
