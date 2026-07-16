@@ -17,7 +17,7 @@ export const BillDiscover = () => {
 	const isNumeric = (billNumber: string) => {
 		return /^\d+$/.test(billNumber) && billNumber.length > 0;
 	};
-	const { congress, setBillFilter, setCurrentIndex, searchType, setSearchType } = useDisplayBills();
+	const { congress, setBillFilter, setCurrentIndex, searchType } = useDisplayBills();
 
 	// Server truth about facet sizes: label counts in the menu and hide facets
 	// with nothing in them. Menu still works (uncounted) if the fetch fails.
@@ -91,22 +91,10 @@ export const BillDiscover = () => {
 	return (
 		<div className='bill-discover'>
 			<RepStrip />
+			{/* Hopper vs Bill Number is chosen in the sidebar now — this area only
+			    hosts the active mode's controls. */}
 			<div className='search-options'>
 				<div className='selectors'>
-					<div
-						className={`selector ${searchType === 'hopper' ? 'active' : ''}`}
-						onClick={() => {
-							setSearchType('hopper');
-						}}>
-						Hopper
-					</div>
-					<div
-						className={`selector dark-high-contrast ${searchType === 'bill-number' ? 'active' : ''} t`}
-						onClick={() => {
-							setSearchType('bill-number');
-						}}>
-						Bill Number
-					</div>
 					{searchType === 'bill-number' && (
 						<div className='bill-number'>
 							<div className='bill-type-selector'>

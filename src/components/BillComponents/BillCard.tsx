@@ -231,9 +231,9 @@ export const BillCard = ({
 								billId={bill.id}
 								active={isVisible}
 							/>
-							<div className='bill-member-positions'>
-								<b>{bill.latestAction.actionDate}</b>
+							<div className='bill-status'>
 								<div>{bill.latestAction.text}</div>
+								<b>{bill.latestAction.actionDate}</b>
 							</div>
 						</div>
 					</div>
