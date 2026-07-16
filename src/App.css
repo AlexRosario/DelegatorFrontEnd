@@ -1420,17 +1420,15 @@ aside.side-bar li.active {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+
 	font-size: var(--size-10);
 }
 
 .vote-buttons {
 	display: flex;
 	flex-direction: row;
+	align-items: center;
 	margin-bottom: 5%;
-}
-
-.bill-status {
-	margin-top: 40px;
 }
 
 .vote-button-icon {
@@ -1785,6 +1783,9 @@ aside.side-bar li.active {
 		width: 100%;
 		margin: 0;
 	}
+	aside.side-bar ul.scrolled {
+		min-width: 100%;
+	}
 	aside.side-bar li {
 		flex: 1;
 		width: auto;
@@ -1793,6 +1794,7 @@ aside.side-bar li.active {
 		gap: 8px;
 		padding: 0;
 	}
+
 	/* Four flat items share the bar: icon stacked over a small label. The
 	   active pill replaces the desktop inset shadow (heavy at this size). */
 	aside.side-bar li {
