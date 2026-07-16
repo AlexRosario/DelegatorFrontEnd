@@ -5,7 +5,7 @@ type BillStatusProps = {
 };
 
 export const BillStatus: React.FC<BillStatusProps> = ({ searchType }) => {
-	const { billsToDisplay, billSubject, currentIndex, activeBillTab, filteredBills, passedBills } = useDisplayBills();
+	const { billsToDisplay, billSubject, currentIndex, activeBillTab, filteredBills } = useDisplayBills();
 
 	const noDiscoverBillsToDisplay = activeBillTab === 'discover-bills' && billsToDisplay.length === 0;
 	const noVotedBillsToDisplay = activeBillTab === 'voted-bills' && billsToDisplay.length === 0;
