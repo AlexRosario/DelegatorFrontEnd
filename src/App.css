@@ -1755,6 +1755,9 @@ aside.side-bar li.active {
 }
 
 @media (width < 728px) {
+	.alignment-bar {
+		height: 20px;
+	}
 	aside.side-bar,
 	aside.side-bar.scrolled {
 		position: fixed;
