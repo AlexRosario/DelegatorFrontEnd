@@ -28,7 +28,7 @@ export const BillCollection = () => {
 				<div
 					key={policy}
 					className='policy-row'>
-					<b>{policy}:</b>
+					<b>{policy + ` (${policyBills[policy].length})`}:</b>
 					<div className='policy-row-bills'>
 						<Carousel bills={policyBills[policy]} />
 					</div>

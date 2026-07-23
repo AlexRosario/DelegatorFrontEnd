@@ -1,0 +1,182 @@
+@media (max-width: 600px) {
+	.register {
+		font-size: 0.6rem;
+	}
+	.register-field {
+		font-size: 0.6em;
+	}
+	.register-field .input-wrap input {
+		font-size: 0.6rem;
+	}
+	.header-container img.gator-logo {
+		height: 100px;
+	}
+	.selector-label {
+		display: none;
+	}
+	.bill-section {
+		margin-top: 20px;
+		font-size: 0.7rem;
+	}
+	.bills-status {
+		margin: 10px 0;
+	}
+	.search-subject {
+		flex-direction: column;
+	}
+
+	.selector {
+		font-size: 0.7rem;
+		font-weight: 900;
+	}
+	.repChamber .selectors {
+		display: flex;
+		gap: 20px;
+	}
+	.rep-card {
+		width: 100%;
+		height: 15vh;
+		font-size: 0.7rem;
+	}
+	/* Donors face: stack the two lists and scroll within the fixed card height. */
+	.rep-donors-columns {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.rep-card-right {
+		font-size: 0.6rem;
+	}
+	.rep-card-left {
+		font-size: 0.6rem;
+	}
+	.rep-card-right img.rep-photo {
+		max-height: 100px;
+		max-width: 75px;
+	}
+}
+
+/* Below ~620px the width chain (container padding × .bill-feed 80%) leaves
+   less room than the card's old 360px minimum — the card was cropping its
+   content. Let the card own the viewport instead. */
+@media (max-width: 620px) {
+	.bill-container {
+		padding: 0 8px;
+	}
+	.bill-feed {
+		max-width: 100%;
+		margin-top: 2%;
+	}
+	.bill-card {
+		width: 100%;
+		min-width: 0;
+		max-width: none;
+		padding: 16px 12px 12px;
+		/* Fit small phone screens: never taller than the visible area above the bottom bar. */
+		height: min(599px, calc(100dvh - 200px));
+	}
+	.bill-footer-actions {
+		flex-wrap: wrap;
+	}
+}
+
+@media (max-width: 728px) {
+	.bill-card {
+		box-shadow: 0 5px 10x #f4f4f62e;
+	}
+	.header-container .logo-wrapper {
+		margin-left: 10px;
+	}
+	.header-user {
+		margin-right: 10px;
+	}
+}
+
+@media (max-width: 1000px) {
+	.register {
+		font-size: 0.85rem;
+	}
+	.register-field,
+	.register-field .input-wrap label {
+		overflow: none;
+	}
+	.register-field .input-wrap input {
+		font-size: 0.85rem;
+	}
+	.selector {
+		font-size: 0.8rem;
+		height: 100%;
+		padding: 5px;
+		align-content: center;
+		font-weight: 700;
+	}
+}
+
+@media (width < 728px) {
+	.alignment-bar {
+		height: 20px;
+	}
+	aside.side-bar,
+	aside.side-bar.scrolled {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 60px;
+		flex-direction: row;
+		align-items: stretch;
+		max-width: none;
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		border-radius: 15px 15px 0 0;
+		border-right: none;
+		box-shadow: 0 -2px 8px #00000026;
+		z-index: 1500;
+	}
+	aside.side-bar ul,
+	aside.side-bar ul.scrolled {
+		position: static;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		align-items: center;
+		width: 100%;
+		margin: 0;
+	}
+	aside.side-bar ul.scrolled {
+		min-width: 100%;
+	}
+	aside.side-bar li {
+		flex: 1;
+		width: auto;
+		height: 100%;
+		justify-content: center;
+		gap: 8px;
+		padding: 0;
+	}
+
+	/* Four flat items share the bar: icon stacked over a small label. The
+	   active pill replaces the desktop inset shadow (heavy at this size). */
+	aside.side-bar li {
+		flex-direction: column;
+		gap: 3px;
+		font-size: 0.62rem;
+	}
+	aside.side-bar li.active {
+		box-shadow: none;
+		border-radius: 8px;
+	}
+	.main-body {
+		padding-bottom: 72px;
+	}
+	/* Guests have no bottom bar — no need to reserve space for it. */
+	.main-body.no-nav {
+		padding-bottom: 0;
+	}
+	/* Keep the back-to-top arrow above the bottom nav bar. */
+	.scroll-top-arrow {
+		bottom: 76px;
+		right: 12px;
+	}
+}

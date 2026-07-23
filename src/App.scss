@@ -1,0 +1,14 @@
+// App styles — split into ordered partials under styles/.
+// IMPORTANT: the cascade is source-order sensitive; keep this @use list in the
+// same order the sections appeared in the original single stylesheet. Add new
+// rules inside the partial that owns that component, not here.
+@use 'styles/base';
+@use 'styles/landing';
+@use 'styles/register';
+@use 'styles/header';
+@use 'styles/bill-section';
+@use 'styles/reps-contact';
+@use 'styles/bill-card';
+@use 'styles/carousel';
+@use 'styles/rep-card';
+@use 'styles/responsive';

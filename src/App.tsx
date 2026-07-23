@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 import { Header } from './components/HeaderComponent';
 import { BillSection } from './components/BillComponents/BillSection';
 import { RepSection } from './components/RepComponents/RepSection';

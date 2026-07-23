@@ -1,0 +1,216 @@
+.bill-card_sign-in-link {
+	font-size: 0.8rem;
+}
+
+.rep-strip {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	gap: 20px;
+	max-width: 600px;
+	width: 100%;
+	padding: 10px 0 4px;
+	overflow-x: auto;
+}
+
+.rep-bubble {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	font-size: 0.7rem;
+	color: var(--lightblue);
+	cursor: pointer;
+}
+
+.rep-bubble:hover .rep-ring,
+.rep-bubble:focus-visible .rep-ring {
+	transform: scale(1.07);
+}
+
+.rep-modal-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 2000;
+	background: #161c2d8c;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.rep-modal {
+	position: relative;
+	width: 90vw;
+	max-width: 700px;
+	max-height: 85vh;
+	overflow-y: auto;
+	border-radius: 12px;
+}
+
+.rep-modal .rep-card {
+	width: 100%;
+	height: auto;
+	margin: 0;
+}
+
+.rep-modal-close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	z-index: 1;
+	width: 25px;
+	height: 25px;
+	padding: 0;
+	gap: 10px;
+	border: none;
+	border-radius: 50%;
+	background: #161c2dbf;
+	color: #fff;
+	font-size: 1.1rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+/* Contact-your-members modal (opened from the card's ✉️ icon). Reuses the
+   rep-modal shell; these style the contact content inside it. */
+.contact-toggle {
+	cursor: pointer;
+	user-select: none;
+}
+.contact-modal {
+	background-color: rgb(255, 254, 251);
+	color: var(--lightblue);
+	padding: 20px 24px;
+	text-align: left;
+	width: min(90vw, 520px);
+}
+.contact-modal-title {
+	margin: 0 24px 10px 0;
+}
+.contact-chamber {
+	margin-bottom: 14px;
+}
+.contact-chamber-title {
+	margin: 0 0 2px;
+}
+.contact-chamber-note {
+	margin: 0 0 8px;
+	font-size: 0.75rem;
+	font-style: italic;
+	opacity: 0.85;
+}
+.contact-member {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	/* Narrow screens (<~525px): the actions can't fit beside the name — let them
+	   drop to their own line instead of clipping past the modal edge. */
+	flex-wrap: wrap;
+	gap: 10px;
+	padding: 6px 0;
+	font-size: 0.8rem;
+}
+.contact-member-photo {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+.contact-member-info {
+	display: flex;
+	flex-direction: column;
+	min-width: 130px;
+}
+.contact-member-party {
+	font-size: 0.7rem;
+	opacity: 0.75;
+}
+.contact-member-actions {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	/* nowrap keeps each action (phone, website, button) intact; wrapping happens
+	   between actions when even their own line is too narrow. */
+	flex-wrap: wrap;
+	gap: 6px 10px;
+	margin-left: auto;
+	font-size: 0.75rem;
+	white-space: nowrap;
+}
+.contact-email-button {
+	margin: 0;
+	padding: 4px 10px;
+	font-size: 0.7rem;
+}
+.contact-member-block {
+	border-bottom: 1px solid rgba(22, 28, 45, 0.08);
+}
+.contact-draft {
+	padding: 4px 0 10px;
+}
+.contact-draft textarea {
+	width: 100%;
+	box-sizing: border-box;
+	font-size: 0.75rem;
+	font-family: inherit;
+	padding: 8px;
+	border-radius: 6px;
+	border: 1px solid #ccc;
+	resize: vertical;
+}
+.contact-draft-actions {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+	margin-top: 4px;
+}
+.contact-draft-actions button {
+	margin: 0;
+	padding: 4px 12px;
+	font-size: 0.7rem;
+}
+.contact-draft-hint {
+	font-size: 0.7rem;
+	opacity: 0.8;
+}
+
+.rep-ring {
+	border-radius: 50%;
+	padding: 3px;
+	transition: transform 0.15s ease;
+}
+
+.rep-ring img {
+	display: block;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 2px solid rgb(243, 248, 242);
+	background-color: #fff;
+}
+
+.rep-bubble-name {
+	font-weight: 700;
+	max-width: 72px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rep-bubble-score {
+	font-size: 0.65rem;
+	opacity: 0.75;
+}
+
+.bills-status {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+}
+

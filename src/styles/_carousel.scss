@@ -1,0 +1,82 @@
+.carousel-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.policy-row-bills .carousel {
+	height: 700px;
+}
+
+.carousel {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 800px;
+	touch-action: pan-y;
+	position: relative;
+
+	.bill-card {
+		opacity: 0;
+		width: 80%;
+
+		&.active {
+			z-index: 10;
+			opacity: 1;
+			position: absolute;
+		}
+
+		&.prev {
+			position: absolute;
+			transform: translate(-40%, 0);
+			opacity: 0.5;
+		}
+
+		&.next {
+			position: absolute;
+			opacity: 0.5;
+			transform: translate(40%, 0);
+		}
+	}
+}
+
+// Hover states for the carousel's side cards. The .prev/.next classes only
+// ever exist on carousel cards, so these belong here — but they're written
+// without a .carousel ancestor, so keep them flat (nesting under .carousel
+// would raise specificity and change the cascade).
+.bill-card.prev:hover {
+	z-index: 1;
+	cursor: pointer;
+}
+
+.bill-card.next:hover {
+	z-index: 1;
+	cursor: pointer;
+}
+
+// Second .carousel block on purpose: kept separate from the first so the
+// hover states above stay between the two groups, preserving source order
+// (merging into one block would reorder the cascade).
+.carousel {
+	.arrows-carousel {
+		font-size: 40px;
+		z-index: 100;
+
+		&.left {
+			position: absolute;
+			left: 7%;
+		}
+
+		&.right {
+			position: absolute;
+			right: 7%;
+		}
+	}
+
+	.slider-wrapper.axis-horizontal .slider .slide {
+		display: flex;
+		justify-content: space-around;
+	}
+}

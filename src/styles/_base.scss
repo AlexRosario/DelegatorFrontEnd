@@ -1,0 +1,20 @@
+#root {
+	width: 100vw;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+
+/* Site-wide prototype disclaimer — every page, above the header. */
+.prototype-banner {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 6px 14px;
+	background-color: #fff3cd;
+	color: #664d03;
+	border-bottom: 1px solid #ffe69c;
+	font-size: 0.72rem;
+	line-height: 1.4;
+	text-align: center;
+}
+

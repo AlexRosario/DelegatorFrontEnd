@@ -1,0 +1,184 @@
+/* ---- Registration page (matches the landing-page card language) ---- */
+.register {
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	min-height: 100vh;
+	width: 100%;
+	padding: 3rem 1.25rem;
+	box-sizing: border-box;
+	background:
+		radial-gradient(1100px 550px at 85% 12%, rgba(63, 120, 130, 0.14), transparent 60%),
+		radial-gradient(900px 500px at 8% 88%, rgba(154, 61, 24, 0.1), transparent 60%), rgb(243, 248, 242);
+}
+
+.register-card {
+	background: white;
+	border-radius: 14px;
+	box-shadow: 0 18px 44px rgba(22, 28, 45, 0.14);
+	padding: 2rem;
+	width: 100%;
+	max-width: 560px;
+	box-sizing: border-box;
+	text-align: left;
+}
+
+.register-head {
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1.25rem;
+}
+
+.register-head h2 {
+	margin: 0;
+	color: var(--lightblue);
+	font-size: 1.35rem;
+}
+
+.register-back {
+	font-size: 0.8rem;
+	color: var(--lightblue);
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.register-back:hover {
+	text-decoration: underline;
+}
+
+.register-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.register-field .input-wrap {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	width: 100%;
+}
+
+.register-field .input-wrap label {
+	font-size: 0.78rem;
+	font-weight: 700;
+	color: var(--offblack);
+	text-align: left;
+}
+
+.register-field .input-wrap input {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.65rem 0.8rem;
+	font-size: 0.95rem;
+	border-radius: 8px;
+	border: 1px solid #d5d9d4;
+	background-color: #fbfcfa;
+}
+
+.register-field .input-wrap input:focus {
+	outline: 2px solid var(--lightblue);
+	border-color: transparent;
+}
+
+/* Side-by-side field rows (passwords; city/state/zip). */
+.register-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.75rem;
+	width: 100%;
+}
+
+.register-row-3 {
+	grid-template-columns: 2fr 1fr 1fr;
+}
+
+.register-section {
+	margin-top: 0.75rem;
+	padding-top: 0.9rem;
+	border-top: 1px solid #eceee9;
+}
+
+.register-section h3 {
+	margin: 0 0 0.25rem;
+	font-size: 1rem;
+	color: var(--lightblue);
+}
+
+.address-prompt {
+	margin: 0;
+	font-size: 0.82rem;
+	line-height: 1.45;
+	color: rgba(45, 46, 44, 0.75);
+}
+
+/* Testing-period note under the address prompt — same amber as the banner. */
+.address-testing-note {
+	padding: 6px 10px;
+	border-radius: 6px;
+	background-color: #fff3cd;
+	color: #664d03;
+}
+
+.attest-checkbox {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	gap: 0.6rem;
+	margin-top: 0.5rem;
+	padding: 0.75rem;
+	border-radius: 8px;
+	background: rgba(63, 120, 130, 0.07);
+	font-size: 0.8rem;
+	line-height: 1.45;
+	color: var(--offblack);
+	cursor: pointer;
+}
+
+.attest-checkbox input {
+	margin-top: 2px;
+	flex-shrink: 0;
+}
+
+.register-submit {
+	width: 100%;
+	margin: 0.5rem 0 0;
+	padding: 0.75rem;
+	font-size: 0.95rem;
+	border-radius: 8px;
+	border: none;
+	box-shadow: none;
+	background-color: var(--lightblue);
+	color: white;
+	font-weight: 600;
+}
+
+.register-submit:hover:not(:disabled) {
+	background-color: #2f5c64;
+	border-color: transparent;
+}
+
+.register-submit:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.register-dev-fill {
+	align-self: flex-end;
+	margin: 0;
+	padding: 4px 10px;
+	font-size: 0.7rem;
+	box-shadow: none;
+	background: #eee;
+	color: #555;
+}
+
+.register .error-message {
+	color: #a12b2b;
+	font-size: 0.8rem;
+	margin: 0;
+}
+

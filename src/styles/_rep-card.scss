@@ -1,0 +1,180 @@
+.rep-section {
+	padding: 20px;
+}
+
+.rep-section .selectors {
+	display: none;
+}
+
+.reps {
+	margin-top: 5%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.rep-card {
+	position: relative;
+	padding: 20px 0;
+	margin-bottom: 20px;
+	max-height: 260px;
+	max-width: 750px;
+	background-color: #fff;
+	border: solid var(--lightblue);
+	border-radius: 15px;
+	overflow: hidden;
+	perspective: 1200px;
+	width: 80%;
+}
+
+/* Flip machinery: both faces share one grid cell so the card keeps its natural
+   (content-driven) height — unlike the bill flip, which has a fixed height. */
+.rep-flip-inner {
+	display: grid;
+	width: 100%;
+	transform-style: preserve-3d;
+	transition: transform 0.6s ease;
+	width: 100%;
+}
+.rep-card.flipped .rep-flip-inner {
+	transform: rotateY(180deg);
+}
+.rep-flip-face {
+	grid-area: 1 / 1;
+	position: relative;
+	min-width: 0;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+.rep-flip-front {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+.rep-flip-back {
+	transform: rotateY(180deg);
+	padding: 0 16px 26px;
+	max-height: 215px;
+	overflow-y: auto;
+	font-size: 0.75rem;
+}
+
+.rep-flip-toggle {
+	margin: 0;
+	padding: 3px 10px;
+	font-size: 0.65rem;
+	cursor: pointer;
+}
+.rep-flip-toggle.to-donors {
+	width: 65%;
+}
+
+.rep-flip-toggle.back-to-profile {
+	position: absolute;
+	top: 6px;
+	left: 10px;
+}
+
+.rep-creds {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 50%;
+}
+/* Donors face content */
+
+.rep-donors-title {
+	margin: 0 0 8px;
+}
+.rep-donors-columns {
+	display: flex;
+	flex-direction: row;
+	gap: 16px;
+}
+.rep-donors-list {
+	flex: 1;
+	min-width: 0;
+}
+.rep-donors-list h6 {
+	margin: 0 0 4px;
+	font-size: 0.7rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	opacity: 0.8;
+}
+.rep-donors-list ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.rep-donors-list li {
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 1px 0;
+}
+.rep-donor-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.rep-donor-total {
+	flex-shrink: 0;
+	font-weight: 700;
+}
+.rep-donors-note {
+	margin: 8px 0;
+	font-style: italic;
+	opacity: 0.85;
+}
+.rep-donors-footnote {
+	margin: 8px 0 0;
+	font-size: 0.65rem;
+	opacity: 0.75;
+}
+
+.rep-card-left {
+	font-size: 0.8rem;
+	display: flex;
+	flex-direction: column;
+}
+
+.rep-card-right {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	align-items: center;
+	padding: 10px;
+	box-sizing: border-box;
+	font-size: 0.8rem;
+	flex-shrink: 1;
+	flex-grow: 0;
+}
+
+.rep-card-right img.rep-photo {
+	width: 100px;
+	max-height: 50%;
+}
+
+.rep-score {
+	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.alignment-bar {
+	width: 100%;
+	height: 20px;
+	background-color: #eee;
+	border-radius: 10px;
+	overflow: hidden;
+	margin: 0.5rem 0;
+}
+
+.alignment-bar .fill {
+	height: 100%;
+	background-color: #4caf50;
+	transition: width 0.4s ease-in-out;
+}
+
