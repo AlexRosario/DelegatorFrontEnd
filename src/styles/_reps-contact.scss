@@ -1,3 +1,5 @@
+@use 'tokens' as *;
+
 .bill-card_sign-in-link {
 	font-size: 0.8rem;
 }
@@ -21,11 +23,11 @@
 	font-size: 0.7rem;
 	color: var(--lightblue);
 	cursor: pointer;
-}
 
-.rep-bubble:hover .rep-ring,
-.rep-bubble:focus-visible .rep-ring {
-	transform: scale(1.07);
+	&:hover .rep-ring,
+	&:focus-visible .rep-ring {
+		transform: scale(1.07);
+	}
 }
 
 .rep-modal-backdrop {
@@ -45,12 +47,12 @@
 	max-height: 85vh;
 	overflow-y: auto;
 	border-radius: 12px;
-}
 
-.rep-modal .rep-card {
-	width: 100%;
-	height: auto;
-	margin: 0;
+	.rep-card {
+		width: 100%;
+		height: auto;
+		margin: 0;
+	}
 }
 
 .rep-modal-close {
@@ -150,16 +152,17 @@
 }
 .contact-draft {
 	padding: 4px 0 10px;
-}
-.contact-draft textarea {
-	width: 100%;
-	box-sizing: border-box;
-	font-size: 0.75rem;
-	font-family: inherit;
-	padding: 8px;
-	border-radius: 6px;
-	border: 1px solid #ccc;
-	resize: vertical;
+
+	textarea {
+		width: 100%;
+		box-sizing: border-box;
+		font-size: 0.75rem;
+		font-family: inherit;
+		padding: 8px;
+		border-radius: 6px;
+		border: 1px solid #ccc;
+		resize: vertical;
+	}
 }
 .contact-draft-actions {
 	display: flex;
@@ -167,11 +170,12 @@
 	align-items: center;
 	gap: 10px;
 	margin-top: 4px;
-}
-.contact-draft-actions button {
-	margin: 0;
-	padding: 4px 12px;
-	font-size: 0.7rem;
+
+	button {
+		margin: 0;
+		padding: 4px 12px;
+		font-size: 0.7rem;
+	}
 }
 .contact-draft-hint {
 	font-size: 0.7rem;
@@ -182,16 +186,16 @@
 	border-radius: 50%;
 	padding: 3px;
 	transition: transform 0.15s ease;
-}
 
-.rep-ring img {
-	display: block;
-	width: 56px;
-	height: 56px;
-	border-radius: 50%;
-	object-fit: cover;
-	border: 2px solid rgb(243, 248, 242);
-	background-color: #fff;
+	img {
+		display: block;
+		width: 56px;
+		height: 56px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 2px solid $page-tint;
+		background-color: #fff;
+	}
 }
 
 .rep-bubble-name {
@@ -213,4 +217,3 @@
 	justify-content: space-evenly;
 	align-items: center;
 }
-

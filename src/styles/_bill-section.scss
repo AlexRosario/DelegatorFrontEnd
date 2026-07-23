@@ -1,3 +1,5 @@
+@use 'tokens' as *;
+
 .bill-section {
 	display: flex;
 	flex-direction: column;
@@ -87,7 +89,7 @@
 .selector {
 	-webkit-user-select: none;
 	user-select: none;
-	border: 1px solid rgba(63, 120, 130, 0.45);
+	border: 1px solid rgba($lightblue, 0.45);
 	font-size: 0.8rem;
 	font-weight: 600;
 	border-radius: 400px;
@@ -106,7 +108,7 @@
 }
 
 .selector:hover {
-	background-color: rgba(63, 120, 130, 0.1);
+	background-color: rgba($lightblue, 0.1);
 	border-color: var(--lightblue);
 }
 
@@ -130,7 +132,7 @@
 .bill-type-selector input {
 	box-sizing: border-box;
 	border-radius: 400px;
-	border: 1px solid rgba(63, 120, 130, 0.45);
+	border: 1px solid rgba($lightblue, 0.45);
 	background-color: white;
 	color: var(--lightblue);
 	font-size: 0.85rem;
@@ -164,7 +166,7 @@
 	padding: 8px 32px 8px 12px;
 	border-radius: 400px;
 	text-align: center;
-	border: 1px solid rgba(63, 120, 130, 0.45);
+	border: 1px solid rgba($lightblue, 0.45);
 	background-color: white;
 	color: var(--lightblue);
 	font-weight: 600;

@@ -1,10 +1,12 @@
+@use 'tokens' as *;
+
 .bill-card {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
 	position: relative;
 	color: var(--lightblue);
-	background-color: #fffefb;
+	background-color: $card-bg;
 	text-align: center;
 	padding: 4%;
 	width: 75%;
@@ -15,14 +17,14 @@
 	border-radius: 14px;
 	border-top: 4px solid transparent; /* chamber accent below */
 	box-sizing: border-box;
-}
 
-/* Chamber accent: House = brand red, Senate = brand blue. */
-.bill-card--house {
-	border-top-color: var(--red);
-}
-.bill-card--senate {
-	border-top-color: var(--lightblue);
+	/* Chamber accent: House = brand red, Senate = brand blue. */
+	&--house {
+		border-top-color: var(--red);
+	}
+	&--senate {
+		border-top-color: var(--lightblue);
+	}
 }
 
 /* Bill number as a "docket stamp" in the brand display face. */
@@ -41,17 +43,18 @@
 	padding: 2px 8px;
 	border-radius: 400px;
 	cursor: default;
-	background-color: rgba(63, 120, 130, 0.14);
+	background-color: rgba($lightblue, 0.14);
 	color: var(--lightblue);
 	width: fit-content;
-}
-.stage-chip.stage-law {
-	background-color: rgba(55, 124, 41, 0.15);
-	color: #2c5e22;
-}
-.stage-chip.stage-dead {
-	background-color: rgba(161, 43, 43, 0.14);
-	color: #a12b2b;
+
+	&.stage-law {
+		background-color: rgba(55, 124, 41, 0.15);
+		color: #2c5e22;
+	}
+	&.stage-dead {
+		background-color: rgba(161, 43, 43, 0.14);
+		color: #a12b2b;
+	}
 }
 
 .bill-content-flip {
@@ -78,7 +81,7 @@
 	inset: 0;
 	backface-visibility: hidden;
 	-webkit-backface-visibility: hidden;
-	background-color: #fffefb;
+	background-color: $card-bg;
 }
 
 .bill-flip-back {
@@ -101,7 +104,7 @@
 	position: absolute;
 	inset: 0;
 	z-index: 5;
-	background-color: #fffefb;
+	background-color: $card-bg;
 	display: flex;
 }
 
@@ -159,13 +162,13 @@
 	display: flex;
 	gap: 6px;
 	padding-top: 6px;
-}
 
-.bill-chat-composer input {
-	flex: 1;
-	padding: 6px 8px;
-	border-radius: 6px;
-	border: 1px solid #ccc;
+	input {
+		flex: 1;
+		padding: 6px 8px;
+		border-radius: 6px;
+		border: 1px solid #ccc;
+	}
 }
 
 .bill-slides {
@@ -182,10 +185,10 @@
 	padding: 8px 2px;
 	scrollbar-width: none;
 	-ms-overflow-style: none;
-}
 
-.bill-slides::-webkit-scrollbar {
-	display: none;
+	&::-webkit-scrollbar {
+		display: none;
+	}
 }
 
 .constituent-votes {
@@ -274,18 +277,18 @@
 	font-size: 1rem;
 	line-height: 1;
 	cursor: pointer;
-}
 
-.slide-arrow:hover {
-	background: #161c2d99;
-}
+	&:hover {
+		background: #161c2d99;
+	}
 
-.slide-arrow.left {
-	left: 4px;
-}
+	&.left {
+		left: 4px;
+	}
 
-.slide-arrow.right {
-	right: 4px;
+	&.right {
+		right: 4px;
+	}
 }
 
 .bill-slides > * {
@@ -306,39 +309,39 @@
 	align-items: center;
 	width: 100%;
 	gap: 8px;
-}
 
-/* Unified action-bar controls: outlined brand pills (buttons and text toggles alike). */
-.bill-footer-actions button,
-.bill-footer-actions .bill-chat-toggle,
-.bill-footer-actions .contact-toggle,
-.bill-footer-actions .bill-fulltext-toggle,
-.bill-footer-actions .bill-url {
-	margin: 0;
-	padding: 4px 12px;
-	font-size: 0.75rem;
-	font-weight: 600;
-	border-radius: 400px;
-	border: 1px solid rgba(63, 120, 130, 0.45);
-	background-color: transparent;
-	color: var(--lightblue);
-	box-shadow: none;
-	text-decoration: none;
-	white-space: nowrap;
-	line-height: 1.4;
-}
+	/* Unified action-bar controls: outlined brand pills (buttons and text toggles alike). */
+	button,
+	.bill-chat-toggle,
+	.contact-toggle,
+	.bill-fulltext-toggle,
+	.bill-url {
+		margin: 0;
+		padding: 4px 12px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		border-radius: 400px;
+		border: 1px solid rgba($lightblue, 0.45);
+		background-color: transparent;
+		color: var(--lightblue);
+		box-shadow: none;
+		text-decoration: none;
+		white-space: nowrap;
+		line-height: 1.4;
+	}
 
-.bill-footer-actions button:hover:not(:disabled),
-.bill-footer-actions .bill-chat-toggle:hover,
-.bill-footer-actions .contact-toggle:hover,
-.bill-footer-actions .bill-fulltext-toggle:hover,
-.bill-footer-actions .bill-url:hover {
-	background-color: rgba(63, 120, 130, 0.1);
-	border-color: var(--lightblue);
-}
+	button:hover:not(:disabled),
+	.bill-chat-toggle:hover,
+	.contact-toggle:hover,
+	.bill-fulltext-toggle:hover,
+	.bill-url:hover {
+		background-color: rgba($lightblue, 0.1);
+		border-color: var(--lightblue);
+	}
 
-.bill-footer-actions button:disabled {
-	opacity: 0.55;
+	button:disabled {
+		opacity: 0.55;
+	}
 }
 
 .bill-flip-toggle {
@@ -364,18 +367,18 @@
 	padding: 2px 8px;
 	border-radius: 400px;
 	cursor: default;
-}
 
-.passage-chip.passage-roll-call {
-	background-color: #377c2926;
-	color: #2c5e22;
-}
+	&.passage-roll-call {
+		background-color: #377c2926;
+		color: #2c5e22;
+	}
 
-.passage-chip.passage-voice,
-.passage-chip.passage-unanimous,
-.passage-chip.passage-unrecorded {
-	background-color: #c494192e;
-	color: #7a5a0e;
+	&.passage-voice,
+	&.passage-unanimous,
+	&.passage-unrecorded {
+		background-color: #c494192e;
+		color: #7a5a0e;
+	}
 }
 
 .inferred-alignment {
@@ -447,18 +450,18 @@
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
-}
 
-.bill-collection .policy-row {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
+	.policy-row {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 
-.bill-collection .policy-row .policy-row-bills {
-	display: flex;
-	flex-wrap: wrap;
-	width: 100%;
-	overflow-x: scroll;
-	white-space: none;
+		.policy-row-bills {
+			display: flex;
+			flex-wrap: wrap;
+			width: 100%;
+			overflow-x: scroll;
+			white-space: none;
+		}
+	}
 }

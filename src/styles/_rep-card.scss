@@ -1,9 +1,9 @@
 .rep-section {
 	padding: 20px;
-}
 
-.rep-section .selectors {
-	display: none;
+	.selectors {
+		display: none;
+	}
 }
 
 .reps {
@@ -64,15 +64,16 @@
 	padding: 3px 10px;
 	font-size: 0.65rem;
 	cursor: pointer;
-}
-.rep-flip-toggle.to-donors {
-	width: 65%;
-}
 
-.rep-flip-toggle.back-to-profile {
-	position: absolute;
-	top: 6px;
-	left: 10px;
+	&.to-donors {
+		width: 65%;
+	}
+
+	&.back-to-profile {
+		position: absolute;
+		top: 6px;
+		left: 10px;
+	}
 }
 
 .rep-creds {
@@ -95,24 +96,27 @@
 .rep-donors-list {
 	flex: 1;
 	min-width: 0;
-}
-.rep-donors-list h6 {
-	margin: 0 0 4px;
-	font-size: 0.7rem;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-	opacity: 0.8;
-}
-.rep-donors-list ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-.rep-donors-list li {
-	display: flex;
-	justify-content: space-between;
-	gap: 8px;
-	padding: 1px 0;
+
+	h6 {
+		margin: 0 0 4px;
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		opacity: 0.8;
+	}
+
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	li {
+		display: flex;
+		justify-content: space-between;
+		gap: 8px;
+		padding: 1px 0;
+	}
 }
 .rep-donor-name {
 	overflow: hidden;
@@ -150,11 +154,11 @@
 	font-size: 0.8rem;
 	flex-shrink: 1;
 	flex-grow: 0;
-}
 
-.rep-card-right img.rep-photo {
-	width: 100px;
-	max-height: 50%;
+	img.rep-photo {
+		width: 100px;
+		max-height: 50%;
+	}
 }
 
 .rep-score {
@@ -170,11 +174,10 @@
 	border-radius: 10px;
 	overflow: hidden;
 	margin: 0.5rem 0;
-}
 
-.alignment-bar .fill {
-	height: 100%;
-	background-color: #4caf50;
-	transition: width 0.4s ease-in-out;
+	.fill {
+		height: 100%;
+		background-color: #4caf50;
+		transition: width 0.4s ease-in-out;
+	}
 }
-

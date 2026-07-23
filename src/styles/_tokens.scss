@@ -1,0 +1,15 @@
+// Sass brand tokens — compile-time mirrors of the CSS custom properties in
+// index.css (:root). They exist because Sass can feed a color into rgba() and
+// gradients at build time, which CSS var() cannot. Keep these in sync with
+// index.css; that file remains the runtime source of truth for --lightblue etc.
+$lightblue: #3f7882; // --lightblue == rgb(63, 120, 130)
+$red: rgb(154, 61, 24); // --red
+$lightblue-hover: #2f5c64; // darker teal used on button:hover
+$card-bg: #fffefb; // bill / rep card surface
+$page-tint: rgb(243, 248, 242); // page-background base tint
+
+// Shared landing + registration page background (two brand-tinted radial
+// glows over the page tint).
+$page-background:
+	radial-gradient(1100px 550px at 85% 12%, rgba($lightblue, 0.14), transparent 60%),
+	radial-gradient(900px 500px at 8% 88%, rgba($red, 0.1), transparent 60%), $page-tint;

@@ -1,3 +1,5 @@
+@use 'tokens' as *;
+
 /* ---- Landing / sign-in page ---- */
 .home {
 	display: flex;
@@ -9,9 +11,7 @@
 	width: 100%;
 	padding: 2rem 1.5rem;
 	box-sizing: border-box;
-	background:
-		radial-gradient(1100px 550px at 85% 12%, rgba(63, 120, 130, 0.14), transparent 60%),
-		radial-gradient(900px 500px at 8% 88%, rgba(154, 61, 24, 0.1), transparent 60%), rgb(243, 248, 242);
+	background: $page-background;
 }
 
 .home-hero {
@@ -33,14 +33,14 @@
 	letter-spacing: 2px;
 	margin: 0;
 	line-height: 1;
-}
 
-.home h1 span:nth-child(1) {
-	color: var(--red);
-}
+	span:nth-child(1) {
+		color: var(--red);
+	}
 
-.home h1 span:nth-child(2) {
-	color: var(--lightblue);
+	span:nth-child(2) {
+		color: var(--lightblue);
+	}
 }
 
 .home-tagline {
@@ -72,13 +72,13 @@
 	width: 100%;
 	max-width: 360px;
 	box-sizing: border-box;
-}
 
-.home-card h2 {
-	margin: 0;
-	text-align: left;
-	color: var(--lightblue);
-	font-size: 1.35rem;
+	h2 {
+		margin: 0;
+		text-align: left;
+		color: var(--lightblue);
+		font-size: 1.35rem;
+	}
 }
 
 .sign-in-field {
@@ -86,38 +86,38 @@
 	flex-direction: column;
 	width: 100%;
 	gap: 0.65rem;
-}
 
-.sign-in-field input {
-	width: 100%;
-	box-sizing: border-box;
-	padding: 0.7rem 0.8rem;
-	font-size: 0.95rem;
-	border-radius: 8px;
-	border: 1px solid #d5d9d4;
-	background-color: #fbfcfa;
-}
+	input {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 0.7rem 0.8rem;
+		font-size: 0.95rem;
+		border-radius: 8px;
+		border: 1px solid #d5d9d4;
+		background-color: #fbfcfa;
 
-.sign-in-field input:focus {
-	outline: 2px solid var(--lightblue);
-	border-color: transparent;
-}
+		&:focus {
+			outline: 2px solid var(--lightblue);
+			border-color: transparent;
+		}
+	}
 
-.sign-in-field button {
-	width: 100%;
-	margin: 0.35rem 0 0;
-	padding: 0.7rem;
-	font-size: 0.95rem;
-	border-radius: 8px;
-	border: none;
-	box-shadow: none;
-	background-color: var(--lightblue);
-	color: white;
-}
+	button {
+		width: 100%;
+		margin: 0.35rem 0 0;
+		padding: 0.7rem;
+		font-size: 0.95rem;
+		border-radius: 8px;
+		border: none;
+		box-shadow: none;
+		background-color: var(--lightblue);
+		color: white;
 
-.sign-in-field button:hover {
-	background-color: #2f5c64;
-	border-color: transparent;
+		&:hover {
+			background-color: $lightblue-hover;
+			border-color: transparent;
+		}
+	}
 }
 
 .home-divider {
@@ -127,14 +127,14 @@
 	color: #9aa09b;
 	font-size: 0.8rem;
 	white-space: nowrap;
-}
 
-.home-divider::before,
-.home-divider::after {
-	content: '';
-	flex: 1;
-	height: 1px;
-	background: #e2e5e0;
+	&::before,
+	&::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background: #e2e5e0;
+	}
 }
 
 .home-register-link {
@@ -153,11 +153,11 @@
 	background-color: white;
 	color: var(--lightblue);
 	font-weight: 600;
-}
 
-.home-secondary:hover {
-	background-color: rgba(63, 120, 130, 0.08);
-	border-color: var(--lightblue);
+	&:hover {
+		background-color: rgba($lightblue, 0.08);
+		border-color: var(--lightblue);
+	}
 }
 
 /* Stack the landing page on narrow screens. */
@@ -178,4 +178,3 @@
 		text-align: left;
 	}
 }
-

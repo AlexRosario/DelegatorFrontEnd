@@ -1,3 +1,5 @@
+@use 'tokens' as *;
+
 /* ---- Registration page (matches the landing-page card language) ---- */
 .register {
 	display: flex;
@@ -7,9 +9,7 @@
 	width: 100%;
 	padding: 3rem 1.25rem;
 	box-sizing: border-box;
-	background:
-		radial-gradient(1100px 550px at 85% 12%, rgba(63, 120, 130, 0.14), transparent 60%),
-		radial-gradient(900px 500px at 8% 88%, rgba(154, 61, 24, 0.1), transparent 60%), rgb(243, 248, 242);
+	background: $page-background;
 }
 
 .register-card {
@@ -30,12 +30,12 @@
 	justify-content: space-between;
 	gap: 1rem;
 	margin-bottom: 1.25rem;
-}
 
-.register-head h2 {
-	margin: 0;
-	color: var(--lightblue);
-	font-size: 1.35rem;
+	h2 {
+		margin: 0;
+		color: var(--lightblue);
+		font-size: 1.35rem;
+	}
 }
 
 .register-back {
@@ -43,45 +43,45 @@
 	color: var(--lightblue);
 	text-decoration: none;
 	white-space: nowrap;
-}
 
-.register-back:hover {
-	text-decoration: underline;
+	&:hover {
+		text-decoration: underline;
+	}
 }
 
 .register-field {
 	display: flex;
 	flex-direction: column;
 	gap: 0.75rem;
-}
 
-.register-field .input-wrap {
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
-	width: 100%;
-}
+	.input-wrap {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		width: 100%;
 
-.register-field .input-wrap label {
-	font-size: 0.78rem;
-	font-weight: 700;
-	color: var(--offblack);
-	text-align: left;
-}
+		label {
+			font-size: 0.78rem;
+			font-weight: 700;
+			color: var(--offblack);
+			text-align: left;
+		}
 
-.register-field .input-wrap input {
-	width: 100%;
-	box-sizing: border-box;
-	padding: 0.65rem 0.8rem;
-	font-size: 0.95rem;
-	border-radius: 8px;
-	border: 1px solid #d5d9d4;
-	background-color: #fbfcfa;
-}
+		input {
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0.65rem 0.8rem;
+			font-size: 0.95rem;
+			border-radius: 8px;
+			border: 1px solid #d5d9d4;
+			background-color: #fbfcfa;
 
-.register-field .input-wrap input:focus {
-	outline: 2px solid var(--lightblue);
-	border-color: transparent;
+			&:focus {
+				outline: 2px solid var(--lightblue);
+				border-color: transparent;
+			}
+		}
+	}
 }
 
 /* Side-by-side field rows (passwords; city/state/zip). */
@@ -100,12 +100,12 @@
 	margin-top: 0.75rem;
 	padding-top: 0.9rem;
 	border-top: 1px solid #eceee9;
-}
 
-.register-section h3 {
-	margin: 0 0 0.25rem;
-	font-size: 1rem;
-	color: var(--lightblue);
+	h3 {
+		margin: 0 0 0.25rem;
+		font-size: 1rem;
+		color: var(--lightblue);
+	}
 }
 
 .address-prompt {
@@ -131,16 +131,16 @@
 	margin-top: 0.5rem;
 	padding: 0.75rem;
 	border-radius: 8px;
-	background: rgba(63, 120, 130, 0.07);
+	background: rgba($lightblue, 0.07);
 	font-size: 0.8rem;
 	line-height: 1.45;
 	color: var(--offblack);
 	cursor: pointer;
-}
 
-.attest-checkbox input {
-	margin-top: 2px;
-	flex-shrink: 0;
+	input {
+		margin-top: 2px;
+		flex-shrink: 0;
+	}
 }
 
 .register-submit {
@@ -154,16 +154,16 @@
 	background-color: var(--lightblue);
 	color: white;
 	font-weight: 600;
-}
 
-.register-submit:hover:not(:disabled) {
-	background-color: #2f5c64;
-	border-color: transparent;
-}
+	&:hover:not(:disabled) {
+		background-color: $lightblue-hover;
+		border-color: transparent;
+	}
 
-.register-submit:disabled {
-	opacity: 0.55;
-	cursor: not-allowed;
+	&:disabled {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
 }
 
 .register-dev-fill {
@@ -181,4 +181,3 @@
 	font-size: 0.8rem;
 	margin: 0;
 }
-
