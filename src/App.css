@@ -391,7 +391,7 @@
 	justify-content: space-between;
 	align-items: center;
 	min-width: 100vw;
-	z-index: 1000;
+	z-index: 10000;
 	background-color: #f3f8f2;
 	transition: all 2s ease;
 }
@@ -504,7 +504,7 @@ aside.side-bar {
 	padding-top: 20%;
 	margin-left: 50px;
 	align-self: flex-start;
-	z-index: 10;
+	z-index: 1000;
 	box-shadow: 0 2px 8px #00000026;
 	border-radius: 15px;
 	background-color: #f3f8f2;
@@ -1445,30 +1445,6 @@ aside.side-bar li.active {
 	color: var(--lightblue);
 }
 
-/* Below ~620px the width chain (container padding × .bill-feed 80%) leaves
-   less room than the card's old 360px minimum — the card was cropping its
-   content. Let the card own the viewport instead. */
-@media (max-width: 620px) {
-	.bill-container {
-		padding: 0 8px;
-	}
-	.bill-feed {
-		max-width: 100%;
-		margin-top: 2%;
-	}
-	.bill-card {
-		width: 100%;
-		min-width: 0;
-		max-width: none;
-		padding: 16px 12px 12px;
-		/* Fit small phone screens: never taller than the visible area above the bottom bar. */
-		height: min(599px, calc(100dvh - 200px));
-	}
-	.bill-footer-actions {
-		flex-wrap: wrap;
-	}
-}
-
 .bill-collection {
 	width: 100%;
 	display: flex;
@@ -1478,11 +1454,99 @@ aside.side-bar li.active {
 
 .bill-collection .policy-row {
 	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.bill-collection .policy-row .policy-row-bills {
+	display: flex;
 	flex-wrap: wrap;
-	padding: 30px 0;
 	width: 100%;
 	overflow-x: scroll;
 	white-space: none;
+}
+.carousel-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.policy-row-bills .carousel {
+	height: 700px;
+}
+
+.carousel {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 800px;
+	touch-action: pan-y;
+	position: relative;
+}
+
+.carousel .bill-card {
+	opacity: 0;
+	width: 80%;
+}
+
+.carousel .bill-card.active {
+	z-index: 10;
+	opacity: 1;
+	position: absolute;
+}
+
+.carousel .bill-card.prev {
+	position: absolute;
+	transform: translate(-40%, 0);
+	opacity: 0.5;
+}
+
+.carousel .bill-card.next {
+	position: absolute;
+	opacity: 0.5;
+	transform: translate(40%, 0);
+}
+
+.bill-card.prev:hover {
+	z-index: 1;
+	cursor: pointer;
+}
+
+.bill-card.next:hover {
+	z-index: 1;
+	cursor: pointer;
+}
+.bill-card .bill-url {
+	color: blue;
+	font-size: 0.2em;
+}
+.vote-buttons > button {
+	background-color: var(--darkblue);
+}
+.vote-buttons button:focus {
+	outline: transparent;
+}
+
+.carousel .arrows-carousel {
+	font-size: 40px;
+	z-index: 100;
+}
+
+.carousel .arrows-carousel.left {
+	position: absolute;
+	left: 7%;
+}
+
+.carousel .arrows-carousel.right {
+	position: absolute;
+	right: 7%;
+}
+
+.carousel .slider-wrapper.axis-horizontal .slider .slide {
+	display: flex;
+	justify-content: space-around;
 }
 
 .rep-section {
@@ -1720,6 +1784,30 @@ aside.side-bar li.active {
 	.rep-card-right img.rep-photo {
 		max-height: 100px;
 		max-width: 75px;
+	}
+}
+
+/* Below ~620px the width chain (container padding × .bill-feed 80%) leaves
+   less room than the card's old 360px minimum — the card was cropping its
+   content. Let the card own the viewport instead. */
+@media (max-width: 620px) {
+	.bill-container {
+		padding: 0 8px;
+	}
+	.bill-feed {
+		max-width: 100%;
+		margin-top: 2%;
+	}
+	.bill-card {
+		width: 100%;
+		min-width: 0;
+		max-width: none;
+		padding: 16px 12px 12px;
+		/* Fit small phone screens: never taller than the visible area above the bottom bar. */
+		height: min(599px, calc(100dvh - 200px));
+	}
+	.bill-footer-actions {
+		flex-wrap: wrap;
 	}
 }
 

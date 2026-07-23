@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDisplayBills } from '../../providers/BillProvider';
 import BillCard from './BillCard';
+import Carousel from './Carousel';
 import { allPolicies } from '../../constants/policy-terms';
 import type { Bill } from '../../types';
 import { BillStatus } from './BillStatus';
@@ -21,23 +22,21 @@ export const BillCollection = () => {
 	}, {});
 
 	const formPolicyRow = (policy: string) => {
+		console.log(policy, policyBills[policy]);
 		return (
-			policyBills[policy].length > 0 && (
-				<div key={policy}>
+			policyBills[policy].length !== 0 && (
+				<div
+					key={policy}
+					className='policy-row'>
 					<b>{policy}:</b>
-					<div className='policy-row'>
-						{policyBills[policy].map((bill, index) => (
-							<BillCard
-								bill={bill}
-								key={index}
-							/>
-						))}
+					<div className='policy-row-bills'>
+						<Carousel bills={policyBills[policy]} />
 					</div>
 				</div>
 			)
 		);
 	};
-
+	console.log(policyBills);
 	return (
 		<>
 			<BillCollectionFilter
@@ -48,43 +47,30 @@ export const BillCollection = () => {
 
 			<div className='bill-collection'>
 				{filterType === 'all' ? (
-					<>
+					<div className='policy-container'>
 						{allPolicies.map((policy) => {
 							return formPolicyRow(policy);
 						})}
 
 						<b>Other Bills:</b>
-						<div className='policy-row'>
-							{billsToDisplay
-								.filter(
-									(bill) => !allPolicies.some((policy) => policy.toLowerCase() === bill.policyArea?.name.toLowerCase()),
-								)
-								.map((bill, index) => (
-									<BillCard
-										bill={bill}
-										key={index}
-									/>
-								))}
-						</div>
-					</>
-				) : (filterType === 'policy' || filterType === 'legislative-term') && billsToDisplay.length > 0 ? (
-					<div className='policy-row'>
-						{billsToDisplay
-							.filter((bill) => {
-								return (
-									bill.policyArea?.name.toLowerCase() === billSubject.toLowerCase() ||
-									bill.subjects.legislativeSubjects?.some((legislativeSubject: { name: string }) =>
-										legislativeSubject.name.toLowerCase().startsWith(billSubject.toLowerCase()),
-									)
-								);
-							})
-							.map((bill, index) => (
-								<BillCard
-									bill={bill}
-									key={index}
-								/>
-							))}
+
+						<Carousel
+							bills={billsToDisplay.filter(
+								(bill) => !allPolicies.some((policy) => policy.toLowerCase() === bill.policyArea?.name.toLowerCase()),
+							)}
+						/>
 					</div>
+				) : (filterType === 'policy' || filterType === 'legislative-term') && billsToDisplay.length > 0 ? (
+					<Carousel
+						bills={billsToDisplay.filter((bill) => {
+							return (
+								bill.policyArea?.name.toLowerCase() === billSubject.toLowerCase() ||
+								bill.subjects.legislativeSubjects?.some((legislativeSubject: { name: string }) =>
+									legislativeSubject.name.toLowerCase().startsWith(billSubject.toLowerCase()),
+								)
+							);
+						})}
+					/>
 				) : filterType === 'letter-collection' ? (
 					billsToDisplay
 						.filter(
