@@ -42,5 +42,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # wrangler-action's default (3.90.0) is too old for the static-assets
+          # SPA config in wrangler.jsonc. Pin the latest 3.x, which was verified
+          # locally to parse this config (`wrangler deploy --dry-run` passed).
+          wranglerVersion: '3.114.17'
           # Uploads the already-built ./dist per wrangler.jsonc; does not rebuild.
           command: deploy
