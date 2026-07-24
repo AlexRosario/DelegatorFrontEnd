@@ -1,0 +1,46 @@
+name: Deploy to Cloudflare
+
+# Builds the Vite app and deploys it to the Cloudflare Worker defined in
+# wrangler.jsonc (name: delegator-frontend, assets: ./dist) on every push to
+# main. Replaces the silent "Workers Builds" Git integration with a pipeline
+# whose pass/fail is visible in the Actions tab.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # allow manual re-deploys from the Actions tab
+
+permissions:
+  contents: read
+
+# Never let two deploys race; cancel an in-flight run if a newer push lands.
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          # Wrangler v4 requires Node >= 22; Vite 7 builds fine on it too.
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Uploads the already-built ./dist per wrangler.jsonc; does not rebuild.
+          command: deploy
