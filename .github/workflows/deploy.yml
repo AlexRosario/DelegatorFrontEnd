@@ -35,6 +35,13 @@ jobs:
         run: npm ci
 
       - name: Build
+        # VITE_API_URL is baked into the client bundle at build time. Without it,
+        # config.ts falls back to http://localhost:8080 and the deployed site
+        # calls the visitor's own machine. It's a public value (visible in the
+        # shipped JS), so it lives here in plain text, not as a secret.
+
+        env:
+          VITE_API_URL: https://api.delegatorus.org
         run: npm run build
 
       - name: Deploy to Cloudflare Workers
