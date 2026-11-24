@@ -107,7 +107,7 @@ export const Register = () => {
 	const generateUser = () => {
 		const capitalize = _.capitalize;
 		return {
-			username: capitalize(faker.internet.userName()),
+			username: capitalize(faker.internet.username()),
 			email: faker.internet.email(),
 			password: faker.internet.password(),
 			address: {
