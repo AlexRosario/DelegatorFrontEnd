@@ -1,4 +1,11 @@
-import { faChair, faHashtag, faLandmarkDome, faCheckToSlot } from '@fortawesome/free-solid-svg-icons';
+import {
+	faHashtag,
+	faLandmarkDome,
+	faCheckToSlot,
+	faUsers,
+	faLandmark,
+	faHouseFlag,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useScreenInfo } from '../../providers/ScreenProvider';
 import { useDisplayBills } from '../../providers/BillProvider';
@@ -7,21 +14,20 @@ import { useDisplayMember } from '../../providers/MemberProvider';
 /**
  * Flat navigation — no parent categories, no hover submenus. Each item IS a
  * destination, so the same list works as the desktop sidebar and the mobile
- * bottom bar with no per-breakpoint mounting logic.
+ * bottom bar with no per-breakpoint mounting logic. The list is scoped to the
+ * current screen (bills vs. reps); the header nav switches between screens.
  */
 export const SideBar = ({ scrolled }: { scrolled: boolean }) => {
-	const { screenSelect, setScreenSelect } = useScreenInfo();
+	const { screenSelect } = useScreenInfo();
 	const { activeBillTab, setActiveBillTab, searchType, setSearchType } = useDisplayBills();
-	const { setChamber } = useDisplayMember();
+	const { chamber, setChamber } = useDisplayMember();
 
-	const onBills = screenSelect === 'bills';
-	const items = [
+	const billItems = [
 		{
 			label: 'Hopper',
 			icon: faLandmarkDome,
-			active: onBills && activeBillTab === 'discover-bills' && searchType === 'hopper',
+			active: activeBillTab === 'discover-bills' && searchType === 'hopper',
 			select: () => {
-				setScreenSelect('bills');
 				setActiveBillTab('discover-bills');
 				setSearchType('hopper');
 			},
@@ -29,9 +35,8 @@ export const SideBar = ({ scrolled }: { scrolled: boolean }) => {
 		{
 			label: 'Bill Number',
 			icon: faHashtag,
-			active: onBills && activeBillTab === 'discover-bills' && searchType === 'bill-number',
+			active: activeBillTab === 'discover-bills' && searchType === 'bill-number',
 			select: () => {
-				setScreenSelect('bills');
 				setActiveBillTab('discover-bills');
 				setSearchType('bill-number');
 			},
@@ -39,22 +44,19 @@ export const SideBar = ({ scrolled }: { scrolled: boolean }) => {
 		{
 			label: 'My Bills',
 			icon: faCheckToSlot,
-			active: onBills && activeBillTab === 'voted-bills',
-			select: () => {
-				setScreenSelect('bills');
-				setActiveBillTab('voted-bills');
-			},
-		},
-		{
-			label: 'Reps',
-			icon: faChair,
-			active: screenSelect === 'reps',
-			select: () => {
-				setScreenSelect('reps');
-				setChamber('');
-			},
+			active: activeBillTab === 'voted-bills',
+			select: () => setActiveBillTab('voted-bills'),
 		},
 	];
+
+	// chamber '' means both chambers (see RepSection).
+	const repItems = [
+		{ label: 'All Reps', icon: faUsers, active: chamber === '', select: () => setChamber('') },
+		{ label: 'Senate', icon: faLandmark, active: chamber === 'senate', select: () => setChamber('senate') },
+		{ label: 'House', icon: faHouseFlag, active: chamber === 'house', select: () => setChamber('house') },
+	];
+
+	const items = screenSelect === 'reps' ? repItems : billItems;
 
 	return (
 		<aside className={`side-bar ${scrolled ? 'scrolled' : ''}`}>

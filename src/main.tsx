@@ -7,6 +7,7 @@ import { ScreenProvider } from './providers/ScreenProvider';
 import { Home } from './components/Home';
 import { Register } from './auth-components/Register';
 import App from './App';
+import { Feed } from './components/FeedComponents/Feed';
 import { Toaster } from 'react-hot-toast';
 import { PrototypeBanner } from './components/PrototypeBanner';
 
@@ -20,6 +21,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 					<Routes>
 						<Route
 							path='/'
+							element={<Feed />}
+						/>
+						<Route
+							path='/bills'
 							element={<App />}
 						/>
 						<Route

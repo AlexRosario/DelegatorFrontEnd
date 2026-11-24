@@ -32,7 +32,7 @@ export const SignIn = () => {
         localStorage.setItem('user', JSON.stringify(data.userInfo));
 
         setUser(data.userInfo);
-        navigate('/', {
+        navigate('/bills', {
           state: data.address
         });
       })

@@ -10,7 +10,7 @@ export const RepSection = () => {
 		if (chamber === 'house') return houseReps;
 		if (chamber === 'senate') return senators;
 		return [...senators, ...houseReps];
-	}, [chamber]);
+	}, [chamber, senators, houseReps]);
 	console.log('RepSection re-rendered. chamber:', chamber);
 
 	return (

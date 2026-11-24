@@ -6,11 +6,15 @@ export const Home = () => {
 	return (
 		<div className='home'>
 			<div className='home-hero'>
-				<img
-					src={mainLogo}
-					alt='Delegator'
-					className='home-logo'
-				/>
+				<Link
+					to='/'
+					className='home-logo-link'>
+					<img
+						src={mainLogo}
+						alt='Delegator'
+						className='home-logo'
+					/>
+				</Link>
 				<h1>
 					<span>DELE</span>
 					<span>GATOR</span>

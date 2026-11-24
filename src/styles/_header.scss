@@ -1,3 +1,5 @@
+@use 'tokens' as *;
+
 .header-container {
 	position: sticky;
 	top: 0;
@@ -34,18 +36,182 @@
 	border-radius: 15px;
 }
 
-.header_sign-in-link {
-	color: black;
-	font-size: 1.2rem;
-	font-weight: 500;
+
+// Header buttons are text/icon controls — undo the global `button` chrome
+// from index.css (inset shadow, radius, and the red :focus background).
+.header-nav-link,
+.menu-burger,
+.header-dropdown .log-out {
+	&,
+	&:hover,
+	&:focus,
+	&:focus-visible {
+		background: none;
+		box-shadow: none;
+		border: none;
+		border-radius: 0;
+	}
+}
+
+// Guest "Sign in" on the bills page — solid black box that inverts on hover.
+.header-sign-in {
+	border: 2px solid #000;
+	background: #000;
+	color: $card-bg;
+	padding: 6px 12px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.18em;
+	text-decoration: none;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease;
+
+	&:hover {
+		background: $card-bg;
+		color: #000;
+	}
+}
+
+// Desktop nav (>= 768px). Below that it collapses into the hamburger.
+.header-nav {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	margin-left: 32px;
+	margin-right: auto;
+
+	@media (max-width: 767px) {
+		display: none;
+	}
+}
+
+.header-nav-link {
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	color: #000;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	transition: color 0.15s ease;
+
+	&:hover,
+	&.active {
+		color: var(--red);
+	}
 }
 
 .menu-burger {
+	display: none;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
 	color: #000;
 	font-size: xx-large;
+
+	@media (max-width: 767px) {
+		display: block;
+	}
+}
+
+.header-dropdown {
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 12px;
+	min-width: 180px;
+	padding: 14px 16px;
+	border: 2px solid #000;
+	background: $card-bg;
+	z-index: 10001;
+
+	hr {
+		width: 100%;
+		margin: 0;
+		border: none;
+		border-top: 1px solid rgba(0, 0, 0, 0.15);
+	}
+}
+
+.header-dropdown-user {
+	font-size: 12px;
+	font-weight: 700;
+}
+
+// The settings dropdown belongs to the desktop nav; the mobile menu to the hamburger.
+.settings-dropdown {
+	@media (max-width: 767px) {
+		display: none;
+	}
+}
+
+.mobile-menu {
+	@media (min-width: 768px) {
+		display: none;
+	}
+}
+
+.header-actions {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.live-feed-badge {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: 8px;
+	border: 2px solid #000;
+	background: $card-bg;
+	padding: 6px 10px;
+
+	// Mirrors Tailwind's `hidden sm:block` — badge only shows at >= 640px.
+	@media (max-width: 639px) {
+		display: none;
+	}
+}
+
+.live-feed-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--red);
+	animation: live-blink 1.4s ease-in-out infinite;
+
+	@media (prefers-reduced-motion: reduce) {
+		animation: none;
+	}
+}
+
+.live-feed-label {
+	color: #000;
+	font-size: 10px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.2em;
+}
+
+@keyframes live-blink {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.2;
+	}
 }
 
 .header-user {
+	position: relative;
 	text-align: center;
 	color: #000;
 	width: fit-content;
@@ -53,38 +219,14 @@
 	margin-right: 50px;
 }
 
-.settings-header {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	gap: 5px;
-}
-
-.profile {
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	padding: 5px;
-	width: max-content;
-	gap: 10px;
-	transform: translateX(10px);
-}
-
-.profile * {
-	padding: 0;
-	margin: 0;
-	text-align: left;
-	text-wrap: wrap;
-}
-
 .log-out {
-	color: red;
-	min-width: max-content;
-}
-
-.profile .log-out:hover {
+	background: none;
+	border: none;
+	padding: 0;
 	cursor: pointer;
+	color: red;
+	font-size: 12px;
+	min-width: max-content;
 }
 
 .main-body {

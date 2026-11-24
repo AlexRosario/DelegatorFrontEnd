@@ -1,6 +1,7 @@
 import type { BillCommentRecord, DonorSummary, Representative5Calls } from './types';
 import type { BillQuery, BillFacetCounts } from './constants/billFacets';
 import { API_BASE_URL } from './config';
+import type { WireKind, WirePage, WirePlatform } from './components/FeedComponents/feedPosts';
 import { parseSenateVoteXML, parseHouseVoteXML } from './utils/parser-utils';
 
 export const Requests = {
@@ -322,6 +323,19 @@ export const Requests = {
 		if (res.status === 404) return null;
 		if (!res.ok) throw new Error(`Failed to load donor data (${res.status})`);
 		return res.json() as Promise<DonorSummary>;
+	},
+	// The Wire, newest first. Pass the previous page's nextCursor to load more.
+	getWire: async (
+		params: { kind?: WireKind; platform?: WirePlatform; cursor?: number | null },
+		signal?: AbortSignal
+	) => {
+		const query = new URLSearchParams();
+		if (params.kind) query.set('kind', params.kind);
+		if (params.platform) query.set('platform', params.platform);
+		if (params.cursor) query.set('cursor', String(params.cursor));
+		const res = await fetch(`${API_BASE_URL}/wire?${query}`, { signal });
+		if (!res.ok) throw new Error(`Failed to load The Wire (${res.status})`);
+		return res.json() as Promise<WirePage>;
 	},
 	getBillById: async (id: string, signal?: AbortSignal) => {
 		try {

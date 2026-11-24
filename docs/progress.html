@@ -1,0 +1,249 @@
+<title>Delegator Progress</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column; one "pick up here" panel up top, then workstreams, working tree, decisions, and a dated log. */
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --fg: #1b2230;
+  --muted: #5b6577;
+  --rule: #dde2ea;
+  --accent: #1a4480;
+  --accent-soft: #e6edf7;
+  --good: #1f7a4d;
+  --good-soft: #e3f3ea;
+  --warn: #9a5b00;
+  --warn-soft: #fbf0dc;
+  --idle: #5b6577;
+  --idle-soft: #eceff4;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151c; --surface: #181e28; --fg: #e4e8ef; --muted: #9aa4b5; --rule: #2a3240;
+    --accent: #8cb4f0; --accent-soft: #1c2a40;
+    --good: #6fd19e; --good-soft: #17301f; --warn: #f0b860; --warn-soft: #34280f;
+    --idle: #9aa4b5; --idle-soft: #232a36;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181e28; --fg: #e4e8ef; --muted: #9aa4b5; --rule: #2a3240;
+  --accent: #8cb4f0; --accent-soft: #1c2a40;
+  --good: #6fd19e; --good-soft: #17301f; --warn: #f0b860; --warn-soft: #34280f;
+  --idle: #9aa4b5; --idle-soft: #232a36;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+header { display: flex; flex-direction: column; gap: 6px; }
+.eyebrow {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
+}
+h1 { margin: 0; font-size: 32px; line-height: 1.15; font-weight: 700; text-wrap: balance; }
+.meta { color: var(--muted); font-size: 14px; }
+h2 {
+  margin: 0; font-size: 20px; font-weight: 700; text-wrap: balance;
+  padding-bottom: 8px; border-bottom: 1px solid var(--rule);
+}
+h3 { margin: 0; font-size: 16px; font-weight: 600; }
+section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+p { margin: 0; max-width: 68ch; }
+ul, ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; max-width: 70ch; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+code, .mono { font-family: var(--font-mono); font-size: 0.88em; }
+code { background: var(--idle-soft); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+
+.next {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  padding: 20px 22px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.next h2 { border: 0; padding: 0; }
+
+.pill {
+  display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  padding: 2px 9px; border-radius: 999px; white-space: nowrap; vertical-align: 2px;
+}
+.pill.design { background: var(--accent-soft); color: var(--accent); }
+.pill.done { background: var(--good-soft); color: var(--good); }
+.pill.hold { background: var(--warn-soft); color: var(--warn); }
+.pill.todo { background: var(--idle-soft); color: var(--idle); }
+
+.stream { display: flex; flex-direction: column; gap: 10px; padding-block: 4px; }
+.stream + .stream { border-top: 1px solid var(--rule); padding-top: 18px; }
+.stream-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+
+.table-wrap { overflow-x: auto; min-width: 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--rule); }
+th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+td.num, td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.step-n { font-family: var(--font-mono); color: var(--muted); }
+
+.files { columns: 2 260px; column-gap: 24px; list-style: none; padding: 0; display: block; }
+.files li { break-inside: avoid; padding-block: 2px; font-family: var(--font-mono); font-size: 13px; }
+.files .tag { color: var(--muted); font-family: var(--font-body); font-size: 12px; margin-left: 6px; }
+
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--rule); padding-top: 16px; }
+@media (max-width: 480px) { h1 { font-size: 26px; } .next { padding: 16px; } }
+</style>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Delegator · frontend + backend</div>
+    <h1>Delegator Progress</h1>
+    <div class="meta">Updated Nov 23, 2026 (evening) · source file <code>DelegatorFrontend/docs/progress.html</code></div>
+  </header>
+
+  <div class="next" aria-labelledby="next-h">
+    <h2 id="next-h">Pick up here</h2>
+    <p>The Wire is live locally. 520 sources and 1,742 accounts are synced, and about 3,400 YouTube posts load on the homepage. Platforms: YouTube now, Instagram after Meta's approval. Nothing is committed or deployed yet. Fact-checking hasn't been built.</p>
+    <ol>
+      <li>Answer the open decisions in the <a href="https://claude.ai/artifact/TXJVqKeEqwn86s3JwmWSif" target="_blank" rel="noopener">verification design doc</a>, starting with whether Wire accounts are checked at launch, how many claims earn a grade, and submission pricing.</li>
+      <li>Fix <code>src/zodSchema.ts</code> in the backend. The zod 4 upgrade broke the build (<code>errorMap</code> was removed), and the server won't start until it's fixed.</li>
+      <li>Get a YouTube Data API key and set <code>YOUTUBE_API_KEY</code>, locally and in production. That adds about 90 member channels that are listed only by legacy username.</li>
+      <li>Start Meta app setup and App Review for Instagram. It's the slowest step.</li>
+      <li>Pick the agencies and other organizations for the curated list in <code>DelegatorBackend/src/wire/curatedSources.ts</code>.</li>
+      <li>Review and commit both repos. Pushing the backend runs the new migration in production through <code>prisma migrate deploy</code>.</li>
+    </ol>
+  </div>
+
+  <section aria-labelledby="streams-h">
+    <h2 id="streams-h">Workstreams</h2>
+
+    <div class="stream">
+      <div class="stream-head"><h3>The Wire and The Mill</h3><span class="pill design">In design</span></div>
+      <p><strong>The Wire</strong> is the homepage feed of posts from curated politicians, agencies and reputable organizations. <strong>The Mill</strong> ranks individual creators that users submit and pay to have checked, and may become its own feed later. AI pulls each claim out of a post and checks it against weighted evidence, and true claims go to a "What's happening in America" wall.</p>
+      <ul>
+        <li><strong>The Wire (curated only):</strong> members of Congress, federal agencies, and reputable organizations across the spectrum. Never removed. The mock's "Delegator users" tab was dropped.</li>
+        <li><strong>Submitting a creator (decided Nov 23):</strong> a user pastes a post link in a homepage section. Before charging, we look up the creator's aggregate rating across all their accounts. A disqualified creator is refused at no charge. A new creator gets a profile created once, with no grade and no intake check, and later submissions add to it.</li>
+        <li><strong>The Mill:</strong> once a creator has enough checked claims for a grade, they're ranked on The Mill list. Whether creators can earn a place in a feed will be decided later.</li>
+        <li><strong>Process:</strong> follows the scientific method. Claims are tied to the creator's exact words, two AI extraction runs are compared, there's a challenge window, test criteria are written before the evidence search, sources are tiered, review is blind, and verdicts can be reopened.</li>
+        <li><strong>Payment:</strong> submitters pay for claim extraction only. Payment never affects a verdict.</li>
+        <li><strong>Platforms:</strong> YouTube and Bluesky first (free APIs). <strong>Instagram is required</strong>, through Meta's Business Discovery API, which needs a Meta app, an Instagram Business account linked to a Facebook Page, business verification and App Review. X is paid, so maybe later.</li>
+        <li><strong>Frontend so far:</strong> a mock feed with sample posts, in <code>src/components/FeedComponents/</code> and <code>src/styles/_feed.scss</code>.</li>
+      </ul>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Step</th><th>Backend build (DelegatorBackend)</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="step-n">1</td><td>Prisma schema: FeedSource (groups a person's accounts; lane Wire or Mill), SocialAccount, SocialPost. Claim and rating tables come with step 4.</td><td><span class="pill done">Done · uncommitted</span></td></tr>
+            <tr><td class="step-n">2</td><td>Source sync (<code>npm run wire:sync</code>, daily cron): current members from congress-legislators, plus curated ProPublica and Ground News</td><td><span class="pill done">Done · uncommitted</span></td></tr>
+            <tr><td class="step-n">3</td><td>Post ingest (<code>npm run wire:ingest</code>, hourly cron): The Wire uses YouTube and Instagram only (decided Nov 23). YouTube RSS works with no key, and Instagram comes after Meta's App Review. The Bluesky ingester works but is switched off. X is on hold because it's paid. TikTok isn't possible: its only API for reading other accounts is limited to non-commercial researchers.</td><td><span class="pill design">Partly done</span></td></tr>
+            <tr><td class="step-n">4</td><td>Fact-check worker using the Anthropic SDK. Cites Bill, RollCall and MemberVote records.</td><td><span class="pill todo">Not started</span></td></tr>
+            <tr><td class="step-n">5</td><td><code>GET /wire</code> route with kind, platform and cursor filters; the homepage reads live posts</td><td><span class="pill done">Done · uncommitted</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="stream">
+      <div class="stream-head"><h3>Header and navigation</h3><span class="pill done">Done · uncommitted</span></div>
+      <ul>
+        <li>"Live feed" box with a blinking dot next to the hamburger, also on the signed-out homepage.</li>
+        <li>The header's Sign in link is hidden on the signed-out homepage; the signed-out bill page shows a Sign in button instead.</li>
+        <li>The logo links to the homepage everywhere.</li>
+        <li>The hamburger appears on mobile only and holds the bill-page header items.</li>
+      </ul>
+    </div>
+
+    <div class="stream">
+      <div class="stream-head"><h3>Sidebar and mobile bottom bar per screen</h3><span class="pill done">Done · uncommitted</span></div>
+      <p>The bills page shows Hopper, Bill Number and My Bills. The reps page shows All, Senate and House. The header nav switches between screens.</p>
+    </div>
+
+    <div class="stream">
+      <div class="stream-head"><h3>Profile link in header</h3><span class="pill hold">On hold</span></div>
+      <p>Paused on Oct 29 so we could work on the sidebar instead.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="tree-h">
+    <h2 id="tree-h">Uncommitted work</h2>
+    <p><strong>DelegatorFrontend</strong> on <code>main</code>. The last commit is <code class="mono">66fca2b</code>, Jul 24.</p>
+    <ul class="files">
+      <li>src/App.scss</li>
+      <li>src/auth-components/Register.tsx</li>
+      <li>src/auth-components/SignIn.tsx</li>
+      <li>src/components/HeaderComponent.tsx</li>
+      <li>src/components/Home.tsx</li>
+      <li>src/components/RepComponents/RepSection.tsx</li>
+      <li>src/components/SideBarComponents/SideBar.tsx</li>
+      <li>src/main.tsx</li>
+      <li>src/api.tsx</li>
+      <li>src/styles/_header.scss</li>
+      <li>src/styles/_landing.scss</li>
+      <li>src/components/FeedComponents/<span class="tag">new</span></li>
+      <li>src/styles/_feed.scss<span class="tag">new</span></li>
+      <li>docs/progress.html<span class="tag">new · this page</span></li>
+    </ul>
+    <p><strong>DelegatorBackend</strong> on <code>main</code>. The last commit is <code class="mono">ddfba35</code>, Oct 12.</p>
+    <ul class="files">
+      <li>prisma/schema.prisma</li>
+      <li>prisma/migrations/20261123212335_wire_social_feed/<span class="tag">new</span></li>
+      <li>src/wire/<span class="tag">new</span></li>
+      <li>src/router/wire.router.ts<span class="tag">new</span></li>
+      <li>src/workers/wireSync.ts<span class="tag">new</span></li>
+      <li>src/workers/wireIngest.ts<span class="tag">new</span></li>
+      <li>server.ts</li>
+      <li>package.json<span class="tag">also your dependency upgrades</span></li>
+      <li>package-lock.json<span class="tag">your dependency upgrades</span></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="log-h">
+    <h2 id="log-h">Session log</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>What happened</th></tr></thead>
+        <tbody>
+          <tr><td class="date">Nov 23, 2026</td><td>Built The Wire end to end: schema and migration, source sync (520 sources), hourly Bluesky and YouTube ingest (about 3,400 posts), <code>GET /wire</code>, and a live homepage feed. Added ProPublica and Ground News. Found that the zod 4 upgrade breaks the backend build.</td></tr>
+          <tr><td class="date">Nov 23, 2026</td><td>Narrowed the homepage feed, The Wire, to curated accounts. Submitted creators are paid for by the submitter, checked against disqualification first, start with no grade and no intake check, and are ranked on The Mill once graded. The Mill may become its own feed later. Updated the design doc to match.</td></tr>
+          <tr><td class="date">Nov 19, 2026</td><td>Created this progress page.</td></tr>
+          <tr><td class="date">Nov 11, 2026</td><td>Made Instagram a required platform. Designed the claim-verification process and wrote it up as a <a href="https://claude.ai/artifact/TXJVqKeEqwn86s3JwmWSif" target="_blank" rel="noopener">design doc</a>.</td></tr>
+          <tr><td class="date">Oct 29, 2026</td><td>Settled the feed structure: three tabs, scoring for everyone, removal for Creators only. Surveyed the backend (Express, Prisma, Postgres, existing workers, Anthropic SDK). Paused before writing the schema.</td></tr>
+          <tr><td class="date">Oct 29, 2026</td><td>Live feed badge, header Sign in rules, logo link, mobile-only hamburger, per-screen sidebar and bottom bar. Profile link put on hold.</td></tr>
+          <tr><td class="date">Oct 28, 2026</td><td>Brought the Base44 influencer feed mock into the homepage. First discussion of AI fact-checking.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="shipped-h">
+    <h2 id="shipped-h">Already shipped</h2>
+    <ul>
+      <li>Hosting on Cloudflare Workers, deployed by GitHub Actions on push (Jul 2026).</li>
+      <li>App.scss split into ordered SCSS partials, plus a global color token (Jul 2026).</li>
+      <li>Login session stored in an httpOnly cookie; no personal data in localStorage (Jul 2026).</li>
+      <li>Bill filters run as server queries, with personalized counts and voted/unvoted filters (Jul 2026).</li>
+      <li>Contact-your-member drafts that change with the bill's stage (Jul 2026).</li>
+      <li>FEC donor data on the back of rep cards (Jul 2026).</li>
+    </ul>
+  </section>
+
+  <footer>Claude updates this page at the end of each working session. You commit changes yourself.</footer>
+</div>

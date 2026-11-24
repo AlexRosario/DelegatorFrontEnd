@@ -95,7 +95,7 @@ export const Register = () => {
 
 			await setUser(data.userInfo);
 
-			navigate('/', { state: address });
+			navigate('/bills', { state: address });
 		} catch (error) {
 			console.error('Fetch error:', error);
 			setIsFormSubmitted(false);
@@ -125,7 +125,7 @@ export const Register = () => {
 				<div className='register-head'>
 					<h2>Create your account</h2>
 					<Link
-						to='/'
+						to='/home'
 						className='register-back'>
 						← Back to sign in
 					</Link>

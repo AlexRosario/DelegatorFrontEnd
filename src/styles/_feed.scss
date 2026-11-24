@@ -1,0 +1,408 @@
+@use 'tokens' as *;
+
+/* ---- Homepage feed (newsprint "wire" of political posts) ---- */
+$feed-ink: rgb(45, 46, 44); // --offblack
+$feed-muted: rgba(45, 46, 44, 0.62);
+$feed-rule: rgba(45, 46, 44, 0.18);
+$feed-serif: Georgia, 'Times New Roman', serif;
+
+@mixin feed-label {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.18em;
+}
+
+.feed-page {
+	width: 100%;
+	min-height: 100vh;
+	// index.css :root defaults to light text on dark — pin the newsprint palette.
+	color: $feed-ink;
+	background: $card-bg;
+}
+
+.feed {
+	max-width: 72rem;
+	margin: 0 auto;
+	padding: 0 1rem 5rem;
+	box-sizing: border-box;
+	text-align: left;
+}
+
+.feed-hero {
+	padding: 2.5rem 0;
+	border-bottom: 1px solid $feed-rule;
+
+	h1 {
+		margin: 0;
+		max-width: 16ch;
+		font-family: $feed-serif;
+		font-size: clamp(2.25rem, 6vw, 3.75rem);
+		font-weight: 900;
+		line-height: 0.98;
+		letter-spacing: -0.01em;
+		color: $feed-ink;
+	}
+}
+
+.feed-hero_lede {
+	margin: 1.25rem 0 0;
+	max-width: 36rem;
+	font-family: $feed-serif;
+	font-size: 1.125rem;
+	line-height: 1.6;
+	color: $feed-muted;
+}
+
+
+.feed-hero_ctas {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: 1.5rem;
+}
+
+.feed-cta {
+	@include feed-label;
+	padding: 0.6rem 1.25rem;
+	border: 2px solid $feed-ink;
+	color: $feed-ink;
+	background: transparent;
+
+	&:hover {
+		color: var(--red);
+		border-color: var(--red);
+	}
+
+	&--primary {
+		background: $feed-ink;
+		color: white;
+
+		&:hover {
+			color: white;
+			background: var(--red);
+		}
+	}
+
+	&--plain {
+		border-color: transparent;
+
+		&:hover {
+			border-color: transparent;
+		}
+	}
+}
+
+/* Filter row — resets the global button chrome from index.css. */
+.feed-filters {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1.25rem 0;
+	border-bottom: 2px solid $feed-ink;
+
+	button {
+		@include feed-label;
+		margin: 0;
+		border-radius: 0;
+		box-shadow: none;
+		font-family: inherit;
+		transition:
+			transform 0.15s,
+			background-color 0.15s;
+
+		&:focus {
+			background-color: inherit;
+		}
+		&:focus-visible {
+			outline: 2px solid var(--lightblue);
+			outline-offset: 2px;
+		}
+	}
+}
+
+.feed-filters_categories {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.feed-chip {
+	padding: 0.4rem 0.75rem;
+	border: 2px solid $feed-rule;
+	background: transparent;
+	color: $feed-muted;
+
+	&:hover {
+		border-color: $feed-ink;
+		transform: translateY(-2px);
+	}
+
+	&.is-active,
+	&.is-active:focus {
+		border-color: $feed-ink;
+		background: $feed-ink;
+		color: white;
+	}
+}
+
+.feed-filters_platforms {
+	display: flex;
+	align-self: flex-start;
+	border: 2px solid $feed-ink;
+}
+
+.feed-segment {
+	padding: 0.4rem 0.75rem;
+	border: none;
+	background: transparent;
+	color: $feed-muted;
+
+	& + & {
+		border-left: 2px solid $feed-ink;
+	}
+
+	&:hover {
+		border-color: $feed-ink;
+		background: rgba(45, 46, 44, 0.06);
+	}
+
+	&.is-active,
+	&.is-active:focus {
+		background: $feed-ink;
+		color: white;
+	}
+}
+
+.feed-wire-head {
+	@include feed-label;
+	display: flex;
+	justify-content: space-between;
+	margin-top: 2rem;
+	letter-spacing: 0.25em;
+	color: $feed-muted;
+}
+
+/* Masonry via CSS columns, with a hairline rule between them. */
+.feed-columns {
+	margin-top: 1.5rem;
+	columns: 1;
+	column-gap: 2.5rem;
+	column-rule: 1px solid $feed-rule;
+}
+
+.feed-columns_item {
+	break-inside: avoid;
+	margin-bottom: 2.5rem;
+}
+
+.feed-empty {
+	margin-top: 2rem;
+	font-family: $feed-serif;
+	color: $feed-muted;
+}
+
+.feed-card {
+	--feed-accent: var(--red);
+	border-top: 2px solid $feed-ink;
+	padding-top: 1rem;
+
+	&--member {
+		--feed-accent: var(--lightblue);
+	}
+	&--organization {
+		--feed-accent: #c46a1c;
+	}
+}
+
+.feed-card_meta {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.75rem;
+	font-size: 10px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.18em;
+	color: $feed-muted;
+}
+
+.feed-card_category {
+	letter-spacing: 0.22em;
+	color: var(--feed-accent);
+}
+
+.feed-card_author {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-top: 1rem;
+}
+
+.feed-card_avatar {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	border: 2px solid $feed-ink;
+	background: var(--feed-accent);
+	color: white;
+	font-family: $feed-serif;
+	font-size: 0.875rem;
+	font-weight: 700;
+}
+
+.feed-card_author-text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.feed-card_name {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	overflow: hidden;
+	font-family: $feed-serif;
+	font-weight: 700;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.feed-card_verified {
+	flex-shrink: 0;
+	color: var(--lightblue);
+}
+
+.feed-card_handle {
+	overflow: hidden;
+	font-size: 0.75rem;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	color: $feed-muted;
+}
+
+.feed-card_image {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1;
+	margin-top: 1rem;
+	object-fit: cover;
+	border: 2px solid $feed-ink;
+	filter: grayscale(25%);
+	transition: filter 0.5s;
+
+	&:hover {
+		filter: none;
+	}
+
+	&--youtube {
+		aspect-ratio: 16 / 9;
+	}
+}
+
+.feed-card_title {
+	margin: 0.75rem 0 0;
+	font-family: $feed-serif;
+	font-size: 19px;
+	line-height: 1.3;
+	text-wrap: balance;
+
+	a {
+		color: inherit;
+		text-decoration: none;
+
+		&:hover,
+		&:focus-visible {
+			text-decoration: underline;
+		}
+	}
+}
+
+.feed-card_text {
+	margin: 0.75rem 0 0;
+	font-family: $feed-serif;
+	font-size: 17px;
+	line-height: 1.65;
+	white-space: pre-line;
+	overflow-wrap: anywhere;
+	// Video descriptions run long; the full text is one click away.
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 8;
+	line-clamp: 8;
+	overflow: hidden;
+}
+
+.feed-card_source-link {
+	margin-left: auto;
+	color: inherit;
+	text-decoration: none;
+	white-space: nowrap;
+
+	&:hover,
+	&:focus-visible {
+		color: $feed-ink;
+		text-decoration: underline;
+	}
+}
+
+.feed-more {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 3rem;
+}
+
+.feed-retry {
+	padding: 0;
+	border: 0;
+	background: none;
+	font: inherit;
+	color: $feed-ink;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+
+
+.feed-card_footer {
+	@include feed-label;
+	display: flex;
+	align-items: center;
+	gap: 1.25rem;
+	margin-top: 0.75rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid $feed-rule;
+	letter-spacing: 0.16em;
+	font-variant-numeric: tabular-nums;
+	color: $feed-muted;
+
+	span {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+	}
+}
+
+@media (min-width: 640px) {
+	.feed-columns {
+		columns: 2;
+	}
+}
+
+@media (min-width: 1024px) {
+	.feed-filters {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.feed-filters_platforms {
+		align-self: auto;
+	}
+
+	.feed-columns {
+		columns: 3;
+	}
+}
