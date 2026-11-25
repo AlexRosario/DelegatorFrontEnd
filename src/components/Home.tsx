@@ -19,7 +19,7 @@ export const Home = () => {
 					<span>DELE</span>
 					<span>GATOR</span>
 				</h1>
-				<p className='home-tagline'>Congress works for you. Watch it like you mean it.</p>
+				<p className='home-tagline'>E. Pluribus Doobum</p>
 				<ul className='home-features'>
 					<li>📜 Every bill, summarized — with plain-English translations</li>
 					<li>🗳️ Vote yourself, then see how your representatives measure up</li>
