@@ -190,9 +190,10 @@ export const Feed = () => {
 			<Header />
 			<main className='feed'>
 				<section className='feed-hero'>
-					<h1>What America is saying about Congress</h1>
+					<h1>E. Pluribus Doobum</h1>
 					<p className='feed-hero_lede'>
-						Posts from members of Congress, federal agencies and independent newsrooms, taken straight from their own accounts.
+						Posts from members of Congress, federal agencies and independent newsrooms, taken straight from their own
+						accounts.
 					</p>
 					<div className='feed-hero_ctas'>
 						{!isSignedIn && (
