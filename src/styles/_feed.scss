@@ -1,9 +1,10 @@
 @use 'tokens' as *;
 
 /* ---- Homepage feed (newsprint "wire" of political posts) ---- */
-$feed-ink: rgb(45, 46, 44); // --offblack
-$feed-muted: rgba(45, 46, 44, 0.62);
-$feed-rule: rgba(45, 46, 44, 0.18);
+// Themed via index.css tokens so the newsprint palette inverts in dark mode.
+$feed-ink: var(--ink);
+$feed-muted: var(--ink-muted);
+$feed-rule: var(--ink-rule);
 $feed-serif: Georgia, 'Times New Roman', serif;
 
 @mixin feed-label {
@@ -16,7 +17,7 @@ $feed-serif: Georgia, 'Times New Roman', serif;
 .feed-page {
 	width: 100%;
 	min-height: 100vh;
-	// index.css :root defaults to light text on dark — pin the newsprint palette.
+	// Pin the newsprint palette (themed tokens).
 	color: $feed-ink;
 	background: $card-bg;
 }
@@ -76,11 +77,11 @@ $feed-serif: Georgia, 'Times New Roman', serif;
 
 	&--primary {
 		background: $feed-ink;
-		color: white;
+		color: var(--on-ink);
 
 		&:hover {
-			color: white;
-			background: var(--red);
+			color: #fff;
+			background: var(--red-solid);
 		}
 	}
 
@@ -142,7 +143,7 @@ $feed-serif: Georgia, 'Times New Roman', serif;
 	&.is-active:focus {
 		border-color: $feed-ink;
 		background: $feed-ink;
-		color: white;
+		color: var(--on-ink);
 	}
 }
 
@@ -164,13 +165,13 @@ $feed-serif: Georgia, 'Times New Roman', serif;
 
 	&:hover {
 		border-color: $feed-ink;
-		background: rgba(45, 46, 44, 0.06);
+		background: var(--ink-hover);
 	}
 
 	&.is-active,
 	&.is-active:focus {
 		background: $feed-ink;
-		color: white;
+		color: var(--on-ink);
 	}
 }
 
@@ -247,7 +248,7 @@ $feed-serif: Georgia, 'Times New Roman', serif;
 	height: 2.75rem;
 	border: 2px solid $feed-ink;
 	background: var(--feed-accent);
-	color: white;
+	color: var(--on-accent);
 	font-family: $feed-serif;
 	font-size: 0.875rem;
 	font-weight: 700;

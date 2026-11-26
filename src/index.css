@@ -3,9 +3,12 @@
 	line-height: 1.5;
 	font-weight: 400;
 
+	/* Theme follows the device: light by default, dark under prefers-color-scheme.
+	   Every color below is a theme token — style rules should use these, never
+	   hard-coded white/black, so both themes stay legible. */
 	color-scheme: light dark;
-	color: rgba(255, 255, 255, 0.87);
-	background-color: #242424;
+	color: var(--text);
+	background-color: var(--bg);
 
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
@@ -16,11 +19,47 @@
 	padding: 0;
 	box-sizing: border-box;
 
-	/* Brand palette: red + lightblue accents, darkblue for deep contrast, offblack for text. */
+	/* Brand palette: red + lightblue accents, darkblue for deep contrast, offblack for text.
+	   --red / --lightblue are re-tuned in dark mode so they stay readable as TEXT;
+	   --red-solid and --darkblue stay fixed because they're used as BACKGROUNDS
+	   under white text. */
 	--red: rgb(154, 61, 24);
+	--red-solid: rgb(154, 61, 24);
 	--lightblue: #3f7882;
+	--accent-hover: #2f5c64; /* hover background for solid --lightblue buttons */
 	--darkblue: #213547;
 	--offblack: rgb(45, 46, 44);
+
+	/* Surfaces + text (light theme). */
+	--bg: rgb(243, 248, 242); /* page tint */
+	--surface: #fffefb; /* bill card, modals, dropdowns */
+	--surface-alt: #ffffff; /* rep card, pills, landing/register cards */
+	--text: var(--darkblue); /* default body text */
+	--text-strong: #000; /* header nav, black outlined boxes */
+	--ink: rgb(45, 46, 44); /* newsprint feed ink */
+	--ink-muted: rgba(45, 46, 44, 0.62);
+	--ink-rule: rgba(45, 46, 44, 0.18);
+	--ink-hover: rgba(45, 46, 44, 0.06);
+	--on-ink: #fff; /* text on a solid --ink background */
+	--on-accent: #fff; /* text on a solid --lightblue / accent background */
+	--muted: rgba(45, 46, 44, 0.75);
+	--hairline: rgba(0, 0, 0, 0.12);
+	--subtle-bg: #161c2d0d;
+	--track: #eeeeee; /* empty bars / rings */
+	--input-bg: #fbfcfa;
+	--input-border: #d5d9d4;
+	--button-bg: var(--darkblue);
+	--shadow: rgba(22, 28, 45, 0.14);
+
+	/* Status colors. */
+	--warn-bg: #fff3cd;
+	--warn-fg: #664d03;
+	--warn-border: #ffe69c;
+	--success-fg: #2c5e22;
+	--success-icon: #377c29;
+	--danger-fg: #a12b2b;
+	--danger-icon: #8f1416;
+	--amber-fg: #7a5a0e;
 
 	--size-10: 0.625rem;
 	--size-14: 0.875rem;
@@ -52,7 +91,7 @@ body {
 	justify-content: center; /* horizontally centers children */
 	align-items: center; /* vertically centers (if height is set) */
 	min-width: 100%;
-	background-color: rgb(243, 248, 242);
+	background-color: var(--bg);
 }
 
 h1 {
@@ -69,8 +108,8 @@ button {
 	font-size: 0.8em;
 	font-weight: 500;
 	font-family: inherit;
-	color: white;
-	background-color: #1a1a1a;
+	color: #fff;
+	background-color: var(--button-bg);
 	cursor: pointer;
 	transition: border-color 0.25s;
 	margin: 10px auto;
@@ -81,19 +120,44 @@ button:hover {
 button:focus,
 button:focus-visible {
 	outline: 4px auto -webkit-focus-ring-color;
-	background-color: var(--red);
+	background-color: var(--red-solid);
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
 	:root {
-		color: var(--darkblue);
-		background-color: rgb(243, 248, 242); /* was var(--bg) — never declared */
-	}
-	a:hover {
-		color: var(--lightblue);
-	}
-	button {
-		background-color: var(--darkblue);
+		--red: #e58a5f;
+		--lightblue: #7cc0cc;
+		--accent-hover: #a3d6df;
+		--offblack: #d9dcd6;
+
+		--bg: #12181c;
+		--surface: #1b2328;
+		--surface-alt: #202a30;
+		--text: #dce5ea;
+		--text-strong: #f2f2ef;
+		--ink: #e6e4df;
+		--ink-muted: rgba(230, 228, 223, 0.66);
+		--ink-rule: rgba(230, 228, 223, 0.2);
+		--ink-hover: rgba(230, 228, 223, 0.08);
+		--on-ink: #12181c;
+		--on-accent: #0f1a1d;
+		--muted: rgba(220, 229, 234, 0.72);
+		--hairline: rgba(255, 255, 255, 0.14);
+		--subtle-bg: rgba(255, 255, 255, 0.06);
+		--track: #2f3a40;
+		--input-bg: #141b1f;
+		--input-border: #3a464d;
+		--button-bg: #2b4a5e;
+		--shadow: rgba(0, 0, 0, 0.45);
+
+		--warn-bg: #3a2f0b;
+		--warn-fg: #f3d98a;
+		--warn-border: #5c4a12;
+		--success-fg: #8fd67f;
+		--success-icon: #6cc35a;
+		--danger-fg: #f29191;
+		--danger-icon: #ef6b6b;
+		--amber-fg: #e8c76d;
 	}
 }
 @font-face {

@@ -49,11 +49,11 @@
 
 	&.stage-law {
 		background-color: rgba(55, 124, 41, 0.15);
-		color: #2c5e22;
+		color: var(--success-fg);
 	}
 	&.stage-dead {
 		background-color: rgba(161, 43, 43, 0.14);
-		color: #a12b2b;
+		color: var(--danger-fg);
 	}
 }
 
@@ -133,7 +133,7 @@
 	gap: 2px;
 	padding: 6px 8px;
 	border-radius: 8px;
-	background-color: #161c2d0d;
+	background-color: var(--subtle-bg);
 }
 
 .bill-chat-author {
@@ -167,7 +167,9 @@
 		flex: 1;
 		padding: 6px 8px;
 		border-radius: 6px;
-		border: 1px solid #ccc;
+		border: 1px solid var(--input-border);
+		background-color: var(--input-bg);
+		color: var(--text);
 	}
 }
 
@@ -233,12 +235,12 @@
 }
 
 .pct-yes {
-	color: #2c7a24;
+	color: var(--success-fg);
 	font-weight: 700;
 }
 
 .pct-no {
-	color: #a12b2b;
+	color: var(--danger-fg);
 	font-weight: 700;
 }
 
@@ -257,8 +259,8 @@
 	font-weight: 700;
 	padding: 1px 8px;
 	border-radius: 400px;
-	background: #161c2d1f;
-	color: #161c2dcc;
+	background: var(--subtle-bg);
+	color: var(--muted);
 	pointer-events: none;
 }
 
@@ -350,7 +352,7 @@
 
 .translate-error {
 	font-size: 0.7rem;
-	color: #8f1416;
+	color: var(--danger-fg);
 }
 
 .passage-methods {
@@ -370,14 +372,14 @@
 
 	&.passage-roll-call {
 		background-color: #377c2926;
-		color: #2c5e22;
+		color: var(--success-fg);
 	}
 
 	&.passage-voice,
 	&.passage-unanimous,
 	&.passage-unrecorded {
 		background-color: #c494192e;
-		color: #7a5a0e;
+		color: var(--amber-fg);
 	}
 }
 

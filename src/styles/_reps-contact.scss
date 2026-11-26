@@ -83,7 +83,7 @@
 	user-select: none;
 }
 .contact-modal {
-	background-color: rgb(255, 254, 251);
+	background-color: var(--surface);
 	color: var(--lightblue);
 	padding: 20px 24px;
 	text-align: left;
@@ -148,7 +148,7 @@
 	font-size: 0.7rem;
 }
 .contact-member-block {
-	border-bottom: 1px solid rgba(22, 28, 45, 0.08);
+	border-bottom: 1px solid var(--hairline);
 }
 .contact-draft {
 	padding: 4px 0 10px;
@@ -160,7 +160,9 @@
 		font-family: inherit;
 		padding: 8px;
 		border-radius: 6px;
-		border: 1px solid #ccc;
+		border: 1px solid var(--input-border);
+		background-color: var(--input-bg);
+		color: var(--text);
 		resize: vertical;
 	}
 }
@@ -194,7 +196,7 @@
 		border-radius: 50%;
 		object-fit: cover;
 		border: 2px solid $page-tint;
-		background-color: #fff;
+		background-color: var(--surface-alt);
 	}
 }
 

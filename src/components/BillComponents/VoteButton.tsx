@@ -7,7 +7,7 @@ type VoteButtonProps = {
 };
 
 export const VoteButton = ({ voteValue, onClick }: VoteButtonProps) => {
-	const color = voteValue == 'No' ? '#8f1416' : '#377c29';
+	const color = voteValue == 'No' ? 'var(--danger-icon)' : 'var(--success-icon)';
 
 	return (
 		<div

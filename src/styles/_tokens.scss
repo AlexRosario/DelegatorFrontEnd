@@ -4,9 +4,9 @@
 // index.css; that file remains the runtime source of truth for --lightblue etc.
 $lightblue: #3f7882; // --lightblue == rgb(63, 120, 130)
 $red: rgb(154, 61, 24); // --red
-$lightblue-hover: #2f5c64; // darker teal used on button:hover
-$card-bg: #fffefb; // bill / rep card surface
-$page-tint: rgb(243, 248, 242); // page-background base tint
+$lightblue-hover: var(--accent-hover); // hover bg for solid lightblue buttons (themed)
+$card-bg: var(--surface); // bill / rep card surface (themed)
+$page-tint: var(--bg); // page-background base tint (themed)
 
 // Shared landing + registration page background (two brand-tinted radial
 // glows over the page tint).

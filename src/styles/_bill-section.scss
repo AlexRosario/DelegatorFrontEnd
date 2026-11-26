@@ -27,10 +27,10 @@
 	bottom: 24px;
 	right: 24px;
 	z-index: 1200; /* above content, below the rep/contact modals (2000) */
-	background-color: white;
-	border: var(--darkblue) 1px solid;
+	background-color: var(--surface-alt);
+	border: var(--text) 1px solid;
 	border-radius: 50%;
-	color: var(--darkblue);
+	color: var(--text);
 	font-size: x-large;
 	width: var(--size-16);
 	height: var(--size-16);
@@ -99,7 +99,7 @@
 	margin-left: 10px;
 	cursor: pointer;
 	color: var(--lightblue);
-	background-color: white;
+	background-color: var(--surface-alt);
 	z-index: 10;
 	transition:
 		background-color 0.15s ease,
@@ -133,7 +133,7 @@
 	box-sizing: border-box;
 	border-radius: 400px;
 	border: 1px solid rgba($lightblue, 0.45);
-	background-color: white;
+	background-color: var(--surface-alt);
 	color: var(--lightblue);
 	font-size: 0.85rem;
 	text-align: center;
@@ -167,7 +167,7 @@
 	border-radius: 400px;
 	text-align: center;
 	border: 1px solid rgba($lightblue, 0.45);
-	background-color: white;
+	background-color: var(--surface-alt);
 	color: var(--lightblue);
 	font-weight: 600;
 	cursor: pointer;

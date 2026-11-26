@@ -16,7 +16,7 @@ const RepBubble = ({ member, onOpen }: { member: CongressMember; onOpen: (member
 	const ringBackground =
 		score === null
 			? alignmentColor(null)
-			: `conic-gradient(${alignmentColor(score)} ${score}%, #e0e0e0 0)`;
+			: `conic-gradient(${alignmentColor(score)} ${score}%, var(--track) 0)`;
 	const missedNote = missedCount > 0 ? `; missed ${missedCount} vote${missedCount === 1 ? '' : 's'}` : '';
 	// The inferred (unrecorded-votes) score is deliberately NOT in the tooltip —
 	// it's disclosed by clicking the score on the rep's card.
