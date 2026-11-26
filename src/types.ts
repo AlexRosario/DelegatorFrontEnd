@@ -181,6 +181,40 @@ export type CongressMember = {
 	url: string;
 };
 
+// One entry of GET /members/mine/past — the member's most recent span as the
+// caller's rep. startedAt is null for links that predate rep history.
+export type PastRepReason = 'left_office' | 'redistricted' | 'moved' | 'other';
+export type PastRep = {
+	member: CongressMember;
+	startedAt: string | null;
+	endedAt: string;
+	reason: PastRepReason;
+};
+
+// GET /members/mine/district-history — everyone who has held the caller's
+// current seats (House district number + state Senate seats), from congress.gov.
+// `member` is a congress.gov subset, not a full DB row: no phone/currentMember.
+export type SeatHistoryMember = Pick<
+	CongressMember,
+	'id' | 'name' | 'firstName' | 'lastName' | 'party' | 'state' | 'district' | 'chamber' | 'photoURL' | 'url'
+>;
+export type SeatTerm = {
+	member: SeatHistoryMember;
+	chamber: 'House' | 'Senate';
+	state: string;
+	district: number | null;
+	startYear: number;
+	endYear: number | null;
+	startCongress: number;
+	endCongress: number;
+};
+export type DistrictHistory = {
+	// Both null (and terms empty) when the user's state can't be resolved.
+	seats: { house: { state: string; district: number } | null; senate: { state: string } | null };
+	coverageFromYear: number;
+	terms: SeatTerm[];
+};
+
 export type Representative5Calls = {
 	id: string;
 	name: string;

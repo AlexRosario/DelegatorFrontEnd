@@ -1,4 +1,4 @@
-import type { BillCommentRecord, DonorSummary, Representative5Calls } from './types';
+import type { BillCommentRecord, DistrictHistory, DonorSummary, PastRep } from './types';
 import type { BillQuery, BillFacetCounts } from './constants/billFacets';
 import { API_BASE_URL } from './config';
 import type { WireKind, WirePage, WirePlatform } from './components/FeedComponents/feedPosts';
@@ -72,20 +72,6 @@ export const Requests = {
 			throw new Error('dang');
 		}
 	},
-	addNewMember: async (member: Representative5Calls) => {
-		try {
-			const members = await fetch(`${API_BASE_URL}/members`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(member),
-			});
-			return members;
-		} catch (error) {
-			console.error('Error posting member:', error);
-		}
-	},
 	// The session cookie is httpOnly — only the server can clear it.
 	logout: async () => {
 		try {
@@ -106,6 +92,19 @@ export const Requests = {
 			console.error('Error fetching members:', err);
 			return null;
 		}
+	},
+	// Reps who used to represent the caller (left office, redistricted, moved),
+	// newest endedAt first. Throws so the section can stay hidden on failure.
+	getPastMembers: async (signal?: AbortSignal) => {
+		const res = await fetch(`${API_BASE_URL}/members/mine/past`, { credentials: 'include', signal });
+		if (!res.ok) throw new Error(`Failed to fetch past reps (${res.status})`);
+		return (await res.json()) as PastRep[];
+	},
+	// Everyone who has held the caller's current seats (congress.gov, cached server-side).
+	getDistrictHistory: async (signal?: AbortSignal) => {
+		const res = await fetch(`${API_BASE_URL}/members/mine/district-history`, { credentials: 'include', signal });
+		if (!res.ok) throw new Error(`Failed to fetch district history (${res.status})`);
+		return (await res.json()) as DistrictHistory;
 	},
 	getVoteLog: async () => {
 		try {

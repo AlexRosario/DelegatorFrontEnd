@@ -181,3 +181,47 @@
 		transition: width 0.4s ease-in-out;
 	}
 }
+
+/* Past-reps section, toggled from the sidebar, sits below the current reps. */
+.past-section {
+	margin-top: 32px;
+	padding-top: 16px;
+	border-top: 1px solid var(--lightblue);
+}
+.past-section-heading {
+	text-align: center;
+	margin: 0;
+}
+
+/* Past rep cards: same cards, visually secondary, with a tenure note. */
+.past-reps-empty,
+.past-reps-hint,
+.district-history-intro {
+	text-align: center;
+	margin: 24px auto 0;
+	max-width: 420px;
+}
+.past-reps-hint {
+	margin-top: 8px;
+	font-size: 0.85rem;
+	opacity: 0.75;
+}
+.rep-card-past {
+	border-style: dashed;
+	opacity: 0.85;
+}
+.rep-tenure {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	margin-top: 4px;
+	font-size: 0.75rem;
+}
+.rep-tenure-reason {
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+.district-history-intro {
+	font-weight: 600;
+}

@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import type { CongressMember } from '../../types';
 import { useAlignment, alignmentColor } from '../../hooks/useAlignment';
 import { RepDonors } from './RepDonors';
-export const RepCard = ({ member }: { member: CongressMember }) => {
+// `tenure` marks a past rep: it renders under the title and dims the card.
+export const RepCard = ({ member, tenure }: { member: CongressMember; tenure?: ReactNode }) => {
 	const title = member.area == 'US House' ? 'Representative' : 'Senator';
 	const bioguideId = member.bioguideId ?? member.id;
 	const chamber = member.area === 'US House' ? 'House' : 'Senate';
@@ -21,13 +23,14 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 	};
 
 	return (
-		<div className={`rep-card ${flipped ? 'flipped' : ''}`}>
+		<div className={`rep-card ${flipped ? 'flipped' : ''} ${tenure ? 'rep-card-past' : ''}`}>
 			<div className='rep-flip-inner'>
 				<div className='rep-flip-face rep-flip-front'>
 					<div className='rep-card-left'>
 						<div className='name-title'>
 							<h3 className='font-face-Barlow'>{member.name.toUpperCase()}</h3>
 							<h5>{`${title} from ${member.state}`}</h5>
+							{tenure}
 						</div>
 						<div className='rep-creds'>
 							{' '}
@@ -89,7 +92,7 @@ export const RepCard = ({ member }: { member: CongressMember }) => {
 							) : null}
 
 							<div>{member.party}</div>
-							<div>Phone: {member.phone}</div>
+							{member.phone && <div>Phone: {member.phone}</div>}
 							<div>
 								<span>
 									<span className='rep-links'>

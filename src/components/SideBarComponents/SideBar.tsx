@@ -5,11 +5,15 @@ import {
 	faUsers,
 	faLandmark,
 	faHouseFlag,
+	faClockRotateLeft,
+	faMapLocationDot,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useScreenInfo } from '../../providers/ScreenProvider';
 import { useDisplayBills } from '../../providers/BillProvider';
 import { useDisplayMember } from '../../providers/MemberProvider';
+import type { PastView } from '../../providers/MemberProvider';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 /**
  * Flat navigation — no parent categories, no hover submenus. Each item IS a
@@ -20,7 +24,7 @@ import { useDisplayMember } from '../../providers/MemberProvider';
 export const SideBar = ({ scrolled }: { scrolled: boolean }) => {
 	const { screenSelect } = useScreenInfo();
 	const { activeBillTab, setActiveBillTab, searchType, setSearchType } = useDisplayBills();
-	const { chamber, setChamber } = useDisplayMember();
+	const { chamber, setChamber, pastView, setPastView } = useDisplayMember();
 
 	const billItems = [
 		{
@@ -49,14 +53,35 @@ export const SideBar = ({ scrolled }: { scrolled: boolean }) => {
 		},
 	];
 
-	// chamber '' means both chambers (see RepSection).
+	// chamber '' means both chambers (see RepSection). The chamber filter applies
+	// to the current reps and to whichever past-reps section is showing below them.
+	// The two past sections are toggles: turning one on turns the other off, and
+	// clicking the active one hides it.
+	const pastItem = (label: string, icon: IconDefinition, view: PastView, groupStart = false) => ({
+		label,
+		icon,
+		groupStart,
+		active: pastView === view,
+		select: () => setPastView(pastView === view ? 'none' : view),
+	});
 	const repItems = [
-		{ label: 'All Reps', icon: faUsers, active: chamber === '', select: () => setChamber('') },
-		{ label: 'Senate', icon: faLandmark, active: chamber === 'senate', select: () => setChamber('senate') },
-		{ label: 'House', icon: faHouseFlag, active: chamber === 'house', select: () => setChamber('house') },
+		{ label: 'All Reps', chamberFilter: true, icon: faUsers, active: chamber === '', select: () => setChamber('') },
+		{ label: 'Senate', chamberFilter: true, icon: faLandmark, active: chamber === 'senate', select: () => setChamber('senate') },
+		{ label: 'House', chamberFilter: true, icon: faHouseFlag, active: chamber === 'house', select: () => setChamber('house') },
+		pastItem('My Past Reps', faClockRotateLeft, 'mine', true),
+		pastItem('Past District Reps', faMapLocationDot, 'district'),
 	];
 
-	const items = screenSelect === 'reps' ? repItems : billItems;
+	const items: {
+		label: string;
+		icon: IconDefinition;
+		active: boolean;
+		select: () => void;
+		groupStart?: boolean;
+		/** Hidden in the mobile bottom bar; the reps page shows chamber pills instead. */
+		chamberFilter?: boolean;
+	}[] =
+		screenSelect === 'reps' ? repItems : billItems;
 
 	return (
 		<aside className={`side-bar ${scrolled ? 'scrolled' : ''}`}>
@@ -64,7 +89,7 @@ export const SideBar = ({ scrolled }: { scrolled: boolean }) => {
 				{items.map((item) => (
 					<li
 						key={item.label}
-						className={`screenSelect ${item.active ? 'active' : ''}`}
+						className={`screenSelect ${item.active ? 'active' : ''} ${item.groupStart ? 'group-start' : ''} ${item.chamberFilter ? 'chamber-filter' : ''}`}
 						onClick={item.select}>
 						<FontAwesomeIcon icon={item.icon} />
 						{item.label}

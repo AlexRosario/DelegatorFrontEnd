@@ -11,7 +11,12 @@ type MemberContextType = {
 	chamber: string;
 	setChamber: (chamber: string) => void;
 	representatives: CongressMember[];
+	/** Optional past-reps section shown below the current reps (one at a time, or none). */
+	pastView: PastView;
+	setPastView: (pastView: PastView) => void;
 };
+
+export type PastView = 'none' | 'mine' | 'district';
 
 export const MemberContext = createContext<MemberContextType>({} as MemberContextType);
 
@@ -20,6 +25,7 @@ export const MemberProvider = ({ children }: { children: ReactNode }) => {
 	const [senators, setSenators] = useState<CongressMember[]>([]);
 	const [houseReps, setHouseReps] = useState<CongressMember[]>([]);
 	const [chamber, setChamber] = useState('house');
+	const [pastView, setPastView] = useState<PastView>('none');
 	const { user } = useAuthInfo();
 	const userId = user.id;
 
@@ -96,6 +102,8 @@ export const MemberProvider = ({ children }: { children: ReactNode }) => {
 				chamber,
 				setChamber,
 				representatives: representatives.current,
+				pastView,
+				setPastView,
 			}}>
 			{children}
 		</MemberContext.Provider>
