@@ -34,8 +34,12 @@
 	height: 150px;
 	box-shadow: 0 2px 8px #00000026;
 	border-radius: 15px;
-}
 
+	// The logo art is dark-on-light; flip it so it reads on the dark header.
+	@media (prefers-color-scheme: dark) {
+		filter: invert(100%) hue-rotate(180deg);
+	}
+}
 
 // Header buttons are text/icon controls — undo the global `button` chrome
 // from index.css (inset shadow, radius, and the red :focus background).
@@ -313,4 +317,3 @@ aside.side-bar li.active {
 	box-shadow: inset 0 2px 5px #37363a;
 	cursor: pointer;
 }
-
